@@ -9,13 +9,15 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --primary: #2563eb; 
-            --secondary: #16a34a; 
-            --tertiary: #f59e0b; 
-            --quaternary: #9333ea; 
-            --quinary: #e11d48; 
+            --primary: #2563eb; /* Azul */
+            --secondary: #16a34a; /* Verde */
+            --tertiary: #f59e0b; /* Naranja */
+            --quaternary: #9333ea; /* Morado */
+            --quinary: #e11d48; /* Rosa */
             
+            /* Variables Escalera */
             --box-size: 60px;
+            --ladder-border-color: #f97316; 
             --ladder-border-width: 3px;
         }
 
@@ -23,7 +25,7 @@
         .math-mono { font-family: 'Roboto Mono', monospace; }
         sup { font-size: 0.7em; vertical-align: super; }
 
-        /* Intro Cells */
+        /* --- ESTILOS COMUNES --- */
         .intro-cell {
             height: 50px; width: 50px; display: flex; align-items: center; justify-content: center;
             font-family: 'Roboto Mono', monospace; font-size: 1.5rem; font-weight: 700;
@@ -31,12 +33,13 @@
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: transform 0.2s;
         }
         .intro-cell:hover { transform: translateY(-3px); }
+        
         .cell-dec { border-color: var(--primary); color: var(--primary); }
         .cell-bin { border-color: var(--secondary); color: var(--secondary); }
         .cell-oct { border-color: var(--quaternary); color: var(--quaternary); }
         .cell-hex { border-color: var(--quinary); color: var(--quinary); }
 
-        /* Viz Tables */
+        /* --- VISUALIZADORES --- */
         .viz-container {
             height: 500px; display: flex; flex-direction: column; border: 1px solid #e2e8f0;
             border-radius: 0.5rem; background: white; overflow: hidden;
@@ -56,12 +59,13 @@
             display: flex; justify-content: center; line-height: 1.5;
         }
         .digit-span { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 100%; text-align: center; }
+        
         .bg-block-uniform { background-color: #eff6ff; color: #1d4ed8; font-weight: bold; }
         .bg-block-uniform-bin { background-color: #f0fdf4; color: #15803d; font-weight: bold; }
         .bg-block-uniform-oct { background-color: #faf5ff; color: #7e22ce; font-weight: bold; }
         .bg-block-uniform-hex { background-color: #fff1f2; color: #be123c; font-weight: bold; }
 
-        /* Ref Table */
+        /* --- TABLAS DE REFERENCIA --- */
         .ref-table-container {
             max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0;
             border-radius: 0.5rem; background: white; width: fit-content; margin: 0 auto;
@@ -75,7 +79,7 @@
         .ref-row:hover { background-color: #f8fafc; }
         .ref-row.active-row { background-color: #fef08a; color: #854d0e; font-weight: bold; border-left: 4px solid #eab308; }
 
-        /* Ladder */
+        /* --- ESCALERA --- */
         .ladder-container-wrapper {
             font-family: 'Roboto Mono', monospace; overflow-x: auto;
             padding-bottom: 20px; padding-left: 10px; text-align: center; 
@@ -109,6 +113,8 @@
         input { width: 100%; padding: 8px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 1.1rem; text-align: center; }
         input:focus { outline: none; border-color: var(--primary); }
         .viz-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        
+        /* Viz Single Line */
         .viz-single-line {
             display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 0.75rem; align-items: center;
             font-family: 'Roboto Mono', monospace; font-size: 1.125rem; padding-bottom: 5px;
@@ -206,6 +212,7 @@
                 <h3 class="text-xl font-bold text-slate-800 mb-4">2.3 Binario a Decimal</h3>
                 <div class="flex flex-col items-center">
                     <div id="binarySwitches" class="flex flex-wrap justify-center gap-2 mb-6"></div>
+                    
                     <div class="w-full bg-slate-50 p-4 rounded-t-xl border border-slate-200 border-b-0 flex justify-center">
                         <div id="binToDecCalc" class="viz-single-line justify-center"></div>
                     </div>
@@ -213,6 +220,7 @@
                         <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Resultado Decimal</div>
                         <div id="binToDecResult" class="text-4xl font-mono font-bold text-green-400"></div>
                     </div>
+
                     <div class="w-full border-t pt-6 text-center">
                         <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tabla Referencia (0-255)</h4>
                         <div class="ref-table-container custom-scroll">
@@ -356,11 +364,11 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow">
+            <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h3 class="text-xl font-bold text-slate-800 mb-4">4.3 Hexadecimal a Decimal</h3>
                 <div class="bg-rose-50 p-6 rounded-xl flex flex-wrap items-center justify-center gap-4 mb-6">
                      <input type="text" id="hexInput" value="1A" class="w-32 text-3xl font-bold text-center text-rose-700 uppercase p-2 rounded bg-white border-2 border-rose-200" oninput="this.value = this.value.replace(/[^0-9A-Fa-f]/g, '').toUpperCase(); updateHexViz()">
-                     <div class="text-2xl text-rose-300 font-bold">→</div>
+                     <div class="hidden md:block text-2xl text-rose-300">→</div>
                     <div id="hexViz" class="viz-single-line"></div>
                 </div>
                 <div class="w-full border-t pt-6 text-center mt-6">
@@ -371,6 +379,22 @@
                         </div>
                         <div id="refTableBodyHex"></div>
                     </div>
+                </div>
+            </div>
+            <!-- 4.4 NUEVO: Conversión Binario a Hexadecimal -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-rose-500">
+                <h3 class="text-xl font-bold text-rose-900 mb-4">4.4 Binario a Hexadecimal (Agrupación)</h3>
+                <p class="text-slate-600 mb-6 text-sm">Como 2<sup>4</sup>=16, agrupamos bits de 4 en 4.</p>
+                <div class="bg-rose-50 p-6 rounded-xl flex flex-col items-center gap-6">
+                    <div class="flex flex-col md:flex-row items-center gap-4 w-full justify-center">
+                        <div>
+                            <input type="text" id="binToHexInput" value="10110111" class="w-64 text-center p-3 text-2xl font-mono font-bold text-green-600 border-2 border-green-200 rounded-lg focus:border-green-500" oninput="this.value = this.value.replace(/[^01]/g, ''); updateBinToHexGroupViz()">
+                            <p class="text-xs text-slate-400 text-center mt-1">Solo 0 y 1</p>
+                        </div>
+                        <div class="text-3xl text-rose-300 hidden md:block">→</div>
+                        <div id="binToHexDisplay" class="text-2xl font-mono font-bold text-slate-500 tracking-widest"></div>
+                    </div>
+                    <div id="binToHexViz" class="w-full flex flex-wrap justify-center gap-6 min-h-[100px]"></div>
                 </div>
             </div>
         </section>
@@ -419,52 +443,6 @@
             if(base===16) highlightRow(tot, 'refTableBodyHex', 'hex');
         }
 
-        // --- 3.5 NUEVO: BINARIO A OCTAL ---
-        function updateBinToOctGroupViz() {
-            let binStr = el('binToOctInput').value.replace(/[^01]/g, '');
-            const container = el('binToOctViz');
-            
-            const originalLen = binStr.length;
-            const remainder = originalLen % 3;
-            const padding = remainder === 0 ? 0 : 3 - remainder;
-            const paddedBinStr = '0'.repeat(padding) + binStr;
-            
-            let groups = [];
-            let displayGroups = [];
-            for (let i = 0; i < paddedBinStr.length; i += 3) {
-                const g = paddedBinStr.substr(i, 3);
-                groups.push(g);
-                displayGroups.push(g);
-            }
-            el('binToOctDisplay').innerText = displayGroups.join('-');
-            
-            if (!binStr) { container.innerHTML = ''; return; }
-
-            let html = '';
-            groups.forEach((group, index) => {
-                const octDigit = parseInt(group, 2).toString(8);
-                const isPaddingGroup = index === 0 && padding > 0;
-                html += `<div class="flex flex-col items-center gap-2">`;
-                html += `<div class="flex border-2 border-purple-200 rounded-lg overflow-hidden bg-white shadow-sm">`;
-                for (let j = 0; j < 3; j++) {
-                    let bit = group[j];
-                    let isPadBit = isPaddingGroup && j < padding;
-                    let colorClass = isPadBit ? 'text-gray-300 bg-gray-50' : 'text-slate-700 font-bold';
-                    html += `<div class="w-8 h-10 flex items-center justify-center border-r border-purple-100 last:border-r-0 ${colorClass}">${bit}</div>`;
-                }
-                html += `</div>`;
-                html += `<div class="text-purple-300"><i data-lucide="arrow-down" class="w-4 h-4"></i></div>`;
-                html += `<div class="w-10 h-10 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xl shadow-sm border border-purple-200">${octDigit}</div>`;
-                html += `</div>`;
-            });
-            
-            const octalResult = parseInt(paddedBinStr, 2).toString(8);
-            html = `<div class="flex flex-wrap gap-4 justify-center items-end font-mono w-full">${html}</div>`;
-            html += `<div class="w-full text-center mt-6 pt-4 border-t border-purple-100 flex justify-center items-center gap-3"><span class="text-slate-500 text-sm font-bold uppercase tracking-wider">Resultado Octal</span><span class="text-4xl font-mono font-bold text-purple-600">${octalResult}</span></div>`;
-            container.innerHTML = html;
-            lucide.createIcons();
-        }
-
         // --- TABLAS REF ---
         function renderRefTables() {
             let bHtml = '';
@@ -484,7 +462,7 @@
             if(r) { r.classList.add('active-row'); r.scrollIntoView({behavior:'smooth', block:'center'}); }
         }
 
-        // --- ESCALERA ---
+        // --- ESCALERA GENÉRICA ---
         function drawLadderGeneric(base, iid, cid, oid, boxid, colPrime, colLight) {
             const inp=el(iid), cont=el(cid), resBox=el(boxid), out=el(oid);
             let n=parseInt(inp.value);
@@ -530,6 +508,51 @@
             }
         }
 
+        // --- 3.5/4.4 AGRUPACIÓN (OCT/HEX) ---
+        function updateBinToOctGroupViz() { renderGrouping(3, 'binToOctInput', 'binToOctDisplay', 'binToOctViz', 'purple'); }
+        function updateBinToHexGroupViz() { renderGrouping(4, 'binToHexInput', 'binToHexDisplay', 'binToHexViz', 'rose'); }
+
+        function renderGrouping(size, iid, did, vid, colorTheme) {
+            let binStr = el(iid).value.replace(/[^01]/g, '');
+            const container = el(vid);
+            const disp = el(did);
+            
+            if (!binStr) { container.innerHTML = ''; disp.innerText=''; return; }
+
+            const rem = binStr.length % size;
+            const pad = rem === 0 ? 0 : size - rem;
+            const padded = '0'.repeat(pad) + binStr;
+            
+            let groups = [];
+            for (let i = 0; i < padded.length; i += size) groups.push(padded.substr(i, size));
+            disp.innerText = groups.join('-');
+
+            let html = '';
+            groups.forEach((group, idx) => {
+                const val = parseInt(group, 2);
+                const digit = val.toString(16).toUpperCase();
+                const isPad = idx === 0 && pad > 0;
+                
+                html += `<div class="flex flex-col items-center gap-2">`;
+                html += `<div class="flex border-2 border-${colorTheme}-200 rounded-lg overflow-hidden bg-white shadow-sm">`;
+                for (let j = 0; j < size; j++) {
+                    let bit = group[j];
+                    let pBit = isPad && j < pad;
+                    let cl = pBit ? 'text-gray-300 bg-gray-50' : 'text-slate-700 font-bold';
+                    html += `<div class="w-6 h-10 flex items-center justify-center border-r border-${colorTheme}-100 last:border-r-0 ${cl}">${bit}</div>`;
+                }
+                html += `</div><div class="text-${colorTheme}-300"><i data-lucide="arrow-down" class="w-4 h-4"></i></div>`;
+                html += `<div class="w-10 h-10 rounded-full bg-${colorTheme}-100 text-${colorTheme}-700 flex items-center justify-center font-bold text-xl shadow-sm border border-${colorTheme}-200">${digit}</div></div>`;
+            });
+            
+            const res = parseInt(padded, 2).toString(16).toUpperCase();
+            const label = size===3?'Octal':'Hex';
+            html = `<div class="flex flex-wrap gap-4 justify-center items-end font-mono w-full">${html}</div>`;
+            html += `<div class="w-full text-center mt-6 pt-4 border-t border-${colorTheme}-100 flex justify-center items-center gap-3"><span class="text-slate-500 text-sm font-bold uppercase tracking-wider">Resultado ${label}</span><span class="text-4xl font-mono font-bold text-${colorTheme}-600">${res}</span></div>`;
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
         // --- INITS ---
         renderSymbols('decimalSymbols', '0123456789'.split(''), 'cell-dec');
         function renderDecimalTable() { renderBaseTable(10, 'decRange', 'decFormulaDisplay', 'decTableHeader', 'decTable', 'bg-block-uniform', '#2563eb'); }
@@ -572,6 +595,7 @@
         function renderHexTable() { renderBaseTable(16, 'hexRange', 'hexFormulaDisplay', 'hexTableHeader', 'hexTable', 'bg-block-uniform-hex', '#e11d48'); }
         function updateHexViz() { updatePolyViz('hexInput', 'hexViz', 16, '#e11d48'); }
         renderHexTable(); updateHexViz();
+        updateBinToHexGroupViz(); // Init 4.4
 
         renderRefTables();
 
