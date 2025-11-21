@@ -3,1786 +3,691 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aprende HTML: Proyecto Incremental</title>
-    <!-- Incluimos Tailwind CSS para un diseño limpio y moderno -->
+    <title>Fundamentos de Sistemas Numéricos - TIC 1º Bachillerato</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Estilo personalizado para la fuente Inter */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        :root {
+            --primary: #2563eb; /* Azul */
+            --secondary: #16a34a; /* Verde */
+            --tertiary: #f59e0b; /* Naranja */
+            --quaternary: #9333ea; /* Morado (Octal) */
+            --quinary: #e11d48; /* Rosa (Hexadecimal) */
+            
+            /* Variables para la Escalera (Sección 3) */
+            --box-size: 60px;
+            --ladder-border-color: #f97316; 
+            --ladder-border-width: 3px;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-        }
-        /* Estilo para el enlace de la lección activa */
-        .nav-link.active {
-            background-color: #2563eb; /* blue-600 */
-            color: #ffffff; /* white */
-            font-weight: 600;
-        }
-
-        /* NUEVA REGLA: Anula el hover por defecto en el enlace activo */
-        .nav-link.active:hover {
-            background-color: #1d4ed8; /* blue-700 */
-            color: #ffffff; /* white */
+            background-color: #f8fafc;
+            color: #1e293b;
         }
         
-        /* Pequeños ajustes para el área de vista previa */
-        /* --- REGLA ELIMINADA --- */
-        /* Se ha eliminado la regla '#preview-area * { all: revert; }' que causaba el bug */
+        .math-mono { font-family: 'Roboto Mono', monospace; }
+        sup { font-size: 0.7em; vertical-align: super; }
 
-        /* --- REGLA ELIMINADA --- */
-        /* Se elimina la regla 'body.is-resizing #preview-area *' que no funcionaba */
+        /* --- ESTILOS UNIFICADOS PARA CELDAS DE INTRODUCCIÓN --- */
+        .intro-cell {
+            height: 50px;
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background-color: white;
+            border-width: 3px;
+            border-style: solid;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        .intro-cell:hover { transform: translateY(-3px); }
+        .cell-dec { border-color: var(--primary); color: var(--primary); }
+        .cell-bin { border-color: var(--secondary); color: var(--secondary); }
+        .cell-oct { border-color: var(--quaternary); color: var(--quaternary); }
+        .cell-hex { border-color: var(--quinary); color: var(--quinary); }
+
+        /* --- ESTILOS VISUALIZADORES --- */
+        .viz-container {
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background: white;
+            overflow: hidden;
+        }
         
-        /* Nueva regla para el iframe */
-        #preview-frame {
-            border: none; /* Asegurarse de que el iframe no tenga bordes feos */
+        .viz-header {
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
         }
-
-        /* Nuevos overlays para el redimensionamiento horizontal */
-        .resize-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 999;
-            /* background-color: rgba(0,0,0,0.05); */ /* Descomentar para depurar */
-        }
-
-        /* === ESTILOS DE QUIZ MODIFICADOS (ADIÓS DRAG/DROP) === */
-        #quiz-fill-in {
-            background-color: #e5e7eb; /* gray-200 */
-            border: 1px solid #d1d5db; /* gray-300 */
-            padding: 16px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 1.1em;
-            line-height: 1.8;
-        }
-        /* NUEVO: Estilo para el quiz de CSS */
-        #quiz-css-fill-in {
-            background-color: #1e293b; /* slate-800 */
-            color: #d1d5db; /* gray-300 */
-            border: 1px solid #4b5563; /* gray-600 */
-            padding: 16px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 1.1em;
-            line-height: 1.8;
-        }
-        .quiz-input {
-            font-family: monospace;
-            font-size: 0.9em;
-            padding: 2px 4px;
-            border: 2px dashed #d1d5db; /* gray-300 */
-            border-radius: 4px;
-            background-color: #ffffff;
+        
+        .header-cell {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 30px; 
+            margin: 0 1px;
             text-align: center;
-            transition: all 0.2s;
-            width: 150px; /* Ancho ampliado para las nuevas respuestas */
         }
-        /* NUEVO: Estilo para cajas pequeñas (símbolos) */
-        .quiz-input-symbol {
-            width: 40px;
-            padding-left: 0;
-            padding-right: 0;
+        
+        .header-value { color: #e2e8f0; font-size: 0.7rem; margin-top: 2px; opacity: 0.9; }
+
+        .viz-content { flex: 1; overflow-y: auto; padding: 10px; text-align: center; }
+        
+        /* FILA COMPACTA SIN ESPACIOS */
+        .viz-row {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.2rem;
+            margin: 0; 
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            line-height: 1.5;
         }
-        .quiz-input:focus {
-            outline: 2px solid #3b82f6; /* blue-500 */
-            border-color: #3b82f6;
+        
+        .digit-span {
+            display: inline-flex; 
+            align-items: center;
+            justify-content: center;
+            width: 30px; 
+            height: 100%; 
+            text-align: center;
         }
-        .quiz-input.correct {
-            background-color: #d1fae5; /* green-100 */
-            border: 2px solid #10b981; /* green-500 */
-            color: #065f46; /* green-800 */
+        
+        /* Fondos Uniformes por Sistema */
+        .bg-block-uniform { background-color: #eff6ff; color: #1d4ed8; font-weight: bold; } /* Decimal */
+        .bg-block-uniform-bin { background-color: #f0fdf4; color: #15803d; font-weight: bold; } /* Binario */
+        .bg-block-uniform-oct { background-color: #faf5ff; color: #7e22ce; font-weight: bold; } /* Octal */
+        .bg-block-uniform-hex { background-color: #fff1f2; color: #be123c; font-weight: bold; } /* Hex */
+
+        /* --- ESTILOS TABLA REFERENCIA (2.3) --- */
+        .ref-table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background: white;
+            width: fit-content;
+            margin: 0 auto;
+            min-width: 280px;
         }
-        .quiz-input.incorrect {
-            background-color: #fee2e2; /* red-100 */
-            border: 2px solid #ef4444; /* red-500 */
-            color: #991b1b; /* red-800 */
-            animation: shake 0.5s;
+        .ref-row {
+            display: grid;
+            grid-template-columns: 60px 1fr; 
+            gap: 20px; 
+            padding: 4px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.1s;
+            align-items: center;
         }
-        /* La animación @keyframes shake se mantiene */
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
+        .ref-row span:first-child { text-align: right; padding-right: 10px; }
+        .ref-row:hover { background-color: #f8fafc; }
+        .ref-row.active-row {
+            background-color: #fef08a; 
+            color: #854d0e;
+            font-weight: bold;
+            border-left: 4px solid #eab308;
         }
-        /* NUEVO: Estilo para el editor desactivado */
-        #code-editor:disabled {
-            background-color: #334155; /* slate-700 */
-            color: #9ca3af; /* gray-400 */
-            cursor: not-allowed;
+
+        /* --- ESTILOS ESCALERA (Sección 3) - INTACTOS --- */
+        .ladder-container-wrapper {
+            font-family: 'Roboto Mono', monospace;
+            overflow-x: auto;
+            padding-bottom: 20px;
+            padding-left: 10px;
+            text-align: center; 
         }
+
+        .number-cell {
+            height: var(--box-size);
+            min-width: var(--box-size);
+            width: var(--box-size); /* Ancho fijo */
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; 
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            box-sizing: border-box;
+            background-color: white;
+            flex-shrink: 0;
+        }
+
+        .divisor-cell {
+            border-left: var(--ladder-border-width) solid var(--ladder-border-color);
+            border-bottom: var(--ladder-border-width) solid var(--ladder-border-color);
+            color: var(--ladder-border-color);
+            justify-content: center; 
+            position: relative;
+            z-index: 20;
+        }
+
+        .remainder-cell { color: #dc2626; font-weight: 800; position: relative; }
+        
+        .step-container { display: inline-flex; flex-direction: row; align-items: flex-start; }
+        .column { display: flex; flex-direction: column; align-items: flex-start; }
+        
+        .next-step-wrapper {
+             margin-top: calc(-1 * var(--ladder-border-width)); 
+             position: relative;
+             z-index: 10;
+        }
+        
+        .final-quotient { color: #9ca3af; opacity: 0.6; }
+        
+        .end-label {
+            height: var(--box-size);
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #16a34a;
+            white-space: nowrap;
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; transform: translateY(-10px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        input[type="number"], input[type="range"], input[type="text"] {
+            width: 100%; padding: 8px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 1.1rem; text-align: center;
+        }
+        input:focus { outline: none; border-color: var(--primary); }
+
+        .viz-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
     </style>
 </head>
-<body class="bg-blue-50 text-gray-800">
+<body>
 
-    <div class="flex h-screen">
-        
-        <!-- === 1. MENÚ DE LECCIONES (EL PROYECTO) === -->
-        <!-- Ancho inicial (w-1/5) y transición añadida -->
-        <nav id="nav-panel" class="w-1/4 bg-gray-50 p-6 shadow-xl overflow-y-auto transition-all duration-300 border-r border-gray-200" style="flex-shrink: 0;">
-            <div class="flex justify-between items-center mb-6">
-                <!-- AÑADIDO: id="nav-title" -->
-                <h1 id="nav-title" class="text-2xl font-semibold text-blue-700">Aprende HTML y CSS Paso a Paso</h1>
-                <button id="toggle-nav-btn" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <!-- Icono de Chevron Izquierda (contraer) -->
-                    <svg id="toggle-nav-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </button>
+    <header class="sticky top-0 z-50 bg-slate-900 shadow-md border-b-4 border-blue-600">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-white">Sistemas de Numeración</h1>
+                <p class="text-blue-300 text-sm">TIC I - 1º Bachillerato</p>
             </div>
-            
-            <!-- Contenido del menú (para poder ocultarlo) -->
-            <div id="nav-content" class="space-y-4">
-                
-                <!-- === MÓDULO HTML === -->
-                <div>
-                    <button id="menu-toggle-html" class="w-full flex justify-between items-center p-3 bg-blue-50 rounded-lg hover:bg-blue-100 focus:outline-none">
-                        <span class="text-lg font-semibold text-blue-800">Módulo HTML</span>
-                        <svg id="arrow-html" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <ul id="lesson-list-html" class="space-y-2 mt-2">
-                        <!-- AÑADIDO: Lección 1 que faltaba -->
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="1">
-                                1. El Esqueleto de tu Web
-                            </a>
-                        </li>
-                        <li>
-                    <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="2">
-                        2. Títulos y Párrafos
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="3">
-                        3. Creando Listas
-                    </a>
-                </li>
-                <!-- NUEVA LECCIÓN -->
-                <li>
-                    <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="4">
-                        4. Creando Tablas
-                    </a>
-                </li>
-                <!-- LECCIONES RENUMERADAS -->
-                <li>
-                    <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="5">
-                        5. Multimedia: Imágenes, Vídeo y Audio
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="6">
-                        6. ¡Conecta tu Web con Enlaces!
-                    </a>
-                </li>
-                 <!-- NUEVA LECCIÓN -->
-                 <li>
-                    <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="7">
-                        7. Comprueba lo Aprendido
-                    </a>
-                </li>
-                 <!-- LECCIÓN 8 AÑADIDA -->
-                 <li>
-                    <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="8">
-                        8. Tu Proyecto Final
-                    </a>
-                </li>
-                 <!-- LECCIÓN 9 CORREGIDA -->
-                <li>
-                    <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="9">
-                        9. Próximos Pasos (CSS)
-                    </a>
-                </li>
-            </ul>
+            <!-- Navegación -->
+            <nav class="hidden md:flex gap-2">
+                <a href="#decimal" class="px-3 py-1 rounded bg-blue-900 text-blue-200 text-xs hover:bg-blue-800">Decimal</a>
+                <a href="#binary" class="px-3 py-1 rounded bg-green-900 text-green-200 text-xs hover:bg-green-800">Binario</a>
+                <a href="#conversion" class="px-3 py-1 rounded bg-orange-900 text-orange-200 text-xs hover:bg-orange-800">Conversión</a>
+                <a href="#octal" class="px-3 py-1 rounded bg-purple-900 text-purple-200 text-xs hover:bg-purple-800">Octal</a>
+                <a href="#hexadecimal" class="px-3 py-1 rounded bg-rose-900 text-rose-200 text-xs hover:bg-rose-800">Hexadecimal</a>
+            </nav>
         </div>
+    </header>
 
-        <!-- === MÓDULO CSS === -->
-                <div>
-                    <button id="menu-toggle-css" class="w-full flex justify-between items-center p-3 bg-blue-50 rounded-lg hover:bg-blue-100 focus:outline-none">
-                        <span class="text-lg font-semibold text-blue-800">Módulo CSS</span>
-                        <svg id="arrow-css" class="w-5 h-5 transition-transform transform -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <ul id="lesson-list-css" class="space-y-2 mt-2 hidden">
-                        <!-- NUEVAS LECCIONES DE CSS -->
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="css-1">
-                                1. ¿Qué es CSS y Cómo se Añade?
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="css-2">
-                                2. Selectores, Colores y Fondos
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="css-3">
-                                3. Fuentes y Texto
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="css-4">
-                                4. El Modelo de Caja (Padding, Border)
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="css-5">
-                                5. Estilizando Enlaces y Multimedia
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="css-6">
-                                6. Comprueba lo Aprendido (CSS)
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="css-7">
-                                7. Tu Proyecto Final (CSS)
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+    <main class="container mx-auto px-4 py-8 max-w-5xl space-y-16">
 
-                <!-- === MÓDULO GOOGLE SITES === -->
-                <div>
-                    <button id="menu-toggle-sites" class="w-full flex justify-between items-center p-3 bg-blue-50 rounded-lg hover:bg-blue-100 focus:outline-none">
-                        <span class="text-lg font-semibold text-blue-800">Módulo Google Sites</span>
-                        <svg id="arrow-sites" class="w-5 h-5 transition-transform transform -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <ul id="lesson-list-sites" class="space-y-2 mt-2 hidden">
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="gs-1">
-                                1. ¿Qué es Google Sites?
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="gs-2">
-                                2. Temas y Encabezados
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="gs-3">
-                                3. Insertar Texto e Imágenes
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="gs-4">
-                                4. Creando Múltiples Páginas
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="gs-5">
-                                5. Incrustar Contenido (Embeds)
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="gs-6">
-                                6. Comprueba lo Aprendido (Sites)
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link block w-full p-3 rounded-lg text-gray-700 hover:bg-gray-100" data-lesson="gs-7">
-                                7. Tu Proyecto Final (Publicar)
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
+        <!-- SECCIÓN 1: DECIMAL -->
+        <section id="decimal" class="scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="bg-blue-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl shadow-md">1</span>
+                <h2 class="text-3xl font-bold text-slate-800">Sistema Decimal (Base 10)</h2>
             </div>
-        </nav>
-
-        <!-- === 2. PANEL DE INSTRUCCIONES === -->
-        <!-- Se cambia 'w-1/2' por 'flex-1' para que se ajuste automáticamente -->
-        <main id="main-panel" class="w-1/2 flex flex-col" style="position: relative;">
-            <header class="bg-white shadow-md p-4 z-10">
-                <h1 class="text-3xl font-bold text-purple-700 text-center">DigitalMente: Nuestra Voz</h1>
-            </header>
-            
-            <div id="instructions-panel" class="flex-1 p-8 overflow-y-auto bg-gray-100">
-                
-                <!-- Contenido de las lecciones (se muestra dinámicamente) -->
-                
-                <div id="lesson-1-content" class="lesson-content space-y-4">
-                    <h3 class="text-2xl font-bold text-gray-900">Lección 1: El Esqueleto de tu Web</h3>
-                    <p>Toda página web necesita una estructura básica, un "esqueleto". ¡Es como los cimientos de una casa!</p>
-                    <p>Este esqueleto se compone de 4 etiquetas principales:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><code><a href="https://www.w3schools.com/tags/tag_doctype.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;!DOCTYPE html&gt;</a></code>: Le dice al navegador que esto es un documento HTML5.</li>
-                        <li><code><a href="https://www.w3schools.com/tags/tag_html.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;html&gt;</a></code>: La etiqueta raíz que envuelve todo el contenido.</li>
-                        <li><code><a href="https://www.w3schools.com/tags/tag_head.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;head&gt;</a></code>: Contiene "meta-información" (datos sobre la web) que no se ve, como el título de la pestaña.</li>
-                        <li><code><a href="https://www.w3schools.com/tags/tag_body.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;body&gt;</a></code>: ¡Aquí va todo el contenido visible! Textos, imágenes, etc.</li>
-                    </ul>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>Copia el código de la derecha en el editor. Observa cómo la etiqueta <code><a href="https://www.w3schools.com/tags/tag_title.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;title&gt;</a></code> cambia el título en la "Vista Previa" (aunque aquí no lo veremos, lo cambiaría en la pestaña del navegador).</p>
-                    </div>
-                </div>
-
-                <!-- === LECCIÓN 2 RESTAURADA === -->
-                <div id="lesson-2-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Lección 2: Títulos y Párrafos</h3>
-                    <p>¡Genial! Ahora que tenemos el esqueleto, vamos a añadir contenido visible dentro del <code><a href="https://www.w3schools.com/tags/tag_body.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;body&gt;</a></code>.</p>
-                    <p>Las etiquetas más comunes para texto son:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><code><a href="https://www.w3schools.com/tags/tag_hn.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;h1&gt;</a></code>: Para el título más importante de la página. (Solo debería haber uno por página).</li>
-                        <li><code><a href="https://www.w3schools.com/tags/tag_hn.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;h2&gt;</a></code>, <code><a href="https://www.w3schools.com/tags/tag_hn.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;h3&gt;</a></code>...: Para subtítulos.</li>
-                        <li><code><a href="https://www.w3schools.com/tags/tag_p.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;p&gt;</a></code>: Para párrafos de texto normal.</li>
-                    </ul>
-
-                    <h4 class="text-lg font-semibold mt-4">Extra: Dejar Comentarios</h4>
-                    <p>A veces, querrás dejar notas en tu código que no sean visibles en la web. Para esto se usan los <strong>comentarios HTML</strong>.</p>
-                    <p>Un comentario empieza con <code>&lt;!--</code> y termina con <code>--&gt;</code>. El navegador ignorará todo lo que esté en medio. ¡Puedes ver uno en el código de la Lección 1!</p>
-
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>Vamos a darle un título a nuestro blog. Añade una etiqueta <code>&lt;h1&gt;</code>, un párrafo <code>&lt;p&gt;</code> y un comentario <code>&lt;!-- ... --&gt;</code>. ¡Mira el código de la derecha!</p>
-                    </div>
-                </div>
-                <!-- === FIN LECCIÓN 2 RESTAURADA === -->
-
-
-                <!-- === CONTENIDO DE LECCIÓN 3 RESTAURADO === -->
-                <div id="lesson-3-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Lección 3: Creando Listas</h3>
-                    <p>A menudo queremos organizar la información en listas. Son perfectas para dar consejos, o listar ideas.</p>
-                    <p>Hay dos tipos de listas:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><code><a href="https://www.w3schools.com/tags/tag_ul.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;ul&gt;</a></code>: Lista "desordenada" (Unordered List). Usa viñetas (•).</li>
-                        <li><code><a href="https://www.w3schools.com/tags/tag_ol.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;ol&gt;</a></code>: Lista "ordenada" (Ordered List). Usa números (1, 2, 3...).</li>
-                        <li><code><a href="https://www.w3schools.com/tags/tag_li.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;li&gt;</a></code>: Cada "elemento de la lista" (List Item) va dentro de un <code>&lt;li&gt;</code>.</li>
-                    </ul>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>Añade un subtítulo <code><a href="https://www.w3schools.com/tags/tag_hn.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;h2&gt;</a></code> que diga "Consejos contra el Estrés" y, debajo, crea una lista <code><a href="https://www.w3schools.com/tags/tag_ul.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;ul&gt;</a></code> con al menos 3 ideas (<code><a href="https://www.w3schools.com/tags/tag_li.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;li&gt;</a></code>) para relajarse.</p>
-                    </div>
-                </div>
-
-                <!-- === NUEVA LECCIÓN 4 (TABLAS) === -->
-                <div id="lesson-4-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Lección 4: Creando Tablas</h3>
-                    <p>Las tablas se usan para organizar datos en filas y columnas. Son perfectas para mostrar un horario, comparar información o cualquier dato estructurado.</p>
-                    <p>Las etiquetas principales de una tabla son:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><code><a href="https://www.w3schools.com/tags/tag_table.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;table&gt;</a></code>: Envuelve toda la tabla.</li>
-                        <li><code><a href="https://www.w3schools.com/tags/tag_tr.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;tr&gt;</a></code> (Table Row): Define una fila.</li>
-                        <li><code><a href="https://www.w3schools.com/tags/tag_th.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;th&gt;</a></code> (Table Header): Define una celda de cabecera (en negrita y centrada).</li>
-                        <li><code><a href="https://www.w3schools.com/tags/tag_td.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;td&gt;</a></code> (Table Data): Define una celda de datos.</li>
-                    </ul>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>Vamos a añadir un pequeño horario o un registro de "tiempo de pantalla". Copia el código de la derecha. Verás que las tablas por defecto no tienen bordes. ¡Eso se arregla luego con CSS!</p>
-                    </div>
-                </div>
-
-                <!-- === LECCIÓN RENUMERADA (antes 4, ahora 5) === -->
-                <div id="lesson-5-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Lección 5: Multimedia (Imágenes, Vídeo y Audio)</h3>
-                    <p>Una web moderna no solo tiene texto. ¡Vamos a añadir imágenes, vídeo y audio!</p>
-                    
-                    <h4 class="text-lg font-semibold">1. Imágenes con <code>&lt;img&gt;</code></h4>
-                    <p>Esta etiqueta es "auto-cierre" y necesita "atributos":</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><code><a href="https://www.w3schools.com/tags/tag_img.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;img src="..." alt="..."&gt;</a></code></li>
-                        <li><code>src</code> (Source): Es la URL o ruta donde se encuentra la imagen.</li>
-                        <li><code>alt</code> (Alternative Text): Texto descriptivo que se muestra si la imagen no carga. Es VITAL para la accesibilidad (personas con discapacidad visual).</li>
-                    </ul>
-
-                    <h4 class="text-lg font-semibold mt-4">2. Vídeo con <code>&lt;video&gt;</code></h4>
-                    <p>Puedes incrustar vídeos directamente en tu página. La etiqueta <code><a href="https://www.w3schools.com/tags/tag_video.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;video&gt;</a></code> es la clave.</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><code><a href="https://www.w3schools.com/tags/tag_video.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;video src="..." controls&gt;&lt;/video&gt;</a></code></li>
-                        <li><code>src</code>: La URL o ruta al archivo de vídeo.</li>
-                        <li><code>controls</code>: ¡Muy importante! Añade los controles de play, pausa y volumen.</li>
-                        <li>También puedes añadir <code>width="..."</code> para darle un tamaño.</li>
-                    </ul>
-
-                    <h4 class="text-lg font-semibold mt-4">3. Audio con <code>&lt;audio&gt;</code></h4>
-                    <p>De forma similar, puedes añadir música o podcasts con la etiqueta <code><a href="https://www.w3schools.com/tags/tag_audio.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;audio&gt;</a></code>.</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><code><a href="https://www.w3schools.com/tags/tag_audio.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;audio src="..." controls&gt;&lt;/audio&gt;</a></code></li>
-                        <li><code>src</code>: La URL o ruta al archivo de audio.</li>
-                        <li><code>controls</code>: Añade los controles de reproducción.</li>
-                    </ul>
-
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>Usa el código de la derecha. He añadido un <code>&lt;video&gt;</code> y un <code>&lt;audio&gt;</code> usando archivos de ejemplo de W3Schools. ¡Observa cómo aparecen los reproductores!</p>
-                    </div>
-                </div>
-                
-                <!-- === LECCIÓN RENUMERADA (antes 5, ahora 6) === -->
-                <div id="lesson-6-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Lección 6: ¡Conecta tu Web con Enlaces!</h3>
-                    <p>La web se llama "web" (red) por los enlaces (hipervínculos) que conectan todo. La etiqueta "ancla" <code><a href="https://www.w3schools.com/tags/tag_a.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;a&gt;</a></code> crea estos enlaces.</p>
-                    <p>También usa un atributo clave:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><code><a href="https://www.w3schools.com/tags/tag_a.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;a href="..."&gt;Texto del enlace&lt;/a&gt;</a></code></li>
-                        <li><code>href</code> (Hypertext Reference): Es la URL de destino a la que queremos ir.</li>
-                        <li>El texto que está entre <code>&lt;a&gt;</code> y <code>&lt;/a&gt;</code> es en lo que el usuario hará clic.</li>
-                    </ul>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>Añade un nuevo párrafo que incluya un enlace a una web externa que te parezca útil o un recurso de apoyo (como una app de meditación, una web de ayuda, etc.).</p>
-                    </div>
-                </div>
-
-                <!-- === NUEVA LECCIÓN 7 (ACTIVIDAD) === -->
-                <div id="lesson-7-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Lección 7: Comprueba lo Aprendido</h3>
-                    <p>¡Hora de repasar! Has aprendido un montón de etiquetas. ¿Puedes identificarlas?</p>
-                    <p>¡Escríbelo todo! Escribe la etiqueta, atributo o valor que falta en cada caja, incluyendo los caracteres <code>&lt;</code>, <code>&gt;</code> y <code>"</code> cuando sea necesario.</p>
-                    <div class="flex space-x-4 mb-4">
-                        <button id="check-quiz-btn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Comprobar Respuestas</button>
-                        <button id="reset-quiz-btn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">Reiniciar</button>
-                    </div>
-                    
-                    <!-- === NUEVO QUIZ DE RELLENAR HUECOS === -->
-                    <div id="quiz-fill-in">
-                        &lt;!DOCTYPE html&gt;<br>
-                        &lt;html&gt;<br>
-                        &lt;head&gt;...&lt;/head&gt;<br>
-                        &lt;body&gt;<br>
-                        &nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="<h1>">
-                        DigitalMente...
-                        <input type="text" class="quiz-input" data-correct="</h1>">
-                        <br><br>
-                        
-                        &nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="<p>">
-                        Bienvenido...
-                        <input type="text" class="quiz-input" data-correct="</p>">
-                        <br><br>
-                        
-                        &nbsp;&nbsp;&lt;h2&gt;Mi Semana...&lt;/h2&gt;<br>
-                        &nbsp;&nbsp;<input type="text" class="quiz-input quiz-input-symbol" data-correct="<">
-                        table&gt;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;tr&gt;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="<th>">
-                        Actividad&lt;/th&gt;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;/tr&gt;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;tr&gt;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="<td>">
-                        Estudio&lt;/td&gt;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;/tr&gt;<br>
-                        &nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="</table>"><br><br>
-                        
-                        &nbsp;&nbsp;&lt;h2&gt;Momento de Calma...&lt;/h2&gt;<br>
-                        &nbsp;&nbsp;&lt;img 
-                        src="calma.jpg" 
-                        alt=
-                        <input type="text" class="quiz-input quiz-input-symbol" data-correct='"'>
-                        Una foto...
-                        <input type="text" class="quiz-input quiz-input-symbol" data-correct='"'>
-                        <input type="text" class="quiz-input quiz-input-symbol" data-correct=">">
-                        <br><br>
-                        
-                        &nbsp;&nbsp;&lt;h2&gt;Recursos...&lt;/h2&gt;<br>
-                        &nbsp;&nbsp;&lt;p&gt;...visita la &lt;a 
-                        href=
-                        <input type="text" class="quiz-input quiz-input-symbol" data-correct='"'>
-                        ...wiki...
-                        <input type="text" class="quiz-input quiz-input-symbol" data-correct='"'>
-                        &gt;página&lt;/a&gt;.&lt;/p&gt;<br>
-                        &lt;/body&gt;
-                    </div>
-                </div>
-
-
-                <!-- === NUEVA LECCIÓN 8 (PROYECTO FINAL) === -->
-                <div id="lesson-8-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Lección 8: Tu Proyecto Final</h3>
-                    <p>¡Has llegado al final del módulo de HTML! Ahora es tu turno de crear algo desde cero.</p>
-                    <p class="font-semibold">Tu Tarea:</p>
-                    <p>Crea tu propia página web sobre un tema que te interese relacionado con la adolescencia. ¡Sé creativo/a! El editor de código se ha reiniciado solo con el esqueleto básico. Debes construir todo lo demás.</p>
-                    <p>Algunas ideas sobre las que puedes escribir:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li>Un análisis de tu serie, película o videojuego favorito.</li>
-                        <li>Una página sobre la presión social o la salud mental.</li>
-                        <li>Una guía de tus grupos de música o artistas preferidos.</li>
-                        <li>Una página sobre tus hobbies, el deporte o qué hacer en tu tiempo libre.</li>
-                    </ul>
-                    
-                    <h4 class="text-lg font-semibold mt-4">Requisitos:</h4>
-                    <p>Tu página debe estar elaborada e incluir <span class="font-bold">todo</span> lo que has aprendido:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li>Un título principal (<code>&lt;h1&gt;</code>).</li>
-                        <li>Varios subtítulos (<code>&lt;h2&gt;</code> o <code>&lt;h3&gt;</code>).</li>
-                        <li>Varios párrafos de texto (<code>&lt;p&gt;</code>).</li>
-                        <li>Al menos una lista (<code>&lt;ul&gt;</code> o <code>&lt;ol&gt;</code>).</li>
-                        <li>Una tabla con datos (<code>&lt;table&gt;</code>).</li>
-                        <li>Al menos una imagen (<code>&lt;img&gt;</code>).</li>
-                        <li>Un vídeo (<code>&lt;video&gt;</code>) o un audio (<code>&lt;audio&gt;</code>).</li>
-                        <li>Varios enlaces (<code>&lt;a&gt;</code>) a páginas externas.</li>
-                    </ul>
-                     <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡A crear!</span>
-                        <p>Usa los botones "Copiar Código" y "Abrir en Navegador" para guardar y ver tu obra maestra.</p>
-                    </div>
-                </div>
-
-
-                <!-- === LECCIÓN RENUMERADA (antes 8, ahora 9) === -->
-                <div id="lesson-9-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Lección 9: Próximos Pasos</h3>
-                    <p>¡ENHORABUENA! Has creado una página web completa con la estructura básica de HTML.</p>
-                    <p>Has aprendido a:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li>Estructurar una web (<code><a href="https://www.w3schools.com/tags/tag_html.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">html</a></code>, <code><a href="https://www.w3schools.com/tags/tag_head.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">head</a></code>, <code><a href="https://www.w3schools.com/tags/tag_body.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">body</a></code>).</li>
-                        <li>Añadir texto (<code><a href="https://www.w3schools.com/tags/tag_hn.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">h1</a></code>, <code><a href="https://www.w3schools.com/tags/tag_p.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">p</a></code>) y comentarios (<code>&lt;!-- ... --&gt;</code>).</li>
-                        <li>Organizar contenido (<code><a href="https://www.w3schools.com/tags/tag_ul.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">ul</a></code>, <code><a href="https://www.w3schools.com/tags/tag_li.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">li</a></code>).</li>
-                        <!-- NUEVA LÍNEA -->
-                        <li>Organizar datos (<code><a href="https://www.w3schools.com/tags/tag_table.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">table</a></code>, <code><a href="https://www.w3schools.com/tags/tag_tr.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">tr</a></code>, <code><a href="https://www.w3schools.com/tags/tag_td.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">td</a></code>).</li>
-                        <li>Mostrar multimedia (<code><a href="https://www.w3schools.com/tags/tag_img.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">img</a></code>, <code><a href="https://www.w3schools.com/tags/tag_video.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">video</a></code>, <code><a href="https://www.w3schools.com/tags/tag_audio.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">audio</a></code>).</li>
-                        <li>Crear enlaces (<code><a href="https://www.w3schools.com/tags/tag_a.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">a</a></code>).</li>
-                    </ul>
-                    <p class="font-semibold">¿Y ahora qué?</p>
-                    <p>Te habrás dado cuenta de que la web se ve... un poco "simple". Eso es porque HTML es solo la Estructura (el esqueleto).</p>
-                    <p>Para darle color, cambiar fuentes, alinear elementos y hacer que se vea bonita, usamos otra tecnología llamada <span class="font-bold text-pink-600">CSS (Cascading Style Sheets)</span>.</p>
-                    <p>¡Pero eso es para la próxima aventura!</p>
-                </div>
-
-
-                <!-- ============================================= -->
-                <!-- === INICIO DE NUEVAS LECCIONES DE CSS === -->
-                <!-- ============================================= -->
-
-                <div id="lesson-css-1-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">CSS Lección 1: ¿Qué es CSS y Cómo se Añade?</h3>
-                    <p>¡Bienvenido al Módulo de CSS! CSS (Hojas de Estilo en Cascada) es el lenguaje que usamos para dar estilo a nuestras páginas HTML. HTML es el esqueleto, y CSS es la ropa, el maquillaje y la pintura.</p>
-                    <p>Hay varias formas de añadir CSS, pero la más sencilla para empezar es usando la etiqueta <code><a href="https://www.w3schools.com/tags/tag_style.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;style&gt;</a></code>.</p>
-                    <p>Esta etiqueta se coloca <span class="font-bold">dentro del <code><a href="https://www.w3schools.com/tags/tag_head.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;head&gt;</a></code></span> de tu documento HTML, y todo lo que escribas dentro de ella será código CSS.</p>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>He cargado el código de tu proyecto "DigitalMente". Observa que he añadido una etiqueta <code><a href="https://www.w3schools.com/tags/tag_style.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;style&gt;</a></code> vacía dentro del <code><a href="https://www.w3schools.com/tags/tag_head.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;head&gt;</a></code>. Aún no hace nada, ¡pero ya estamos listos para añadir estilos!</p>
-                    </div>
-                </div>
-
-                <div id="lesson-css-2-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">CSS Lección 2: Selectores, Colores y Fondos</h3>
-                    <p>La regla básica de CSS es: "Selecciona algo, y luego dale estilo".</p>
-                    <p>La sintaxis es <code>selector { propiedad: valor; }</code></p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><strong>Selector:</strong> A qué etiqueta HTML queremos apuntar (ej. <code><a href="https://www.w3schools.com/css/css_selectors.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">h1</a></code>, <code><a href="https://www.w3schools.com/css/css_selectors.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">p</a></code>, <code><a href="https://www.w3schools.com/css/css_selectors.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">body</a></code>).</li>
-                        <li><strong>Propiedad:</strong> Qué característica queremos cambiar (ej. <code><a href="https://www.w3schools.com/cssref/pr_color.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">color</a></code>, <code><a href="https://www.w3schools.com/cssref/pr_background-color.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">background-color</a></code>).</li>
-                        <li><strong>Valor:</strong> El nuevo estilo que queremos aplicar (ej. <code>red</code>, <code>#333</code>).</li>
-                    </ul>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>Mira dentro de la etiqueta <code><a href="https://www.w3schools.com/tags/tag_style.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">&lt;style&gt;</a></code>. He añadido dos reglas: una para cambiar el color de fondo de <code><a href="https://www.w3schools.com/css/css_selectors.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">body</a></code> y otra para cambiar el color del texto de <code><a href="https://www.w3schools.com/css/css_selectors.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">h1</a></code>. ¡Mira cómo ha cambiado la vista previa!</p>
-                    </div>
-                </div>
-                
-                <div id="lesson-css-3-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">CSS Lección 3: Fuentes y Texto</h3>
-                    <p>CSS nos da control total sobre la tipografía. Las propiedades más comunes son:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><code><a href="https://www.w3schools.com/cssref/pr_font_font-family.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">font-family</a></code>: Para cambiar el tipo de letra (ej. "Arial", "Verdana", sans-serif).</li>
-                        <li><code><a href="https://www.w3schools.com/cssref/pr_font_font-size.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">font-size</a></code>: Para cambiar el tamaño del texto (ej. <code>16px</code>, <code>1.2em</code>).</li>
-                        <li><code><a href="https://www.w3schools.com/cssref/pr_dim_line-height.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">line-height</a></code>: Para cambiar el espacio entre líneas (ej. <code>1.6</code>).</li>
-                        <li><code><a href="https://www.w3schools.com/cssref/pr_text_text-align.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">text-align</a></code>: Para alinear el texto (ej. <code>center</code>, <code>left</code>, <code>right</code>).</li>
-                    </ul>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>He actualizado el <code><a href="https://www.w3schools.com/css/css_selectors.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">body</a></code> para poner una fuente "sans-serif" (más moderna) y he centrado el <code><a href="https://www.w3schools.com/css/css_selectors.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">h1</a></code>. ¿Ves la diferencia? Prueba a cambiar el valor de <code><a href="https://www.w3schools.com/cssref/pr_text_text-align.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">text-align</a></code> a <code>right</code> y mira qué pasa.</p>
-                    </div>
-                </div>
-
-                <div id="lesson-css-4-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">CSS Lección 4: El Modelo de Caja</h3>
-                    <p>Todo elemento en HTML es una caja rectangular. El "Modelo de Caja" nos permite controlar su tamaño y espacio.</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><code><a href="https://www.w3schools.com/cssref/pr_padding.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">padding</a></code>: El espacio "interior" de la caja (entre el contenido y el borde).</li>
-                        <li><code><a href="https://www.w3schools.com/cssref/pr_border.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">border</a></code>: El borde de la caja (ej. <code>1px solid black</code>).</li>
-                        <li><code><a href="https://www.w3schools.com/cssref/pr_margin.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">margin</a></code>: El espacio "exterior" de la caja (para separarla de otros elementos).</li>
-                        <li><code><a href="https://www.w3schools.com/cssref/pr_dim_width.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">width</a></code>: El ancho de la caja.</li>
-                    </ul>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>He añadido estilos a la tabla (<code><a href="https://www.w3schools.com/css/css_table.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">table</a></code>, <code><a href="https://www.w3schools.com/css/css_table.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">th</a></code>, <code><a href="https://www.w3schools.com/css/css_table.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">td</a></code>) para darle bordes y <code><a href="https://www.w3schools.com/cssref/pr_padding.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">padding</a></code>. ¡Ahora parece una tabla de verdad! También he puesto un <code><a href="https://www.w3schools.com/cssref/pr_margin.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">margin</a></code> al <code><a href="https://www.w3schools.com/css/css_selectors.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">body</a></code> para que el contenido no esté pegado a los bordes.</p>
-                    </div>
-                </div>
-
-                <div id="lesson-css-5-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">CSS Lección 5: Estilizando Enlaces y Multimedia</h3>
-                    <p>¡Demos los toques finales!</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><strong>Multimedia:</strong> Es crucial hacer que las imágenes y vídeos sean "responsivos" (que se adapten al tamaño de la pantalla). Usamos <code><a href="https://www.w3schools.com/cssref/pr_dim_max-width.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">max-width: 100%;</a></code> para esto. <code><a href="https://www.w3schools.com/cssref/pr_border-radius.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">border-radius</a></code> nos permite redondear las esquinas.</li>
-                        <li><strong>Enlaces:</strong> Podemos cambiar el estilo de los enlaces (<code><a href="https://www.w3schools.com/css/css_link.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">a</a></code>) y hacer que reaccionen al ratón usando <code><a href="https://www.w3schools.com/css/css_link.asp#pseudo" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">a:hover</a></code> (pseudo-clase).</li>
-                    </ul>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>He añadido estilos para que la imagen y el vídeo no se salgan de la pantalla y tengan esquinas redondeadas. También he estilizado los enlaces (<code><a href="https://www.w3schools.com/css/css_link.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">a</a></code>) y he hecho que cambien de color al pasar el ratón por encima (<code><a href="https://www.w3schools.com/css/css_link.asp#pseudo" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">a:hover</a></code>).</p>
-                    </div>
-                </div>
-
-                <div id="lesson-css-6-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">CSS Lección 6: Comprueba lo Aprendido</h3>
-                    <p>¡Hora de repasar CSS! Escribe la propiedad o el valor que falta en cada caja. No te preocupes por los espacios.</p>
-                    <div class="flex space-x-4 mb-4">
-                        <button id="check-css-quiz-btn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Comprobar Respuestas</button>
-                        <button id="reset-css-quiz-btn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">Reiniciar</button>
-                    </div>
-                    
-                    <div id="quiz-css-fill-in">
-                        body {<br>
-                        &nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="background-color">
-                        : #f0f0f0;<br>
-                        &nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="font-family">
-                        : sans-serif;<br>
-                        }<br><br>
-                        
-                        h1 {<br>
-                        &nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="color">
-                        : #333;<br>
-                        &nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="text-align">
-                        : center;<br>
-                        }<br><br>
-
-                        img {<br>
-                        &nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="max-width">
-                        : 100%;<br>
-                        &nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="border-radius">
-                        : 8px;<br>
-                        }<br><br>
-
-                        th, td {<br>
-                        &nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="border">
-                        : 1px solid #ccc;<br>
-                        &nbsp;&nbsp;<input type="text" class="quiz-input" data-correct="padding">
-                        : 8px;<br>
-                        }<br><br>
-
-                        a:hover {<br>
-                        &nbsp;&nbsp;color: 
-                        <input type="text" class="quiz-input" data-correct="red">
-                        ;<br>
-                        }
-                    </div>
-                </div>
-
-                <div id="lesson-css-7-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">CSS Lección 7: Tu Proyecto Final</h3>
-                    <p>¡Este es el gran final! Es hora de combinar tus conocimientos de HTML y CSS.</p>
-                    <p class="font-semibold">Tu Tarea:</p>
-                    <p>He cargado el esqueleto de tu **"Proyecto Final de HTML"** (el de la Lección 8). Tu misión es usar todo lo que has aprendido en este módulo de CSS para darle vida y un aspecto increíble.</p>
-                    <p>¡No hay límites! Experimenta con colores, fuentes, márgenes, bordes y todo lo que se te ocurra.</p>
-                    
-                    <h4 class="text-lg font-semibold mt-4">Requisitos:</h4>
-                    <p>Intenta aplicar al menos:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li>Un color de fondo para el <code><a href="https://www.w3schools.com/css/css_selectors.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">body</a></code>.</li>
-                        <li>Una fuente (<code><a href="https://www.w3schools.com/cssref/pr_font_font-family.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">font-family</a></code>) para toda la página.</li>
-                        <li>Estilos de color y alineación para tus <code><a href="https://www.w3schools.com/css/css_selectors.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">h1</a></code> y <code><a href="https://www.w3schools.com/css/css_selectors.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">h2</a></code>.</li>
-                        <li>Estilos de <code><a href="https://www.w3schools.com/cssref/pr_padding.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">padding</a></code> y <code><a href="https://www.w3schools.com/cssref/pr_border.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">border</a></code> a tu tabla.</li>
-                        <li>Un <code><a href="https://www.w3schools.com/cssref/pr_border-radius.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">border-radius</a></code> y <code><a href="https://www.w3schools.com/cssref/pr_dim_max-width.asp" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">max-width</a></code> a tus imágenes.</li>
-                        <li>Un efecto <code><a href="https://www.w3schools.com/css/css_link.asp#pseudo" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:text-green-800 underline">:hover</a></code> para tus enlaces.</li>
-                    </ul>
-                     <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡A diseñar!</span>
-                        <p>Este es tu proyecto. ¡Haz que te sientas orgulloso/a de él! Usa "Abrir en Navegador" para ver tu creación.</p>
-                    </div>
-                </div>
-
-                <!-- === FIN DE NUEVAS LECCIONES DE CSS === -->
-                <!-- ======================================= -->
-
-                <!-- ================================================= -->
-                <!-- === INICIO DE NUEVAS LECCIONES DE GOOGLE SITES === -->
-                <!-- ================================================= -->
-
-                <div id="lesson-gs-1-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Google Sites Lección 1: ¿Qué es Google Sites?</h3>
-                    <p>¡Bienvenido al último módulo! Ya sabes cómo funciona una web "por dentro" (HTML y CSS). Ahora, aprenderás a usar un <strong>constructor visual (No-Code)</strong> como Google Sites.</p>
-                    <p>Estas herramientas te permiten crear sitios web complejos arrastrando y soltando elementos, sin escribir (casi) nada de código. Es ideal para crear portafolios, webs para trabajos de clase o sitios de recursos rápidamente.</p>
-                    <p>💠 Google Sites forma parte de tu cuenta de Google (como Drive o Docs).</p>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>Abre una nueva pestaña del navegador, ve a <a href="https://sites.google.com/new" target="_blank" class="font-bold underline">sites.google.com/new</a> (o búscalo en Google) y haz clic en el botón grande de "En blanco" (un ➕ de colores). Ponle un nombre a tu proyecto, como por ejemplo "Mi Espacio Digital" o "Proyecto 4ºESO".</p>
-                        <p class="mt-2 font-semibold">Nota: El editor de código de la derecha se desactivará durante este módulo, ¡el trabajo se hace en la pestaña de Google Sites!</p>
-                    </div>
-                </div>
-
-                <div id="lesson-gs-2-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Google Sites Lección 2: Temas y Encabezados</h3>
-                    <p>Lo primero que ve un visitante es el "look" de tu web. En Google Sites, esto se controla con los <strong>Temas</strong>.</p>
-                    <p>En el panel de la derecha de Google Sites, busca la pestaña <strong>"Temas" 🎨</strong>. Aquí puedes cambiar toda la paleta de colores y las fuentes de tu sitio con un solo clic (Aristóteles, Diplomático, Visión...)</p>
-                    <p>El <strong>Encabezado</strong> es la imagen grande de la parte superior. Puedes cambiarla por una de la galería o subir la tuya propia.</p>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>En tu sitio de Google Sites:</p>
-                        <ol class="list-decimal list-inside ml-4">
-                            <li>Ve a la pestaña "Temas" 🎨 y elige el que más te guste.</li>
-                            <li>Pasa el ratón sobre el encabezado, haz clic en "Cambiar imagen" 🖼️ y selecciona una nueva.</li>
-                            <li>Escribe el título de tu web en el encabezado.</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <div id="lesson-gs-3-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Google Sites Lección 3: Insertar Texto e Imágenes</h3>
-                    <p>Aquí es donde ocurre la magia. Vuelve a la pestaña <strong>"Insertar" 📌</strong> del panel derecho.</p>
-                    <p>Verás todos los "bloques de contenido" que puedes añadir. Los más importantes son:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><strong>🔡 Cuadro de texto:</strong> Añade un párrafo de texto simple (equivale a la etiqueta <code>&lt;p&gt;</code>).</li>
-                        <li><strong>🖼️ Imágenes:</strong> Te permite subir una imagen o buscarla en Google.</li>
-                        <li><strong>📑 Bloques de contenido:</strong> Son diseños ya hechos (ej. una imagen al lado de un texto) que te ahorran mucho trabajo.</li>
-                    </ul>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>En la página principal de tu sitio:</p>
-                        <ol class="list-decimal list-inside ml-4">
-                            <li>Añade un "Cuadro de texto" 🔡 y escribe un párrafo de bienvenida.</li>
-                            <li>Debajo, añade un "Bloque de contenido" 📑 (el que tiene imagen y texto) y presenta un tema que te guste (un hobby, un libro, etc.).</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <div id="lesson-gs-4-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Google Sites Lección 4: Creando Múltiples Páginas</h3>
-                    <p>Un sitio web casi siempre tiene más de una página. Google Sites hace que esto sea increíblemente fácil.</p>
-                    <p>En el panel derecho, ve a la pestaña <strong>"Páginas" 📄</strong>. Verás tu "Página principal".</p>
-                    <p>Para añadir una nueva, simplemente haz clic en el botón <strong>(➕)</strong> en la parte inferior. Dale un nombre (ej. "Mi Blog", "Recursos", "Sobre mí") y pulsa "Listo".</p>
-                    <p>Google Sites <span class="font-bold">creará automáticamente el menú de navegación</span> 🧭 en la parte superior de tu web para que los visitantes puedan saltar de una página a otra.</p>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>Abre una nueva pestaña del navegador, ve a <a href="https://sites.google.com/new" target="_blank" class="font-bold underline">sites.google.com/new</a> (o búscalo en Google) y crea un sitio en blanco. Ponle un nombre a tu proyecto, como por ejemplo "Mi Espacio Digital" o "Proyecto 4ºESO".</p>
-                        <p class="mt-2 font-semibold">Nota: El editor de código de la derecha se desactivará durante este módulo, ¡el trabajo se hace en la pestaña de Google Sites!</p>
-                    </div>
-                </div>
-
-                <div id="lesson-gs-2-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Google Sites Lección 2: Temas y Encabezados</h3>
-                    <p>Lo primero que ve un visitante es el "look" de tu web. En Google Sites, esto se controla con los <strong>Temas</strong>.</p>
-                    <p>En el panel de la derecha de Google Sites, busca la pestaña <strong>"Temas"</strong>. Aquí puedes cambiar toda la paleta de colores y las fuentes de tu sitio con un solo clic (Aristóteles, Diplomático, Visión...)</p>
-                    <p>El <strong>Encabezado</strong> es la imagen grande de la parte superior. Puedes cambiarla por una de la galería o subir la tuya propia.</p>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>En tu sitio de Google Sites:</p>
-                        <ol class="list-decimal list-inside ml-4">
-                            <li>Ve a la pestaña "Temas" y elige el que más te guste.</li>
-                            <li>Pasa el ratón sobre el encabezado, haz clic en "Cambiar imagen" y selecciona una nueva.</li>
-                            <li>Escribe el título de tu web en el encabezado.</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <div id="lesson-gs-3-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Google Sites Lección 3: Insertar Texto e Imágenes</h3>
-                    <p>Aquí es donde ocurre la magia. Vuelve a la pestaña <strong>"Insertar"</strong> del panel derecho.</p>
-                    <p>Verás todos los "bloques de contenido" que puedes añadir. Los más importantes son:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><strong>Cuadro de texto:</strong> Añade un párrafo de texto simple (equivale a la etiqueta <code>&lt;p&gt;</code>).</li>
-                        <li><strong>Imágenes:</strong> Te permite subir una imagen o buscarla en Google.</li>
-                        <li><strong>Bloques de contenido:</strong> Son diseños ya hechos (ej. una imagen al lado de un texto) que te ahorran mucho trabajo.</li>
-                    </ul>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>En la página principal de tu sitio:</p>
-                        <ol class="list-decimal list-inside ml-4">
-                            <li>Añade un "Cuadro de texto" y escribe un párrafo de bienvenida.</li>
-                            <li>Debajo, añade un "Bloque de contenido" (el que tiene imagen y texto) y presenta un tema que te guste (un hobby, un libro, etc.).</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <div id="lesson-gs-4-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Google Sites Lección 4: Creando Múltiples Páginas</h3>
-                    <p>Un sitio web casi siempre tiene más de una página. Google Sites hace que esto sea increíblemente fácil.</p>
-                    <p>En el panel derecho, ve a la pestaña <strong>"Páginas"</strong>. Verás tu "Página principal".</p>
-                    <p>Para añadir una nueva, simplemente haz clic en el botón <strong>"+"</strong> en la parte inferior. Dale un nombre (ej. "Mi Blog", "Recursos", "Sobre mí") y pulsa "Listo".</p>
-                    <p>Google Sites <span class="font-bold">creará automáticamente el menú de navegación</span> en la parte superior de tu web para que los visitantes puedan saltar de una página a otra.</p>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>Crea al menos dos páginas nuevas para tu sitio. Por ejemplo:</p>
-                        <ol class="list-decimal list-inside ml-4">
-                            <li>Una página llamada "Blog" o "Mis Ideas".</li>
-                            <li>Una página llamada "Recursos Útiles".</li>
-                            <li>Fíjate cómo aparecen automáticamente en el menú superior.</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <div id="lesson-gs-5-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Google Sites Lección 5: Incrustar Contenido (Embeds)</h3>
-                    <p>Esta es la función más potente. Te permite insertar contenido de otros servicios directamente en tu página. Es el equivalente a las etiquetas <code>&lt;iframe&gt;</code>, <code>&lt;video&gt;</code>, etc., pero de forma visual.</p>
-                    <p>Vuelve a la pestaña <strong>"Insertar" 📌</strong>. Busca las opciones:</p>
-                    <ul class="list-disc list-inside bg-white p-4 rounded-lg">
-                        <li><strong>▶️ YouTube:</strong> Te permite buscar un vídeo de YouTube y añadirlo.</li>
-                        <li><strong>📅 Calendario:</strong> Inserta un Google Calendar.</li>
-                        <li><strong>🗺️ Mapa:</strong> Inserta un Google Map.</li>
-                        <li><strong>🔗 Incrustar:</strong> ¡La más potente! Te permite insertar casi cualquier cosa de la web pegando su URL (como un post de Twitter/X, una playlist de Spotify, etc.).</li>
-                    </ul>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Turno!</span>
-                        <p>Ve a tu página "Recursos Útiles" y:</p>
-                        <ol class="list-decimal list-inside ml-4">
-                            <li>Inserta un vídeo de YouTube 🎬 que te parezca interesante (ej. sobre salud mental, un tutorial, música relajante...).</li>
-                            <li>Intenta insertar un Mapa 🗺️ de tu ciudad o instituto.</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <div id="lesson-gs-6-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Google Sites Lección 6: Comprueba lo Aprendido</h3>
-                    <p>¡Repaso rápido! Escribe la palabra que falta en cada caja, según la interfaz de Google Sites.</p>
-                    <div class="flex space-x-4 mb-4">
-                        <button id="check-gs-quiz-btn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Comprobar Respuestas</button>
-                        <button id="reset-gs-quiz-btn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">Reiniciar</button>
-                    </div>
-                    
-                    <div id="quiz-gs-fill-in" class="space-y-3">
-                        <div>
-                            Para cambiar las fuentes y colores (🎨) de todo el sitio, usas la pestaña...
-                            <input type="text" class="quiz-input" data-correct="Temas">
-                        </div>
-                        <div>
-                            Para añadir una nueva página (📄) (ej. "Blog"), usas la pestaña...
-                            <input type="text" class="quiz-input" data-correct="Páginas">
-                        </div>
-                        <div>
-                            Para añadir texto, imágenes o bloques de diseño (🔡/🖼️), usas la pestaña...
-                            <input type="text" class="quiz-input" data-correct="Insertar">
-                        </div>
-                        <div>
-                            Para insertar un vídeo de YouTube (▶️) o un Mapa (🗺️), buscas en la pestaña...
-                            <input type="text" class="quiz-input" data-correct="Insertar">
-                        </div>
-                        <div>
-                            El botón azul para que tu web sea visible en internet (🚀) se llama...
-                            <input type="text" class="quiz-input" data-correct="Publicar">
-                        </div>
-                    </div>
-                </div>
-
-                <div id="lesson-gs-7-content" class="lesson-content space-y-4 hidden">
-                    <h3 class="text-2xl font-bold text-gray-900">Google Sites Lección 7: Tu Proyecto Final (Publicar)</h3>
-                    <p>¡Has construido un sitio web completo con múltiples páginas y contenido interactivo sin escribir código!</p>
-                    <p>Solo queda un paso: que el mundo pueda verlo. Por defecto, tu sitio es privado (solo tú puedes verlo).</p>
-                    <p>Para hacerlo público, debes hacer clic en el botón azul de <strong>"Publicar" 🚀</strong> (arriba a la derecha). Te pedirá que elijas una "dirección web" (URL) para tu sitio. Elige una sencilla.</p>
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg">
-                        <span class="font-bold">¡Tu Tarea Final!</span>
-                        <p>Asegúrate de que tu sitio tiene al menos 3 páginas (ej. Inicio, Blog, Recursos) y que cada página tiene contenido (texto, imágenes, vídeos, etc.).</p>
-                        <p>Cuando estés listo, pulsa <strong>"Publicar"</strong>, configura la dirección y comparte el enlace con tu profesor y compañeros.</p>
-                        <p class="mt-2 font-semibold">¡ENHORABUENA! Has aprendido a crear webs desde cero con HTML y CSS, y a usar herramientas visuales como Google Sites.</p>
-                    </div>
-                </div>
-
-                <!-- === FIN DE NUEVAS LECCIONES DE GOOGLE SITES === -->
-                <!-- ================================================= -->
-
+            <!-- Intro -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500 mb-8">
+                <h3 class="text-lg font-bold text-blue-800 mb-4">1.1 El Alfabeto Decimal</h3>
+                <div class="viz-grid" id="decimalSymbols"></div>
             </div>
-            <!-- Overlay para capturar eventos de ratón durante el redimensionamiento horizontal -->
-            <div id="main-overlay" class="resize-overlay hidden"></div>
-        </main>
-
-        <!-- === NUEVO RESIZER HORIZONTAL === -->
-        <div id="horizontal-resizer" class="w-2 h-full bg-slate-600 cursor-col-resize hover:bg-blue-500" style="flex-shrink: 0; z-index: 20;"></div>
-
-        <!-- === 3. EDITOR Y VISTA PREVIA === -->
-        <!-- Se cambia 'w-1/2' por 'flex-1' para que se ajuste automáticamente -->
-        <aside id="aside-panel" class="w-1/4 bg-slate-800 p-4 flex flex-col h-screen">
-            
-            <!-- Editor de Código -->
-            <div class="flex-1 flex flex-col" id="editor-container">
-                <div class="flex justify-between items-center mb-2">
-                    <label for="code-editor" class="text-sm font-medium text-blue-200">Tu Código HTML (index.html)</label>
-                    <button id="copy-code-btn" class="bg-slate-600 hover:bg-slate-500 text-white px-3 py-1 text-xs font-medium rounded-lg shadow transition-all duration-200">
-                        Copiar Código
-                    </button>
-                </div>
-                <textarea id="code-editor" class="w-full flex-1 font-mono text-sm bg-slate-900 text-emerald-300 p-4 rounded-lg border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500" spellcheck="false">
-<!-- El código de la lección aparecerá aquí -->
-                </textarea>
-            </div>
-
-            <!-- Resizer Gutter -->
-            <div id="vertical-resizer" class="h-2 bg-slate-600 cursor-ns-resize hover:bg-blue-500 my-2 rounded-sm" style="flex-shrink: 0;"></div>
-
-            <!-- Vista Previa -->
-            <div class="flex-1 flex flex-col" id="preview-container">
-                <div class="flex justify-between items-center mb-2">
-                    <h3 class="text-sm font-medium text-blue-200">Vista Previa de tu Web</h3>
-                    <button id="open-in-browser-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-xs font-medium rounded-lg shadow">
-                        Abrir en Navegador
-                    </button>
-                </div>
-
-                <!-- Contenedor relativo para el overlay -->
-                <div id="preview-wrapper" class="w-full flex-1 rounded-lg" style="position: relative;">
-                    <!-- --- CAMBIO: Se reemplaza el DIV por un IFRAME --- -->
-                    <iframe id="preview-frame" class="w-full h-full bg-white rounded-lg">
-                        <!-- El HTML renderizado aparecerá aquí -->
-                    </iframe>
-                    <!-- Overlay para capturar eventos de ratón durante el redimensionamiento horizontal -->
-                    <div id="iframe-overlay" class="resize-overlay hidden"></div>
+            <!-- Combinatoria -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100 mb-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-6">1.2 Formación de Combinaciones</h3>
+                <div class="grid md:grid-cols-12 gap-8">
+                    <div class="md:col-span-4 space-y-6">
+                        <div class="bg-blue-50 p-5 rounded-xl border border-blue-100">
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Número de Cifras:</label>
+                            <input type="range" id="decRange" min="1" max="4" value="1" class="w-full accent-blue-600 mb-2" oninput="renderDecimalTable()">
+                            <div class="flex justify-between text-xs text-slate-500"><span>1</span><span>4</span></div>
+                            <div id="decFormulaDisplay" class="mt-4 text-center flex flex-col items-center justify-center min-h-[4rem]"></div>
+                        </div>
+                        <div class="text-sm border-t border-slate-100 pt-4">
+                            <p class="font-bold text-slate-700 mb-2">Leyenda de Posición:</p>
+                            <div id="decLegend" class="space-y-1"></div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-8">
+                        <div class="viz-container">
+                            <div class="viz-header !bg-blue-900" id="decTableHeader"></div>
+                            <div class="viz-content" id="decTable"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <!-- Descomposición -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">1.3 Descomposición Polinómica</h3>
+                <div class="bg-slate-50 p-6 rounded-xl flex flex-col md:flex-row items-center gap-6 justify-center border border-slate-200">
+                    <div class="text-center">
+                        <label class="block text-xs font-bold text-slate-400 mb-1 tracking-wider">NÚMERO</label>
+                        <input type="number" id="decInput" value="342" max="999999" class="text-3xl font-bold text-center w-32 bg-white border-2 border-blue-200 rounded-lg p-2 text-blue-700 focus:outline-none focus:border-blue-500" oninput="updateDecimalViz()">
+                    </div>
+                    <div class="hidden md:block text-3xl text-slate-300">→</div>
+                    <div id="decViz" class="flex flex-wrap gap-3 justify-center items-center font-mono text-lg"></div>
+                </div>
+            </div>
+        </section>
 
-        </aside>
+        <!-- SECCIÓN 2: BINARIO -->
+        <section id="binary" class="scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="bg-green-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl shadow-md">2</span>
+                <h2 class="text-3xl font-bold text-slate-800">Sistema Binario (Base 2)</h2>
+            </div>
+            <!-- Intro -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500 mb-8">
+                <h3 class="text-lg font-bold text-green-800 mb-4">2.1 El Alfabeto Binario</h3>
+                <div class="flex justify-center gap-6">
+                    <div class="intro-cell cell-bin">0</div>
+                    <div class="intro-cell cell-bin">1</div>
+                </div>
+            </div>
+            <!-- Combinatoria -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100 mb-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-6">2.2 Formación de Combinaciones</h3>
+                <div class="grid md:grid-cols-12 gap-8">
+                    <div class="md:col-span-4 space-y-6">
+                        <div class="bg-green-50 p-5 rounded-xl border border-green-100">
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Número de Bits:</label>
+                            <input type="range" id="binRange" min="1" max="8" value="3" class="w-full accent-green-600 mb-2" oninput="renderBinaryTable()">
+                            <div class="flex justify-between text-xs text-slate-500"><span>1</span><span>8</span></div>
+                            <div id="binFormulaDisplay" class="mt-4 text-center flex flex-col items-center justify-center min-h-[4rem]"></div>
+                        </div>
+                        <div class="text-sm border-t border-slate-100 pt-4">
+                            <p class="font-bold text-slate-700 mb-2">Leyenda de Posición:</p>
+                            <div id="binLegend" class="space-y-1"></div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-8">
+                        <div class="viz-container">
+                            <div class="viz-header !bg-green-900" id="binTableHeader"></div>
+                            <div class="viz-content" id="binTable"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Descomposición -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">2.3 Conversión Binario a Decimal</h3>
+                <div class="flex flex-col items-center">
+                    <div id="binarySwitches" class="flex flex-wrap justify-center gap-2 mb-8"></div>
+                    <div class="bg-slate-50 p-6 rounded-xl w-full border border-slate-200 flex justify-center mb-8">
+                        <div id="binToDecViz" class="flex flex-wrap gap-3 justify-center items-center font-mono text-lg"></div>
+                    </div>
+                    <div class="w-full border-t border-slate-100 pt-6 text-center">
+                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Tabla de Referencia (0-255)</h4>
+                        <div class="ref-table-container custom-scroll">
+                            <div class="bg-slate-100 px-5 py-2 flex text-xs font-bold text-slate-500 sticky top-0 border-b border-slate-200" style="display: grid; grid-template-columns: 60px 1fr; gap: 20px; align-items: center;">
+                                <span style="text-align: right; padding-right: 10px;">DEC</span>
+                                <span>BIN (8 bits)</span>
+                            </div>
+                            <div id="referenceTableBody"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    </div>
+        <!-- SECCIÓN 3: CONVERSIÓN ESCALERA (INTACTA) -->
+        <section id="conversion" class="scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="bg-orange-500 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl shadow-md">3</span>
+                <h2 class="text-3xl font-bold text-slate-800">Conversión Decimal a Binario</h2>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-orange-500">
+                <h3 class="text-xl font-bold text-orange-900 mb-4">3.1 Método de la Escalera</h3>
+                <div class="grid md:grid-cols-3 gap-8 items-start">
+                    <div class="md:col-span-1 bg-orange-50 p-6 rounded-xl">
+                        <label class="block text-sm font-bold text-orange-900 mb-2">Número Decimal:</label>
+                        <input type="number" id="ladderInput" value="42" min="0" class="w-full text-center p-3 text-xl font-bold text-orange-700 border-2 border-orange-200 rounded-lg focus:border-orange-500 focus:outline-none mb-4" onkeypress="if(event.key === 'Enter') calculateLadder()">
+                        <button onclick="calculateLadder()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg shadow-md transition">Convertir</button>
+                        <div id="ladderResultBox" class="hidden mt-6 bg-white p-4 rounded-lg border border-orange-100 text-center shadow-sm">
+                            <div class="text-xs text-gray-400 uppercase font-bold tracking-wider">Resultado Binario</div>
+                            <div id="ladderBinaryOutput" class="text-3xl font-mono font-bold text-orange-600 mt-1 break-all"></div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2 bg-white border border-slate-200 rounded-xl p-4 overflow-hidden min-h-[200px]">
+                        <div class="text-xs text-slate-400 font-bold uppercase mb-4 border-b pb-2">Proceso Visual</div>
+                        <div class="ladder-container-wrapper">
+                            <div id="ladderContainer" class="inline-block text-left pt-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <!-- === FORMULARIO OCULTO ELIMINADO === -->
-    <!-- El formulario <form id="w3-tryit-form"> ya no es necesario y se ha eliminado -->
+        <!-- SECCIÓN 4: OCTAL -->
+        <section id="octal" class="scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="bg-purple-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl shadow-md">4</span>
+                <h2 class="text-3xl font-bold text-slate-800">Sistema Octal (Base 8)</h2>
+            </div>
+            <!-- Intro -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-500 mb-8">
+                <h3 class="text-lg font-bold text-purple-800 mb-4">4.1 El Alfabeto Octal (0-7)</h3>
+                <div class="viz-grid" id="octalSymbols"></div>
+            </div>
+            <!-- Combinatoria -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100 mb-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-6">4.2 Formación de Combinaciones</h3>
+                <div class="grid md:grid-cols-12 gap-8">
+                    <div class="md:col-span-4 space-y-6">
+                        <div class="bg-purple-50 p-5 rounded-xl border border-purple-100">
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Cifras:</label>
+                            <input type="range" id="octRange" min="1" max="4" value="2" class="w-full accent-purple-600" oninput="renderOctalTable()">
+                            <div id="octFormulaDisplay" class="mt-4 text-center flex flex-col items-center justify-center min-h-[4rem]"></div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-8">
+                        <div class="viz-container">
+                            <div class="viz-header !bg-purple-900" id="octTableHeader"></div>
+                            <div class="viz-content" id="octTable"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Descomposición -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">4.3 Conversión Octal a Decimal</h3>
+                <div class="bg-purple-50 p-6 rounded-xl flex flex-col md:flex-row items-center gap-6 justify-center border border-purple-200">
+                    <div class="text-center">
+                        <label class="block text-xs font-bold text-purple-700 mb-1 tracking-wider">OCTAL</label>
+                        <input type="text" id="octInput" value="75" maxlength="6" class="text-3xl font-bold text-center w-32 bg-white border-2 border-purple-200 rounded-lg p-2 text-purple-700 focus:outline-none focus:border-purple-500 uppercase" oninput="this.value = this.value.replace(/[^0-7]/g, ''); updateOctalViz()">
+                    </div>
+                    <div class="hidden md:block text-2xl text-purple-300">→</div>
+                    <div id="octViz" class="flex flex-wrap gap-3 justify-center items-center font-mono text-lg"></div>
+                </div>
+            </div>
+        </section>
 
-    <!-- === LÓGICA JAVASCRIPT === -->
+        <!-- SECCIÓN 5: HEXADECIMAL -->
+        <section id="hexadecimal" class="scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="bg-rose-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl shadow-md">5</span>
+                <h2 class="text-3xl font-bold text-slate-800">Sistema Hexadecimal (Base 16)</h2>
+            </div>
+            <!-- Intro -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-rose-500 mb-8">
+                <h3 class="text-lg font-bold text-rose-800 mb-4">5.1 El Alfabeto Hexadecimal (0-9, A-F)</h3>
+                <div class="viz-grid" id="hexSymbols"></div>
+            </div>
+            <!-- Combinatoria -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100 mb-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-6">5.2 Formación de Combinaciones</h3>
+                <div class="grid md:grid-cols-12 gap-8">
+                    <div class="md:col-span-4 space-y-6">
+                        <div class="bg-rose-50 p-5 rounded-xl border border-rose-100">
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Cifras:</label>
+                            <input type="range" id="hexRange" min="1" max="3" value="2" class="w-full accent-rose-600" oninput="renderHexTable()">
+                            <div id="hexFormulaDisplay" class="mt-4 text-center flex flex-col items-center justify-center min-h-[4rem]"></div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-8">
+                        <div class="viz-container">
+                            <div class="viz-header !bg-rose-900" id="hexTableHeader"></div>
+                            <div class="viz-content" id="hexTable"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Descomposición -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">5.3 Conversión Hexadecimal a Decimal</h3>
+                <div class="bg-rose-50 p-6 rounded-xl flex flex-col md:flex-row items-center gap-6 justify-center border border-rose-200">
+                    <div class="text-center">
+                        <label class="block text-xs font-bold text-rose-700 mb-1 tracking-wider">HEX</label>
+                        <input type="text" id="hexInput" value="1A" maxlength="5" class="text-3xl font-bold text-center w-32 bg-white border-2 border-rose-200 rounded-lg p-2 text-rose-700 focus:outline-none focus:border-rose-500 uppercase" oninput="this.value = this.value.replace(/[^0-9A-Fa-f]/g, '').toUpperCase(); updateHexViz()">
+                    </div>
+                    <div class="hidden md:block text-2xl text-rose-300">→</div>
+                    <div id="hexViz" class="flex flex-wrap gap-3 justify-center items-center font-mono text-lg"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
     <script>
-        // Objeto que almacena el código de inicio para cada lección
-        const lessonCodes = {
-            1: `<!DOCTYPE html>
-<html>
-<head>
-    <title>DigitalMente: Nuestra Voz</title>
-</head>
-<body>
-    <!-- El contenido visible va aquí -->
-</body>
-</html>`,
-            // --- CÓDIGO LECCIÓN 2 RESTAURADO ---
-            2: `<!DOCTYPE html>
-<html>
-<head>
-    <title>DigitalMente: Nuestra Voz</title>
-</head>
-<body>
-    <!-- Este es el título principal -->
-    <h1>DigitalMente: Nuestra Voz</h1>
-    <p>Bienvenido. Este es un espacio para hablar de la presión de los exámenes, el futuro, y la vida digital.</p>
-</body>
-</html>`,
-            3: `<!DOCTYPE html>
-<html>
-<head>
-    <title>DigitalMente: Nuestra Voz</title>
-</head>
-<body>
-    <h1>DigitalMente: Nuestra Voz</h1>
-    <p>Bienvenido. Este es un espacio para hablar de la presión de los exámenes, el futuro, y la vida digital.</p>
-    
-    <h2>Consejos contra el Estrés</h2>
-    <ul>
-        <li>Escuchar música</li>
-        <li>Hablar con amigos</li>
-        <li>Hacer deporte</li>
-    </ul>
-</body>
-</html>`,
-            // --- NUEVO lessonCodes[4] ---
-            4: `<!DOCTYPE html>
-<html>
-<head>
-    <title>DigitalMente: Nuestra Voz</title>
-</head>
-<body>
-    <h1>DigitalMente: Nuestra Voz</h1>
-    <p>Bienvenido. Este es un espacio para hablar de la presión de los exámenes, el futuro, y la vida digital.</p>
-    
-    <h2>Consejos contra el Estrés</h2>
-    <ul>
-        <li>Escuchar música</li>
-        <li>Hablar con amigos</li>
-        <li>Hacer deporte</li>
-    </ul>
+        lucide.createIcons();
+        function el(id) { return document.getElementById(id); }
 
-    <h2>Mi Semana (Ejemplo de Tabla)</h2>
-    <table>
-        <tr>
-            <th>Actividad</th>
-            <th>Lunes</th>
-            <th>Miércoles</th>
-        </tr>
-        <tr>
-            <td>Estudio</td>
-            <td>2h</td>
-            <td>1.5h</td>
-        </tr>
-        <tr>
-            <td>Pantallas</td>
-            <td>3h</td>
-            <td>2.5h</td>
-        </tr>
-    </table>
-</body>
-</html>`,
-            // --- RENUMERADO (antes 4, ahora 5) Y ACTUALIZADO ---
-            5: `<!DOCTYPE html>
-<html>
-<head>
-    <title>DigitalMente: Nuestra Voz</title>
-</head>
-<body>
-    <h1>DigitalMente: Nuestra Voz</h1>
-    <p>Bienvenido. Este es un espacio para hablar de la presión de los exámenes, el futuro, y la vida digital.</p>
-    
-    <h2>Consejos contra el Estrés</h2>
-    <ul>
-        <li>Escuchar música</li>
-        <li>Hablar con amigos</li>
-        <li>Hacer deporte</li>
-    </ul>
+        // --- GENERADOR GENÉRICO DE SÍMBOLOS ---
+        function renderSymbols(containerId, chars, cssClass) {
+            const container = el(containerId);
+            container.innerHTML = '';
+            chars.forEach(char => {
+                container.innerHTML += `<div class="intro-cell ${cssClass}">${char}</div>`;
+            });
+        }
 
-    <h2>Mi Semana (Ejemplo de Tabla)</h2>
-    <table>
-        <tr>
-            <th>Actividad</th>
-            <th>Lunes</th>
-            <th>Miércoles</th>
-        </tr>
-        <tr>
-            <td>Estudio</td>
-            <td>2h</td>
-            <td>1.5h</td>
-        </tr>
-        <tr>
-            <td>Pantallas</td>
-            <td>3h</td>
-            <td>2.5h</td>
-        </tr>
-    </table>
-
-    <h2>Momento de Calma (Imagen)</h2>
-    <img src="https://placehold.co/600x300/a0c4ff/333?text=Un+momento+de+calma" alt="Una imagen que representa la calma o el relax" width="600">
-    
-    <h2>Vídeo Relajante (Ejemplo)</h2>
-    <video src="https://www.w3schools.com/html/mov_bbb.mp4" controls width="600">
-        Tu navegador no soporta este vídeo.
-    </video>
-
-    <h2>Audio (Ejemplo)</h2>
-    <audio src="https://www.w3schools.com/html/horse.ogg" controls>
-        Tu navegador no soporta este audio.
-    </audio>
-</body>
-</html>`,
-            // --- RENUMERADO (antes 5, ahora 6) Y ACTUALIZADO ---
-            6: `<!DOCTYPE html>
-<html>
-<head>
-    <title>DigitalMente: Nuestra Voz</title>
-</head>
-<body>
-    <h1>DigitalMente: Nuestra Voz</h1>
-    <p>Bienvenido. Este es un espacio para hablar de la presión de los exámenes, el futuro, y la vida digital.</p>
-    
-    <h2>Consejos contra el Estrés</h2>
-    <ul>
-        <li>Escuchar música</li>
-        <li>Hablar con amigos</li>
-        <li>Hacer deporte</li>
-    </ul>
-
-    <h2>Mi Semana (Ejemplo de Tabla)</h2>
-    <table>
-        <tr>
-            <th>Actividad</th>
-            <th>Lunes</th>
-            <th>Miércoles</th>
-        </tr>
-        <tr>
-            <td>Estudio</td>
-            <td>2h</td>
-            <td>1.5h</td>
-        </tr>
-        <tr>
-            <td>Pantallas</td>
-            <td>3h</td>
-            <td>2.5h</td>
-        </tr>
-    </table>
-
-    <h2>Momento de Calma (Imagen)</h2>
-    <img src="https://placehold.co/600x300/a0c4ff/333?text=Un+momento+de+calma" alt="Una imagen que representa la calma o el relax" width="600">
-    
-    <h2>Vídeo Relajante (Ejemplo)</h2>
-    <video src="https://www.w3schools.com/html/mov_bbb.mp4" controls width="600">
-        Tu navegador no soporta este vídeo.
-    </video>
-
-    <h2>Audio (Ejemplo)</h2>
-    <audio src="https://www.w3schools.com/html/horse.ogg" controls>
-        Tu navegador no soporta este audio.
-    </audio>
-
-    <h2>Recursos Útiles</h2>
-    <p>
-        Un buen recurso para empezar es la
-        <a href="https://es.wikipedia.org/wiki/Mindfulness" target="_blank">
-            página de Wikipedia sobre Mindfulness
-        </a>.
-    </p>
-</body>
-</html>`,
-            // --- NUEVO CÓDIGO DE LECCIÓN 7 ---
-            7: `<!DOCTYPE html>
-<html>
-<head>
-    <title>DigitalMente: Nuestra Voz</title>
-</head>
-<body>
-    <h1>DigitalMente: Nuestra Voz</h1>
-    <p>Bienvenido. Este es un espacio para hablar de la presión de los exámenes, el futuro, y la vida digital.</p>
-    
-    <h2>Consejos contra el Estrés</h2>
-    <ul>
-        <li>Escuchar música</li>
-        <li>Hablar con amigos</li>
-        <li>Hacer deporte</li>
-    </ul>
-
-    <h2>Mi Semana (Ejemplo de Tabla)</h2>
-    <table>
-        <tr>
-            <th>Actividad</th>
-            <th>Lunes</th>
-            <th>Miércoles</th>
-        </tr>
-        <tr>
-            <td>Estudio</td>
-            <td>2h</td>
-            <td>1.5h</td>
-        </tr>
-        <tr>
-            <td>Pantallas</td>
-            <td>3h</td>
-            <td>2.5h</td>
-        </tr>
-    </table>
-
-    <h2>Momento de Calma (Imagen)</h2>
-    <img src="https://placehold.co/600x300/a0c4ff/333?text=Un+momento+de+calma" alt="Una imagen que representa la calma o el relax" width="600">
-    
-    <h2>Vídeo Relajante (Ejemplo)</h2>
-    <video src="https://www.w3schools.com/html/mov_bbb.mp4" controls width="600">
-        Tu navegador no soporta este vídeo.
-    </video>
-
-    <h2>Audio (Ejemplo)</h2>
-    <audio src="https://www.w3schools.com/html/horse.ogg" controls>
-        Tu navegador no soporta este audio.
-    </audio>
-
-    <h2>Recursos Útiles</h2>
-    <p>
-        Un buen recurso para empezar es la
-        <a href="https://es.wikipedia.org/wiki/Mindfulness" target="_blank">
-            página de Wikipedia sobre Mindfulness
-        </a>.
-    </p>
-</body>
-</html>`,
-            // --- RENUMERADO (antes 7, ahora 8) ---
-            8: `<!DOCTYPE html>
-<html>
-<head>
-    <title>Mi Proyecto Final</title>
-</head>
-<body>
-    <!-- 
-      ¡Este es tu lienzo en blanco!
-      Borra este comentario y empieza a construir tu página.
-      
-      Recuerda usar todo lo que has aprendido:
-      - Títulos (h1, h2...)
-      - Párrafos (p)
-      - Listas (ul, li)
-      - Tablas (table, tr, th, td)
-      - Multimedia (img, video, audio)
-      - Enlaces (a)
-      
-      ¡Mucha suerte!
-    -->
-</body>
-</html>`,
-            // --- RENUMERADO (antes 8, ahora 9) ---
-            9: `<!DOCTYPE html>
-<html>
-<head>
-    <title>Mi Proyecto Final</title>
-</head>
-<body>
-    <!-- 
-      ¡Este es tu lienzo en blanco!
-      Borra este comentario y empieza a construir tu página.
-      
-      Recuerda usar todo lo que has aprendido:
-      - Títulos (h1, h2...)
-      - Párrafos (p)
-      - Listas (ul, li)
-      - Tablas (table, tr, th, td)
-      - Multimedia (img, video, audio)
-      - Enlaces (a)
-      
-      ¡Mucha suerte!
-    -->
-</body>
-</html>`
-        };
-
-        // --- CÓDIGOS DE CSS (NUEVOS) ---
-        const baseHtmlCode = lessonCodes[7]; // Usamos el HTML final como base
-
-        // CSS Lección 1: Añadir <style>
-        lessonCodes['css-1'] = baseHtmlCode.replace(
-            '</head>',
-            '    <style>\n\n    </style>\n</head>'
-        );
-
-        // CSS Lección 2: Selectores y Colores
-        lessonCodes['css-2'] = baseHtmlCode.replace(
-            '</head>',
-            '    <style>\n' +
-            '        body {\n' +
-            '            background-color: #f4f7f6;\n' +
-            '        }\n' +
-            '        h1 {\n' +
-            '            color: #2c3e50;\n' +
-            '        }\n' +
-            '    </style>\n</head>'
-        );
-
-        // CSS Lección 3: Fuentes y Texto
-        lessonCodes['css-3'] = baseHtmlCode.replace(
-            '</head>',
-            '    <style>\n' +
-            '        body {\n' +
-            '            background-color: #f4f7f6;\n' +
-            '            font-family: Arial, sans-serif;\n' +
-            '            line-height: 1.6;\n' +
-            '        }\n' +
-            '        h1 {\n' +
-            '            color: #2c3e50;\n' +
-            '            text-align: center;\n' +
-            '        }\n' +
-            '        h2 {\n' +
-            '            color: #34495e;\n' +
-            '        }\n' +
-            '    </style>\n</head>'
-        );
-
-        // CSS Lección 4: Modelo de Caja
-        lessonCodes['css-4'] = baseHtmlCode.replace(
-            '</head>',
-            '    <style>\n' +
-            '        body {\n' +
-            '            background-color: #f4f7f6;\n' +
-            '            font-family: Arial, sans-serif;\n' +
-            '            line-height: 1.6;\n' +
-            '            margin: 20px;\n' +
-            '        }\n' +
-            '        h1 {\n' +
-            '            color: #2c3e50;\n' +
-            '            text-align: center;\n' +
-            '        }\n' +
-            '        h2 {\n' +
-            '            color: #34495e;\n' +
-            '        }\n' +
-            '        table {\n' +
-            '            width: 100%;\n' +
-            '            border-collapse: collapse;\n' +
-            '            margin-top: 15px;\n' +
-            '        }\n' +
-            '        th, td {\n' +
-            '            border: 1px solid #bdc3c7;\n' +
-            '            padding: 8px;\n' +
-            '            text-align: left;\n' +
-            '        }\n' +
-            '        th {\n' +
-            '            background-color: #ecf0f1;\n' +
-            '        }\n' +
-            '    </style>\n</head>'
-        );
-
-        // CSS Lección 5: Multimedia y Enlaces
-        lessonCodes['css-5'] = baseHtmlCode.replace(
-            '</head>',
-            '    <style>\n' +
-            '        body {\n' +
-            '            background-color: #f4f7f6;\n' +
-            '            font-family: Arial, sans-serif;\n' +
-            '            line-height: 1.6;\n' +
-            '            margin: 20px;\n' +
-            '        }\n' +
-            '        h1 {\n' +
-            '            color: #2c3e50;\n' +
-            '            text-align: center;\n' +
-            '        }\n' +
-            '        h2 {\n' +
-            '            color: #34495e;\n' +
-            '        }\n' +
-            '        table {\n' +
-            '            width: 100%;\n' +
-            '            border-collapse: collapse;\n' +
-            '            margin-top: 15px;\n' +
-            '        }\n' +
-            '        th, td {\n' +
-            '            border: 1px solid #bdc3c7;\n' +
-            '            padding: 8px;\n' +
-            '            text-align: left;\n' +
-            '        }\n' +
-            '        th {\n' +
-            '            background-color: #ecf0f1;\n' +
-            '        }\n' +
-            '        img, video {\n' +
-            '            max-width: 100%;\n' +
-            '            height: auto;\n' +
-            '            border-radius: 8px;\n' +
-            '            margin-top: 10px;\n' +
-            '        }\n' +
-            '        a {\n' +
-            '            color: #2980b9;\n' +
-            '            text-decoration: none;\n' +
-            '        }\n' +
-            '        a:hover {\n' +
-            '            color: #e74c3c;\n' +
-            '            text-decoration: underline;\n' +
-            '        }\n' +
-            '    </style>\n</head>'
-        );
-
-        // CSS Lección 6: Quiz (usa el mismo código que la 5)
-        lessonCodes['css-6'] = lessonCodes['css-5'];
-        
-        // CSS Lección 7: Proyecto Final (usa el esqueleto de HTML Lección 8)
-        lessonCodes['css-7'] = lessonCodes[8].replace(
-             '</head>',
-            '    <style>\n' +
-            '        /*\n' +
-            '          ¡Añade tu CSS aquí!\n' +
-            '          Intenta estilizar:\n' +
-            '          - body (background-color, font-family)\n' +
-            '          - h1, h2 (color, text-align)\n' +
-            '          - table, th, td (border, padding)\n' +
-            '          - img (max-width, border-radius)\n' +
-            '          - a (color, a:hover)\n' +
-            '        */\n' +
-            '    </style>\n</head>'
-        );
-
-
-        const googleSitesPlaceholderCode = `<!-- =================================== -->
-<!-- MÓDULO DE GOOGLE SITES              -->
-<!-- =================================== -->
-        
-<!-- 
-  ¡Estás en una lección de Google Sites!
-  
-  Esta herramienta es 100% visual, por lo que
-  no usaremos este editor de código.
-  
-  Sigue las instrucciones del panel central
-  y realiza los pasos en la ventana de tu
-  navegador donde tengas abierto Google Sites.
-  
-  ¡Suerte!
--->`;
-
-        lessonCodes['gs-1'] = googleSitesPlaceholderCode;
-        lessonCodes['gs-2'] = googleSitesPlaceholderCode;
-        lessonCodes['gs-3'] = googleSitesPlaceholderCode;
-        lessonCodes['gs-4'] = googleSitesPlaceholderCode;
-        lessonCodes['gs-5'] = googleSitesPlaceholderCode;
-        lessonCodes['gs-6'] = googleSitesPlaceholderCode;
-        lessonCodes['gs-7'] = googleSitesPlaceholderCode;
-
-
-        // --- INICIO DEL SCRIPT ---
-        // 3. Se rehace el script para asegurar que las variables están en el ámbito correcto
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // --- Definiciones de Elementos ---
-            const lessonLinks = document.querySelectorAll('.nav-link');
-            const lessonContents = document.querySelectorAll('.lesson-content');
-            const codeEditor = document.getElementById('code-editor');
-            const previewFrame = document.getElementById('preview-frame');
+        // --- GENERADOR GENÉRICO DE TABLAS (CON BLOQUES SÓLIDOS) ---
+        function renderBaseTable(base, rangeId, formulaId, headerId, tableId, colorBgClass, colorHex) {
+            const digits = parseInt(el(rangeId).value);
+            const total = Math.pow(base, digits);
+            const plural = digits === 1 ? 'cifra' : 'cifras';
             
-            // Redimensionamiento Vertical
-            const editorContainer = document.getElementById('editor-container');
-            const previewContainer = document.getElementById('preview-container');
-            const vResizer = document.getElementById('vertical-resizer');
-            const rightPanel = vResizer.parentElement;
-            
-            // Redimensionamiento Horizontal
-            const navPanel = document.getElementById('nav-panel');
-            const mainPanel = document.getElementById('main-panel');
-            const asidePanel = document.getElementById('aside-panel');
-            const hResizer = document.getElementById('horizontal-resizer');
-            const mainOverlay = document.getElementById('main-overlay');
-            const iframeOverlay = document.getElementById('iframe-overlay');
+            el(formulaId).innerHTML = `<div class="text-slate-500 text-sm mb-1">Posibilidades:</div><div class="flex items-center justify-center gap-3 text-3xl font-mono text-slate-700"><div>${base}<sup style="color:${colorHex}; font-weight:bold;">${digits}</sup></div><div class="text-slate-300">=</div><div style="color:${colorHex}; font-weight:bold;">${total.toLocaleString()}</div></div>`;
 
-            // Botón Abrir en Navegador
-            const openInBrowserBtn = document.getElementById('open-in-browser-btn');
-
-            // Menú lateral
-            const toggleNavBtn = document.getElementById('toggle-nav-btn');
-            const navContent = document.getElementById('nav-content');
-            const toggleNavIcon = document.getElementById('toggle-nav-icon');
-            const navTitle = document.getElementById('nav-title');
-            const navHeader = toggleNavBtn.parentElement;
-            
-            // --- NUEVAS DEFINICIONES PARA MENÚS COLAPSABLES ---
-            const menuToggleHtml = document.getElementById('menu-toggle-html');
-            const lessonListHtml = document.getElementById('lesson-list-html');
-            const arrowHtml = document.getElementById('arrow-html');
-            
-            const menuToggleCss = document.getElementById('menu-toggle-css');
-            const lessonListCss = document.getElementById('lesson-list-css');
-            const arrowCss = document.getElementById('arrow-css');
-
-            const menuToggleSites = document.getElementById('menu-toggle-sites');
-            const lessonListSites = document.getElementById('lesson-list-sites');
-            const arrowSites = document.getElementById('arrow-sites');
-            // --- FIN NUEVAS DEFINICIONES ---
-
-            // --- NUEVA DEFINICIÓN ---
-            const copyCodeBtn = document.getElementById('copy-code-btn');
-            
-            // W3Schools
-            // --- Se eliminan las referencias al formulario y al textarea oculto ---
-
-            // --- Lógica de Lecciones ---
-            function updatePreview() {
-                const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
-                if (previewDoc) {
-                    previewDoc.open();
-                    previewDoc.write(codeEditor.value);
-                    previewDoc.close();
-                } else {
-                    console.error("No se pudo acceder al documento del iframe.");
-                }
+            const header = el(headerId);
+            header.innerHTML = '';
+            for(let i=digits-1; i>=0; i--) {
+                header.innerHTML += `<div class="header-cell"><div>${base}<sup>${i}</sup></div><div class="header-value">${Math.pow(base, i).toLocaleString()}</div></div>`;
             }
 
-            function showLesson(lessonNumber) {
-                lessonContents.forEach(content => {
-                    content.classList.add('hidden');
-                });
-                const activeContent = document.getElementById(`lesson-${lessonNumber}-content`);
-                if (activeContent) {
-                    activeContent.classList.remove('hidden');
-                }
-                // --- INICIALIZAR QUIZ SI ES LA LECCIÓN 7 ---
-                if (lessonNumber === '7') {
-                    initQuiz();
-                }
-                // --- INICIALIZAR QUIZ CSS SI ES LA LECCIÓN CSS-6 ---
-                if (lessonNumber === 'css-6') {
-                    initCssQuiz();
-                }
-                // --- INICIALIZAR QUIZ GS SI ES LA LECCIÓN GS-6 ---
-                if (lessonNumber === 'gs-6') {
-                    initGsQuiz();
-                }
+            const table = el(tableId);
+            table.innerHTML = '';
+            const limit = Math.min(total, 256); 
+            const blockSize = Math.pow(base, Math.max(1, digits - 1));
 
-                // --- LÓGICA PARA DESACTIVAR EDITOR EN GOOGLE SITES ---
-                if (lessonNumber.startsWith('gs-')) {
-                    codeEditor.disabled = true;
-                    openInBrowserBtn.disabled = true;
-                    copyCodeBtn.disabled = true;
-                    openInBrowserBtn.style.opacity = '0.5';
-                    copyCodeBtn.style.opacity = '0.5';
-                } else {
-                    codeEditor.disabled = false;
-                    openInBrowserBtn.disabled = false;
-                    copyCodeBtn.disabled = false;
-                    openInBrowserBtn.style.opacity = '1';
-                    copyCodeBtn.style.opacity = '1';
-                }
-                // --- FIN LÓGICA DESACTIVAR ---
+            for(let n=0; n<limit; n++) {
+                let s = n.toString(base).toUpperCase().padStart(digits, '0');
+                let rowHtml = '';
+                
+                // Separador de bloque
+                const isNewBlock = (n > 0 && n % blockSize === 0);
+                const rowClass = isNewBlock ? 'pt-4' : '';
+                
+                const isBlockStart = (n % blockSize === 0);
+                const isBlockEnd = ((n + 1) % blockSize === 0);
 
-                lessonLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.dataset.lesson === lessonNumber) {
-                        link.classList.add('active');
+                for(let charIdx=0; charIdx<s.length; charIdx++) {
+                    // Fondo sólido para las cifras que rotan
+                    let bgClass = '';
+                    let styleColor = colorHex;
+                    if (digits > 1 && charIdx > 0) {
+                         bgClass = colorBgClass;
+                         if (isBlockStart) bgClass += ' rounded-t-md';
+                         if (isBlockEnd) bgClass += ' rounded-b-md';
+                    } else {
+                        styleColor = (digits > 1) ? '#64748b' : colorHex;
                     }
-                });
-                if (lessonCodes[lessonNumber]) {
-                    codeEditor.value = lessonCodes[lessonNumber];
-                }
-                updatePreview();
-            }
-
-            lessonLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const lessonNumber = e.target.dataset.lesson;
-                    showLesson(lessonNumber);
-                });
-            });
-
-            codeEditor.addEventListener('keyup', updatePreview);
-
-            // --- Lógica Redimensionamiento Vertical ---
-            let isVResizing = false;
-            vResizer.addEventListener('mousedown', (e) => {
-                e.preventDefault(); 
-                isVResizing = true;
-                document.body.style.cursor = 'ns-resize';
-                document.body.style.userSelect = 'none';
-                window.addEventListener('mousemove', handleVMouseMove);
-                window.addEventListener('mouseup', stopVResizing);
-            });
-
-            function handleVMouseMove(e) {
-                if (!isVResizing) return;
-                const panelRect = rightPanel.getBoundingClientRect();
-                const mouseYInPanel = e.clientY - panelRect.top;
-                const resizerStyle = getComputedStyle(vResizer);
-                const resizerAndMarginHeight = vResizer.offsetHeight + parseFloat(resizerStyle.marginTop) + parseFloat(resizerStyle.marginBottom);
-                const panelStyle = getComputedStyle(rightPanel);
-                const panelPaddingTop = parseFloat(panelStyle.paddingTop);
-                const panelPaddingBottom = parseFloat(panelStyle.paddingBottom);
-                const totalAvailableHeight = rightPanel.offsetHeight - panelPaddingTop - panelPaddingBottom - resizerAndMarginHeight;
-                let newEditorHeight = mouseYInPanel - panelPaddingTop - (vResizer.offsetHeight / 2);
-                const minHeight = 100;
-                let newPreviewHeight = totalAvailableHeight - newEditorHeight;
-                if (newEditorHeight < minHeight) {
-                    newEditorHeight = minHeight;
-                    newPreviewHeight = totalAvailableHeight - newEditorHeight;
-                } else if (newPreviewHeight < minHeight) {
-                    newPreviewHeight = minHeight;
-                    newEditorHeight = totalAvailableHeight - newPreviewHeight;
-                }
-                editorContainer.style.flexBasis = `${newEditorHeight}px`;
-                previewContainer.style.flexBasis = `${newPreviewHeight}px`;
-            }
-
-            function stopVResizing() {
-                isVResizing = false;
-                window.removeEventListener('mousemove', handleVMouseMove);
-                window.removeEventListener('mouseup', stopVResizing);
-                document.body.style.cursor = 'default'; 
-                document.body.style.userSelect = 'auto';
-            }
-
-            // --- Lógica Redimensionamiento Horizontal ---
-            let isHResizing = false;
-            hResizer.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-                isHResizing = true;
-                document.body.style.cursor = 'col-resize';
-                document.body.style.userSelect = 'none';
-                mainOverlay.classList.remove('hidden');
-                iframeOverlay.classList.remove('hidden');
-                window.addEventListener('mousemove', handleHMouseMove);
-                window.addEventListener('mouseup', stopHResizing);
-            });
-
-            function handleHMouseMove(e) {
-                if (!isHResizing) return;
-                const navWidth = navPanel.offsetWidth;
-                const totalWidth = document.body.offsetWidth;
-                const mouseX = e.clientX;
-                const hResizerWidth = hResizer.offsetWidth;
-                let newMainWidth = mouseX - navWidth - (hResizerWidth / 2);
-                let newAsideWidth = totalWidth - navWidth - hResizerWidth - newMainWidth;
-                const minWidth = 200;
-                if (newMainWidth < minWidth) {
-                    newMainWidth = minWidth;
-                    newAsideWidth = totalWidth - navWidth - hResizerWidth - newMainWidth;
-                } else if (newAsideWidth < minWidth) {
-                    newAsideWidth = minWidth;
-                    newMainWidth = totalWidth - navWidth - hResizerWidth - newAsideWidth;
-                }
-                mainPanel.style.flexBasis = `${newMainWidth}px`;
-                asidePanel.style.flexBasis = `${newAsideWidth}px`;
-                mainPanel.classList.remove('w-1/2'); // Reemplaza 'flex-1'
-                asidePanel.classList.remove('w-1/4'); // Reemplaza 'flex-1'
-            }
-
-            function stopHResizing() {
-                isHResizing = false;
-                window.removeEventListener('mousemove', handleHMouseMove);
-                window.removeEventListener('mouseup', stopHResizing);
-                document.body.style.cursor = 'default';
-                document.body.style.userSelect = 'auto';
-                mainOverlay.classList.add('hidden');
-                iframeOverlay.classList.add('hidden');
-            }
-
-            // --- Botón Abrir en Navegador ---
-            openInBrowserBtn.addEventListener('click', () => {
-                const codeContent = codeEditor.value;
-                try {
-                    const newTab = window.open();
-                    newTab.document.open();
-                    newTab.document.write(codeContent);
-                    newTab.document.close();
-                } catch (e) {
-                    console.error("No se pudo abrir la nueva pestaña. Es posible que los pop-ups estén bloqueados.", e);
-                }
-            });
-
-            // --- NUEVO CÓDIGO PARA MENÚS COLAPSABLES ---
-            menuToggleHtml.addEventListener('click', () => {
-                lessonListHtml.classList.toggle('hidden');
-                arrowHtml.classList.toggle('-rotate-90');
-            });
-
-            menuToggleCss.addEventListener('click', () => {
-                lessonListCss.classList.toggle('hidden');
-                arrowCss.classList.toggle('-rotate-90');
-            });
-
-            menuToggleSites.addEventListener('click', () => {
-                lessonListSites.classList.toggle('hidden');
-                arrowSites.classList.toggle('-rotate-90');
-            });
-            // --- FIN CÓDIGO MENÚS COLAPSABLES ---
-
-
-            // --- NUEVO CÓDIGO PARA COPIAR ---
-            copyCodeBtn.addEventListener('click', () => {
-                const code = codeEditor.value;
-
-                // Usamos el método 'execCommand' que es más robusto en iframes
-                const tempArea = document.createElement('textarea');
-                tempArea.value = code;
-                tempArea.style.position = 'absolute';
-                tempArea.style.left = '-9999px'; // Ocultarlo
-                document.body.appendChild(tempArea);
-                tempArea.select();
-                try {
-                    document.execCommand('copy');
                     
-                    // Feedback visual
-                    const originalText = copyCodeBtn.textContent;
-                    copyCodeBtn.textContent = '¡Copiado!';
-                    copyCodeBtn.disabled = true;
-                    copyCodeBtn.style.backgroundColor = '#34D399'; // green-400
-                    
-                    setTimeout(() => {
-                        copyCodeBtn.textContent = originalText;
-                        copyCodeBtn.disabled = false;
-                        copyCodeBtn.style.backgroundColor = ''; // Revertir al original
-                    }, 2000);
-
-                } catch (err) {
-                    console.error('Error al copiar al portapapeles: ', err);
+                    rowHtml += `<span class="digit-span ${bgClass}" style="color:${styleColor}; font-weight:bold;">${s[charIdx]}</span>`;
                 }
-                document.body.removeChild(tempArea);
-            });
-            // --- FIN DEL CÓDIGO PARA COPIAR ---
+                table.innerHTML += `<div class="viz-row ${rowClass}">${rowHtml}</div>`;
+            }
+            if(total > limit) table.innerHTML += `<div class="text-slate-400 text-xs py-4">... hasta ${total} combinaciones ...</div>`;
+        }
 
-            // --- CÓDIGO RESTAURADO PARA OCULTAR EL MENÚ ---
-            const iconChevronLeft = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>';
-            const iconChevronRight = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>';
-
-            toggleNavBtn.addEventListener('click', () => {
-                const isHidden = navContent.classList.toggle('hidden');
-                navTitle.classList.toggle('hidden');
+        // --- GENERADOR GENÉRICO DE DESCOMPOSICIÓN ---
+        function updatePolyViz(inputId, vizId, base, colorHex) {
+            const inputVal = el(inputId).value.toUpperCase();
+            if(!inputVal) { el(vizId).innerHTML = ''; return; }
+            
+            let html = '';
+            let totalDecimal = 0;
+            
+            for(let i=0; i<inputVal.length; i++) {
+                const char = inputVal[i];
+                const val = parseInt(char, base); 
+                const power = inputVal.length - 1 - i;
                 
-                navPanel.classList.toggle('w-1/5');
-                navPanel.classList.toggle('w-20');   
-
-                navHeader.classList.toggle('justify-between');
-                navHeader.classList.toggle('justify-center');
+                totalDecimal += val * Math.pow(base, power);
                 
-                if (isHidden) {
-                    toggleNavIcon.innerHTML = iconChevronRight;
-                } else {
-                    toggleNavIcon.innerHTML = iconChevronLeft;
+                let displayVal = char;
+                if(base === 16 && val >= 10) {
+                    displayVal = `${char}<span class="text-xs ml-1 opacity-60">(${val})</span>`;
                 }
+
+                html += `<div class="bg-white border rounded px-2 py-1 flex items-baseline gap-1 shadow-sm"><span style="color:${colorHex}; font-weight:bold; font-size:1.2em;">${displayVal}</span><span class="text-slate-400 text-xs">x</span><span class="text-slate-600 font-bold">${base}<sup>${power}</sup></span></div>`;
+                if(i < inputVal.length - 1) html += `<span class="text-slate-300 font-bold">+</span>`;
+            }
+            html += `<span class="text-slate-300 font-bold mx-2">=</span> <strong class="text-slate-800 text-2xl">${totalDecimal}</strong>`;
+            el(vizId).innerHTML = html;
+        }
+
+        // --- INICIALIZACIONES ---
+        
+        // 1. DECIMAL
+        function renderDecimalSymbols() { renderSymbols('decimalSymbols', '0123456789'.split(''), 'cell-dec'); }
+        function renderDecimalTable() { renderBaseTable(10, 'decRange', 'decFormulaDisplay', 'decTableHeader', 'decTable', 'bg-block-uniform', '#2563eb'); }
+        function updateDecimalViz() { updatePolyViz('decInput', 'decViz', 10, '#2563eb'); }
+
+        // 2. BINARIO
+        // (Usamos las funciones específicas para el lab de interruptores, pero la tabla usa la genérica)
+        function renderBinaryTable() { renderBaseTable(2, 'binRange', 'binFormulaDisplay', 'binTableHeader', 'binTable', 'bg-block-uniform-bin', '#16a34a'); }
+
+        // 4. OCTAL
+        function renderOctalSymbols() { renderSymbols('octalSymbols', '01234567'.split(''), 'cell-oct'); }
+        function renderOctalTable() { renderBaseTable(8, 'octRange', 'octFormulaDisplay', 'octTableHeader', 'octTable', 'bg-block-uniform-oct', '#9333ea'); }
+        function updateOctalViz() { updatePolyViz('octInput', 'octViz', 8, '#9333ea'); }
+
+        // 5. HEXADECIMAL
+        function renderHexSymbols() { renderSymbols('hexSymbols', '0123456789ABCDEF'.split(''), 'cell-hex'); }
+        function renderHexTable() { renderBaseTable(16, 'hexRange', 'hexFormulaDisplay', 'hexTableHeader', 'hexTable', 'bg-block-uniform-hex', '#e11d48'); }
+        function updateHexViz() { updatePolyViz('hexInput', 'hexViz', 16, '#e11d48'); }
+
+
+        // --- LÓGICA BINARIA INTERACTIVA (SECCIÓN 2) ---
+        function renderReferenceTable() {
+            const container = el('referenceTableBody');
+            container.innerHTML = '';
+            for(let i=0; i<=255; i++) {
+                const binStr = i.toString(2).padStart(8, '0');
+                container.innerHTML += `<div id="ref-row-${i}" class="ref-row"><span>${i}</span><span class="font-bold text-slate-700">${binStr}</span></div>`;
+            }
+        }
+        function highlightReferenceRow(num) {
+            const active = document.querySelector('.active-row');
+            if(active) active.classList.remove('active-row');
+            const row = document.getElementById(`ref-row-${num}`);
+            if(row) {
+                row.classList.add('active-row');
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        let binaryBits = [0,0,0,1,0,1,0,1];
+        function renderBinaryLab() {
+            const container = el('binarySwitches');
+            const vizContainer = el('binToDecViz');
+            container.innerHTML = '';
+            let sum = 0;
+            let vizHtml = '';
+            const colors = ['#2563eb', '#dc2626', '#16a34a'];
+            binaryBits.forEach((bit, idx) => {
+                const power = 7 - idx;
+                const val = Math.pow(2, power);
+                const color = colors[power%3];
+                const isActive = bit === 1;
+                if(isActive) sum += val;
+                const btn = document.createElement('button');
+                btn.className = `flex flex-col items-center group transition-all ${isActive ? '-translate-y-2' : 'opacity-60 hover:opacity-100'}`;
+                btn.onclick = () => { binaryBits[idx] = 1 - binaryBits[idx]; renderBinaryLab(); };
+                btn.innerHTML = `<span class="text-[10px] font-bold text-slate-400 mb-1">2<sup>${power}</sup></span><div class="w-10 h-14 rounded border-2 flex flex-col items-center justify-between py-1 shadow-sm transition-colors ${isActive ? 'bg-green-50 border-green-500' : 'bg-white border-slate-300'}"><span class="text-[10px] text-slate-500">${val}</span><span class="text-xl font-mono font-bold ${isActive ? 'text-green-600' : 'text-slate-300'}">${bit}</span></div>`;
+                container.appendChild(btn);
+                const opacityStyle = isActive ? 'opacity: 1;' : 'opacity: 0.4;';
+                vizHtml += `<div class="bg-white border rounded px-2 py-1 flex items-baseline gap-1 shadow-sm" style="${opacityStyle}"><span style="color:${color}; font-weight:bold; font-size:1.2em;">${bit}</span><span class="text-slate-400 text-xs">x</span><span class="text-slate-600 font-bold">2<sup>${power}</sup></span></div>`;
+                if (idx < binaryBits.length - 1) vizHtml += `<span class="text-slate-300 font-bold">+</span>`;
             });
-            // --- FIN DEL CÓDIGO RESTAURADO ---
+            vizHtml += `<span class="text-slate-300 font-bold mx-2">=</span> <strong class="text-slate-800 text-2xl">${sum}</strong>`;
+            vizContainer.innerHTML = vizHtml;
+            highlightReferenceRow(sum);
+        }
 
-            // --- NUEVO CÓDIGO PARA LA ACTIVIDAD INTERACTIVA ---
-            function initQuiz() {
-                const checkBtn = document.getElementById('check-quiz-btn');
-                const resetBtn = document.getElementById('reset-quiz-btn');
-                const inputs = document.querySelectorAll('#lesson-7-content .quiz-input');
-
-                checkBtn.addEventListener('click', () => {
-                    inputs.forEach(input => {
-                        // --- LÓGICA DE COMPROBACIÓN MEJORADA ---
-                        // 1. Quitar todos los espacios
-                        const answer = input.value.replace(/\s/g, '');
-                        // 2. Quitar todos los espacios de la respuesta correcta
-                        const correctAnswer = input.dataset.correct.replace(/\s/g, '');
-                        
-                        // 3. Comparar sin mayúsculas/minúsculas
-                        if (answer.toLowerCase() === correctAnswer.toLowerCase()) {
-                            input.classList.remove('incorrect');
-                            input.classList.add('correct');
-                        } else {
-                            input.classList.remove('correct');
-                            input.classList.add('incorrect');
-                        }
-                    });
-                });
-
-                resetBtn.addEventListener('click', () => {
-                    inputs.forEach(input => {
-                        input.value = '';
-                        input.classList.remove('correct', 'incorrect');
-                    });
-                });
+        // --- 3. ESCALERA (INTACTA) ---
+        function calculateLadder() {
+            const input = el('ladderInput');
+            const container = el('ladderContainer');
+            const resultBox = el('ladderResultBox');
+            const binaryOutput = el('ladderBinaryOutput');
+            let num = parseInt(input.value);
+            container.innerHTML = '';
+            resultBox.classList.add('hidden');
+            if (isNaN(num) || num < 0) return;
+            if (num === 0) {
+                container.innerHTML = '<div class="text-2xl font-bold text-slate-400 font-mono">0</div>';
+                binaryOutput.innerText = "0";
+                resultBox.classList.remove('hidden');
+                return;
             }
-            // --- FIN DEL CÓDIGO DEL QUIZ ---
+            const remainders = [];
+            drawStep(num, container, remainders, true);
+            let binaryString = remainders.reverse().join('');
+            binaryOutput.innerText = binaryString;
+            resultBox.classList.remove('hidden');
+        }
 
-            // --- NUEVO CÓDIGO PARA EL QUIZ DE CSS ---
-            function initCssQuiz() {
-                const checkBtn = document.getElementById('check-css-quiz-btn');
-                const resetBtn = document.getElementById('reset-css-quiz-btn');
-                const inputs = document.querySelectorAll('#lesson-css-6-content .quiz-input');
-
-                checkBtn.addEventListener('click', () => {
-                    inputs.forEach(input => {
-                        const answer = input.value.replace(/\s/g, '');
-                        const correctAnswer = input.dataset.correct.replace(/\s/g, '');
-                        
-                        if (answer.toLowerCase() === correctAnswer.toLowerCase()) {
-                            input.classList.remove('incorrect');
-                            input.classList.add('correct');
-                        } else {
-                            input.classList.remove('correct');
-                            input.classList.add('incorrect');
-                        }
-                    });
-                });
-
-                resetBtn.addEventListener('click', () => {
-                    inputs.forEach(input => {
-                        input.value = '';
-                        input.classList.remove('correct', 'incorrect');
-                    });
-                });
+        function drawStep(dividend, parentElement, remaindersArray, isFirst) {
+            const quotient = Math.floor(dividend / 2);
+            const remainder = dividend % 2;
+            remaindersArray.push(remainder);
+            const stepContainer = document.createElement('div');
+            stepContainer.className = 'step-container fade-in';
+            stepContainer.style.animationDelay = `${remaindersArray.length * 0.1}s`;
+            const leftCol = document.createElement('div');
+            leftCol.className = 'ladder-column';
+            const divCell = document.createElement('div'); divCell.className = 'number-cell'; divCell.innerText = dividend;
+            const remCell = document.createElement('div'); remCell.className = 'number-cell remainder-cell'; remCell.innerText = remainder;
+            leftCol.appendChild(divCell);
+            leftCol.appendChild(remCell);
+            const rightCol = document.createElement('div');
+            rightCol.className = 'ladder-column';
+            const divisorCell = document.createElement('div'); divisorCell.className = 'number-cell divisor-cell'; divisorCell.innerText = '2';
+            const nextStepContainer = document.createElement('div'); nextStepContainer.className = 'next-step-wrapper';
+            rightCol.appendChild(divisorCell);
+            rightCol.appendChild(nextStepContainer);
+            stepContainer.appendChild(leftCol);
+            stepContainer.appendChild(rightCol);
+            parentElement.appendChild(stepContainer);
+            if (quotient > 0) {
+                drawStep(quotient, nextStepContainer, remaindersArray, false);
+            } else {
+                const finalDiv = document.createElement('div');
+                finalDiv.className = 'step-container fade-in';
+                finalDiv.style.animationDelay = `${(remaindersArray.length + 1) * 0.1}s`;
+                const finalLeft = document.createElement('div'); finalLeft.className = 'ladder-column';
+                const zero = document.createElement('div'); zero.className = 'number-cell final-quotient'; zero.innerText = '0';
+                finalLeft.appendChild(zero);
+                const endLabel = document.createElement('div'); endLabel.className = 'end-label'; endLabel.innerText = 'Fin división';
+                finalDiv.appendChild(finalLeft);
+                finalDiv.appendChild(endLabel);
+                nextStepContainer.appendChild(finalDiv);
             }
-            // --- FIN DEL CÓDIGO DEL QUIZ DE CSS ---
+        }
 
-            // --- NUEVO CÓDIGO PARA EL QUIZ DE GOOGLE SITES ---
-            function initGsQuiz() {
-                const checkBtn = document.getElementById('check-gs-quiz-btn');
-                const resetBtn = document.getElementById('reset-gs-quiz-btn');
-                const inputs = document.querySelectorAll('#lesson-gs-6-content .quiz-input');
+        // INIT
+        renderDecimalSymbols(); renderDecimalTable(); updateDecimalViz();
+        renderBinaryTable(); renderReferenceTable(); renderBinaryLab();
+        calculateLadder();
+        
+        renderOctalSymbols(); renderOctalTable(); updateOctalViz();
+        renderHexSymbols(); renderHexTable(); updateHexViz();
 
-                checkBtn.addEventListener('click', () => {
-                    inputs.forEach(input => {
-                        const answer = input.value.trim();
-                        const correctAnswer = input.dataset.correct;
-                        
-                        // Comparar sin mayúsculas/minúsculas
-                        if (answer.toLowerCase() === correctAnswer.toLowerCase()) {
-                            input.classList.remove('incorrect');
-                            input.classList.add('correct');
-                        } else {
-                            input.classList.remove('correct');
-                            input.classList.add('incorrect');
-                        }
-                    });
-                });
-
-                resetBtn.addEventListener('click', () => {
-                    inputs.forEach(input => {
-                        input.value = '';
-                        input.classList.remove('correct', 'incorrect');
-                    });
-                });
-            }
-            // --- FIN DEL CÓDIGO DEL QUIZ DE GOOGLE SITES ---
-
-            // --- CÓDIGO W3SCHOOLS ELIMINADO ---
-
-            // Mostrar la lección 1 al cargar la página
-            showLesson('1');
-        });
     </script>
 </body>
 </html>
