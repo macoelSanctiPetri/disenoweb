@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama de Conversiones de Sistemas Numéricos Interactivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono&display=swap');
+        
+        /* Estilos generales */
+        .conversion-arrow { cursor: pointer; transition: stroke 0.2s, stroke-width 0.2s; }
+        .conversion-arrow:hover { stroke-width: 5; }
+        .node-circle { cursor: pointer; transition: stroke 0.2s; }
+        .node-circle:hover { stroke-width: 6 !important; }
+        .step-label { font-family: Inter, sans-serif; font-weight: bold; font-size: 18px; fill: white; pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        
+        /* Estilos para la tabla de División Sucesiva (Estilo Escalera) */
+        .division-table {
+            display: inline-block;
+            border-collapse: collapse;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .division-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+        .quotient, .remainder-value {
+            padding: 2px 5px;
+            text-align: center;
+        }
+        .quotient {
+            border-right: 2px solid #3b82f6; /* Línea de división */
+            min-width: 60px;
+        }
+        .divisor {
+            background-color: #3b82f6;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 4px;
+            margin-left: -2px; /* Superpone un poco la línea de división */
+        }
+        .remainder {
+            font-weight: bold;
+            color: #ef4444; /* Color rojo para el residuo */
+            padding-left: 10px;
+            min-width: 40px;
+        }
+        .result-digit {
+            background-color: #10b981;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 4px;
+            margin-right: 4px;
+            font-weight: bold;
+        }
+        .arrow-down {
+            color: #10b981;
+            font-size: 18px;
+            margin: 0 5px;
+            align-self: center;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div id="app-container" class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-5xl border-l-8 border-blue-500 mb-8">
+        <h1 class="text-3xl font-extrabold text-slate-900 mb-2 border-b pb-2">Red de Conversiones Numéricas Interactiva</h1>
+        <p class="text-slate-600 mb-6 text-sm">
+            Haz clic en un círculo para ingresar un número, luego haz clic en una flecha para realizar la conversión. 
+            La secuencia de pasos se registrará abajo.
+        </p>
+
+        <div class="flex justify-center items-center p-4 bg-gray-50 rounded-lg border">
+            <svg id="conversionDiagram" width="1000" height="700" viewBox="0 0 1000 700" class="max-w-full h-auto">
+                <defs>
+                    <!-- Definiciones de flechas para el FINAL (apuntando hacia la derecha/abajo/centro) -->
+                    <marker id="arrowhead-dec" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb" /></marker>
+                    <marker id="arrowhead-bin" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#16a34a" /></marker>
+                    <marker id="arrowhead-oct" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9333ea" /></marker>
+                    <marker id="arrowhead-hex" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#e11d48" /></marker>
+
+                    <!-- Definiciones de flechas para el INICIO (apuntando hacia la izquierda/arriba/exterior) -->
+                    <marker id="arrowhead-start-dec" markerWidth="10" markerHeight="7" refX="2" refY="3.5" orient="auto"><polygon points="10 0, 0 3.5, 10 7" fill="#2563eb" /></marker>
+                    <marker id="arrowhead-start-bin" markerWidth="10" markerHeight="7" refX="2" refY="3.5" orient="auto"><polygon points="10 0, 0 3.5, 10 7" fill="#16a34a" /></marker>
+                    <marker id="arrowhead-start-oct" markerWidth="10" markerHeight="7" refX="2" refY="3.5" orient="auto"><polygon points="10 0, 0 3.5, 10 7" fill="#9333ea" /></marker>
+                    <marker id="arrowhead-start-hex" markerWidth="10" markerHeight="7" refX="2" refY="3.5" orient="auto"><polygon points="10 0, 0 3.5, 10 7" fill="#e11d48" /></marker>
+                </defs>
+
+                <!-- Nodos de los Sistemas Numéricos -->
+                <g class="node-decimal" onclick="handleCircleClick('decimal')">
+                    <circle id="decimalCircle" cx="500" cy="350" r="80" fill="#2563eb" stroke="#1d4ed8" stroke-width="4" class="node-circle"/>
+                    <text x="500" y="340" font-family="Inter, sans-serif" font-size="32" fill="white" text-anchor="middle" font-weight="bold">Decimal</text>
+                    <text id="decimalValue" x="500" y="375" font-family="Roboto Mono, monospace" font-size="24" fill="#bfdbfe" text-anchor="middle">10</text>
+                </g>
+
+                <g class="node-binary" onclick="handleCircleClick('binary')">
+                    <circle id="binaryCircle" cx="500" cy="100" r="70" fill="#16a34a" stroke="#15803d" stroke-width="3" class="node-circle"/>
+                    <text x="500" y="90" font-family="Inter, sans-serif" font-size="28" fill="white" text-anchor="middle" font-weight="bold">Binario</text>
+                    <text id="binaryValue" x="500" y="120" font-family="Roboto Mono, monospace" font-size="20" fill="#dcfce7" text-anchor="middle">2</text>
+                </g>
+
+                <g class="node-octal" onclick="handleCircleClick('octal')">
+                    <circle id="octalCircle" cx="180" cy="350" r="70" fill="#9333ea" stroke="#7e22ce" stroke-width="3" class="node-circle"/>
+                    <text x="180" y="340" font-family="Inter, sans-serif" font-size="28" fill="white" text-anchor="middle" font-weight="bold">Octal</text>
+                    <text id="octalValue" x="180" y="370" font-family="Roboto Mono, monospace" font-size="20" fill="#f3e8ff" text-anchor="middle">8</text>
+                </g>
+
+                <g class="node-hexadecimal" onclick="handleCircleClick('hexa')">
+                     <circle id="hexaCircle" cx="820" cy="350" r="70" fill="#e11d48" stroke="#be123c" stroke-width="3" class="node-circle"/>
+                    <text x="820" y="340" font-family="Inter, sans-serif" font-size="28" fill="white" text-anchor="middle" font-weight="bold">Hexa</text>
+                    <text id="hexaValue" x="820" y="370" font-family="Roboto Mono, monospace" font-size="20" fill="#ffe4e6" text-anchor="middle">16</text>
+                </g>
+                
+                <!-- --- CONVERSIONES A/DESDE DECIMAL (Multiplicación/División) --- -->
+                
+                <!-- Binario -> Decimal (•2) | B2D_ARROW -->
+                <path id="B2D_ARROW" d="M450,160 C400,225 400,225 450,275" fill="none" stroke="#16a34a" stroke-width="3" marker-end="url(#arrowhead-bin)" class="conversion-arrow" onclick="handleConversion('binary', 'decimal', 'toDec', 2)"/>
+                <text x="400" y="230" font-family="Roboto Mono, monospace" font-size="20" fill="#16a34a" text-anchor="middle" font-weight="bold">•2</text>
+                <g id="BINDEC_STEP"></g>
+                
+                <!-- Decimal -> Binario (:2) | D2B_ARROW -->
+                <path id="D2B_ARROW" d="M550,290 C600,225 600,225 545,160" fill="none" stroke="#2563eb" stroke-width="3" marker-end="url(#arrowhead-dec)" class="conversion-arrow" onclick="handleConversion('decimal', 'binary', 'fromDec', 2)"/> 
+                <text x="600" y="230" font-family="Roboto Mono, monospace" font-size="20" fill="#2563eb" text-anchor="middle" font-weight="bold">:2</text>
+                <g id="DECBIN_STEP"></g>
+
+                <!-- Octal -> Decimal (•8) | O2D_ARROW -->
+                <path id="O2D_ARROW" d="M240,330 C330,300 330,300 410,335" fill="none" stroke="#9333ea" stroke-width="3" marker-end="url(#arrowhead-oct)" class="conversion-arrow" onclick="handleConversion('octal', 'decimal', 'toDec', 8)"/>
+                <text x="330" y="300" font-family="Roboto Mono, monospace" font-size="20" fill="#9333ea" text-anchor="middle" font-weight="bold">•8</text>
+                <g id="OCTDEC_STEP"></g>
+                
+                <!-- Decimal -> Octal (:8) | D2O_ARROW -->
+                <path id="D2O_ARROW" d="M420,370 C330,400 330,400 255,370" fill="none" stroke="#2563eb" stroke-width="3" marker-end="url(#arrowhead-dec)" class="conversion-arrow" onclick="handleConversion('decimal', 'octal', 'fromDec', 8)"/>
+                <text x="330" y="410" font-family="Roboto Mono, monospace" font-size="20" fill="#2563eb" text-anchor="middle" font-weight="bold">:8</text>
+                <g id="DECOCT_STEP"></g>
+
+                <!-- Hexa -> Decimal (•16) | H2D_ARROW -->
+                <path id="H2D_ARROW" d="M760,330 C670,300 670,300 590,335" fill="none" stroke="#e11d48" stroke-width="3" marker-end="url(#arrowhead-hex)" class="conversion-arrow" onclick="handleConversion('hexa', 'decimal', 'toDec', 16)"/>
+                <text x="670" y="300" font-family="Roboto Mono, monospace" font-size="20" fill="#e11d48" text-anchor="middle" font-weight="bold">•16</text>
+                <g id="HEXDEC_STEP"></g>
+                
+                <!-- Decimal -> Hexa (:16) | D2H_ARROW -->
+                <path id="D2H_ARROW" d="M580,370 C670,400 670,400 745,370" fill="none" stroke="#2563eb" stroke-width="3" marker-end="url(#arrowhead-dec)" class="conversion-arrow" onclick="handleConversion('decimal', 'hexa', 'fromDec', 16)"/>
+                <text x="670" y="410" font-family="Roboto Mono, monospace" font-size="20" fill="#2563eb" text-anchor="middle" font-weight="bold">:16</text>
+                <g id="DECHEX_STEP"></g>
+                
+                <!-- --- CONVERSIONES DIRECTAS (Octal/Hexa <-> Binario) --- -->
+                
+                <!-- Octal -> Binario (G-3) | O2B_ARROW -->
+                <path id="O2B_ARROW" d="M245,290 Q 300,180 425,130" fill="none" stroke="#9333ea" stroke-width="3" marker-start="url(#arrowhead-start-oct)" marker-end="url(#arrowhead-oct)" class="conversion-arrow" onclick="handleConversion('octal', 'binary', 'direct', 8)"/>
+                <text x="270" y="180" font-family="Roboto Mono, monospace" font-size="20" fill="#9333ea" text-anchor="middle" font-weight="bold">G-3</text>
+                <g id="OCTBIN_STEP"></g>
+                
+                <!-- Binario -> Octal (G-3 Inversa) | B2O_ARROW -->
+                <path id="B2O_ARROW" d="M425,130 Q 300,180 245,290" fill="none" stroke="#16a34a" stroke-width="3" marker-end="url(#arrowhead-bin)" class="conversion-arrow" onclick="handleConversion('binary', 'octal', 'direct', 2)"/>
+                <text x="350" y="220" font-family="Roboto Mono, monospace" font-size="20" fill="#16a34a" text-anchor="middle" font-weight="bold">G-3</text>
+                <g id="BINOCT_STEP"></g>
+
+                <!-- Hexa -> Binario (G-4) | H2B_ARROW -->
+                <path id="H2B_ARROW" d="M755,290 Q 700,180 575,130" fill="none" stroke="#e11d48" stroke-width="3" marker-start="url(#arrowhead-start-hex)" marker-end="url(#arrowhead-hex)" class="conversion-arrow" onclick="handleConversion('hexa', 'binary', 'direct', 16)"/>
+                <text x="730" y="180" font-family="Roboto Mono, monospace" font-size="20" fill="#e11d48" text-anchor="middle" font-weight="bold">G-4</text>
+                <g id="HEXBIN_STEP"></g>
+                
+                <!-- Binario -> Hexa (G-4 Inversa) | B2H_ARROW -->
+                <path id="B2H_ARROW" d="M575,130 Q 700,180 755,290" fill="none" stroke="#16a34a" stroke-width="3" marker-end="url(#arrowhead-bin)" class="conversion-arrow" onclick="handleConversion('binary', 'hexa', 'direct', 2)"/>
+                <text x="650" y="220" font-family="Roboto Mono, monospace" font-size="20" fill="#16a34a" text-anchor="middle" font-weight="bold">G-4</text>
+                <g id="BINHEX_STEP"></g>
+            </svg>
+        </div>
+
+        <!-- Sección de Historial de Conversión -->
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold text-slate-900 mb-4">Secuencia y Proceso de Conversión</h2>
+            
+            <!-- El mensaje inicial se ha movido fuera del div de historial para evitar ser borrado -->
+            <p class="text-slate-500" id="initialMessage">Haz clic en un círculo (sistema numérico) para empezar a ingresar un valor.</p>
+            
+            <div id="conversionHistory" class="space-y-4">
+                <!-- Los pasos dinámicos irán aquí -->
+            </div>
+            
+            <button id="resetButton" onclick="resetApp()" class="mt-6 px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition disabled:opacity-50" disabled>
+                Reiniciar Secuencia
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal para ingreso de números (Oculto por defecto) -->
+    <div id="inputModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-sm">
+            <h3 id="modalTitle" class="text-xl font-bold mb-4">Ingresar Número</h3>
+            <p id="modalHint" class="text-sm text-gray-600 mb-4"></p>
+            <input type="text" id="numberInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Escribe el número aquí">
+            <div class="mt-4 flex justify-end space-x-3">
+                <button onclick="closeModal()" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition">Cancelar</button>
+                <button onclick="saveNumber()" class="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition">Guardar</button>
+            </div>
+            <p id="modalError" class="text-red-500 text-sm mt-2 hidden">Error de validación.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- Variables de Estado Globales ---
+        let numbers = { 'decimal': null, 'binary': null, 'octal': null, 'hexa': null };
+        let steps = [];
+        let stepCounter = 1;
+        let activeSystemForInput = null;
+
+        // Mapeo de IDs de flecha a coordenadas de la etiqueta de paso para asegurar visibilidad
+        const stepPositionMap = {
+            'BINDEC_STEP': { x: 480, y: 220 }, 
+            'DECBIN_STEP': { x: 520, y: 220 }, 
+            'OCTDEC_STEP': { x: 370, y: 320 }, 
+            'DECOCT_STEP': { x: 370, y: 390 }, 
+            'HEXDEC_STEP': { x: 630, y: 320 }, 
+            'DECHEX_STEP': { x: 630, y: 390 }, 
+            'OCTBIN_STEP': { x: 340, y: 140 }, 
+            'BINOCT_STEP': { x: 380, y: 200 }, 
+            'HEXBIN_STEP': { x: 660, y: 140 }, 
+            'BINHEX_STEP': { x: 620, y: 200 }  
+        };
+
+        // --- Mapeo de Sistemas y Bases ---
+        const systemBases = {
+            'decimal': 10,
+            'binary': 2,
+            'octal': 8,
+            'hexa': 16
+        };
+
+        // --- Utilidades de Conversión Básicas ---
+
+        /**
+         * Valida si un número es válido para el sistema dado.
+         */
+        function isValidNumber(value, system) {
+            if (!value) return false;
+            if (system === 'hexa') {
+                return /^[0-9a-fA-F]+$/.test(value);
+            }
+            if (system === 'binary') {
+                return /^[01]+$/.test(value);
+            }
+            if (system === 'octal') {
+                return /^[0-7]+$/.test(value);
+            }
+            if (system === 'decimal') {
+                // Solo números enteros positivos
+                return /^\d+$/.test(value);
+            }
+            return false;
+        }
+
+        /**
+         * Convierte un número de la base 'fromBase' a la base 'toBase'.
+         */
+        function convertBase(numStr, fromBase, toBase) {
+            return parseInt(numStr, fromBase).toString(toBase);
+        }
+
+        // --- Lógica del Modal de Entrada ---
+
+        function handleCircleClick(system) {
+            // Muestra el modal para introducir el número en el sistema seleccionado.
+            activeSystemForInput = system;
+            const systemName = system.charAt(0).toUpperCase() + system.slice(1);
+            
+            document.getElementById('modalTitle').textContent = `Ingresar número en ${systemName}`;
+            document.getElementById('modalHint').textContent = `Base ${systemBases[system]}. El valor actual es: ${numbers[system] || 'ninguno'}.`;
+            document.getElementById('numberInput').value = numbers[system] || '';
+            document.getElementById('modalError').classList.add('hidden');
+            document.getElementById('inputModal').classList.remove('hidden');
+            document.getElementById('inputModal').classList.add('flex');
+            document.getElementById('numberInput').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('inputModal').classList.add('hidden');
+            document.getElementById('inputModal').classList.remove('flex');
+            activeSystemForInput = null;
+        }
+
+        function saveNumber() {
+            const input = document.getElementById('numberInput').value.trim().toLowerCase();
+            const errorElement = document.getElementById('modalError');
+
+            if (!isValidNumber(input, activeSystemForInput)) {
+                errorElement.textContent = `Número inválido para el sistema ${activeSystemForInput}.`;
+                errorElement.classList.remove('hidden');
+                return;
+            }
+
+            numbers[activeSystemForInput] = input;
+            errorElement.classList.add('hidden');
+            closeModal();
+            renderDiagram();
+            updateResetButtonState();
+        }
+
+        // --- Generación del HTML de División Sucesiva (Mejora Gráfica) ---
+        function generateDivisionHTML(initialNumber, base) {
+            let currentNum = parseInt(initialNumber, 10);
+            let html = `<p class="text-sm mb-2">Método de **Divisiones Sucesivas** por ${base}:</p>`;
+            let remainders = [];
+            let divisionStepsHtml = '';
+            let isFirst = true;
+
+            if (currentNum === 0) {
+                 html += `<div class="division-row"><div class="quotient">0</div><div class="divisor">/${base}</div><div class="remainder">0</div></div>`;
+                 remainders.push('0');
+            } else {
+                while (currentNum > 0) {
+                    const remainder = currentNum % base;
+                    const divisionResult = Math.floor(currentNum / base);
+                    const remainderChar = remainder.toString(base).toUpperCase(); 
+                    
+                    remainders.unshift(remainderChar);
+
+                    // Genera la fila de la división
+                    divisionStepsHtml += `
+                        <div class="division-row">
+                            <div class="quotient ${isFirst ? 'font-bold' : ''}">${currentNum}</div>
+                            <div class="divisor">/${base}</div>
+                            <div class="remainder">${remainderChar}</div>
+                        </div>
+                    `;
+                    
+                    currentNum = divisionResult;
+                    isFirst = false;
+                }
+            }
+            
+            // Agrega el último cociente (que siempre es 0 si se termina bien, pero lo mostramos al final si es > 0)
+            if (currentNum === 0 && divisionStepsHtml.length > 0) {
+                 divisionStepsHtml += `
+                    <div class="division-row">
+                        <div class="quotient">0</div>
+                        <div class="divisor">/${base}</div>
+                        <div class="remainder"></div>
+                    </div>
+                `;
+            }
+
+
+            html += `<div class="division-table">${divisionStepsHtml}</div>`;
+            
+            // Resultado y dirección de lectura
+            const resultHtml = remainders.map(r => `<span class="result-digit">${r}</span>`).join('');
+
+            html += `
+                <p class="text-sm mt-4 font-semibold text-slate-800">
+                    Resultado (lectura de residuos de abajo hacia arriba):
+                </p>
+                <div class="flex items-center mt-2">
+                    <span class="arrow-down">⮝</span>
+                    ${resultHtml}
+                </div>
+            `;
+
+            return { process: html, result: remainders.join('') || '0' };
+        }
+
+
+        // --- Lógica de Conversión Principal (Al hacer clic en la flecha) ---
+
+        function handleConversion(fromSystem, toSystem, type, base) {
+            const inputNumber = numbers[fromSystem];
+
+            if (!inputNumber) {
+                showMessage('error', `Debes ingresar un número en el sistema ${fromSystem} antes de convertir.`);
+                return;
+            }
+
+            let outputNumber;
+            let processDescription = '';
+
+            try {
+                if (type === 'toDec') {
+                    // Convertir de Binario/Octal/Hexa A Decimal (Multiplicación por potencias de la base)
+                    outputNumber = parseInt(inputNumber, base).toString(10);
+                    
+                    let processSteps = `<p class="text-sm mb-2">Para convertir ${fromSystem.toUpperCase()} a DECIMAL, se usa la suma de potencias de la base ${base}:</p><pre class="font-mono text-sm">`;
+                    let sum = 0;
+                    
+                    for (let i = 0; i < inputNumber.length; i++) {
+                        const digit = parseInt(inputNumber[inputNumber.length - 1 - i], base);
+                        const power = i;
+                        const value = digit * Math.pow(base, power);
+                        sum += value;
+                        const digitChar = inputNumber[inputNumber.length - 1 - i].toUpperCase();
+
+                        processSteps += `(${digitChar} * ${base}^${power}) ${i < inputNumber.length - 1 ? ' + ' : ''} = ${value}\n`;
+                    }
+                    processDescription = processSteps + `</pre><p class="mt-2 font-semibold">Total en Decimal: ${outputNumber}</p>`;
+
+                } else if (type === 'fromDec') {
+                    // Convertir de Decimal A Binario/Octal/Hexa (Divisiones sucesivas/escalera)
+                    const { process: divisionHtml, result: convertedResult } = generateDivisionHTML(inputNumber, base);
+                    processDescription = divisionHtml;
+                    outputNumber = convertedResult;
+
+                } else if (type === 'direct') {
+                    // Conversiones directas entre Binario, Octal y Hexa (Agrupación/Expansión)
+                    
+                    const fromBase = systemBases[fromSystem];
+                    const toBase = systemBases[toSystem];
+                    outputNumber = convertBase(inputNumber, fromBase, toBase);
+                    
+                    if ((fromBase === 8 && toBase === 2) || (fromBase === 16 && toBase === 2)) {
+                         // Octal/Hexa a Binario (Expansión)
+                        const bits = (fromBase === 8) ? 3 : 4;
+                        const chunks = inputNumber.split('').map(digit => parseInt(digit, fromBase).toString(2).padStart(bits, '0'));
+                        
+                        let tableHtml = `<p class="text-sm mb-2">Cada dígito ${fromSystem.toUpperCase()} se expande a ${bits} bits BINARIOS:</p><div class="flex flex-col space-y-2">`;
+                        for(let i=0; i < inputNumber.length; i++) {
+                            tableHtml += `<div class="flex items-center space-x-2"><span class="font-bold text-lg text-red-500">${inputNumber[i].toUpperCase()}</span><span class="text-gray-400">→</span><span class="font-mono bg-yellow-100 p-1 rounded">${chunks[i]}</span></div>`;
+                        }
+                        tableHtml += `</div><p class="mt-3 font-semibold">Resultado final: ${outputNumber}</p>`;
+                        processDescription = tableHtml;
+
+                    } else if ((fromBase === 2 && toBase === 8) || (fromBase === 2 && toBase === 16)) {
+                         // Binario a Octal/Hexa (Agrupación)
+                        const bits = (toBase === 8) ? 3 : 4;
+                        let paddedInput = inputNumber;
+                        while (paddedInput.length % bits !== 0) {
+                            paddedInput = '0' + paddedInput;
+                        }
+                        
+                        let chunks = [];
+                        let resultDigits = [];
+                        let tempStr = paddedInput;
+                        while (tempStr.length > 0) {
+                            const chunk = tempStr.substring(0, bits);
+                            const resultDigit = parseInt(chunk, 2).toString(toBase).toUpperCase();
+                            chunks.push(chunk);
+                            resultDigits.push(resultDigit);
+                            tempStr = tempStr.substring(bits);
+                        }
+
+                        let tableHtml = `<p class="text-sm mb-2">Agrupación del BINARIO en bloques de ${bits} bits (desde la derecha):</p>`;
+                        tableHtml += `<p class="font-mono mb-2">Con relleno: <span class="bg-gray-200 p-1 rounded">${paddedInput}</span></p>`;
+                        
+                        tableHtml += `<div class="flex justify-center flex-wrap gap-x-3 gap-y-1">`;
+                        for(let i = 0; i < chunks.length; i++) {
+                            tableHtml += `
+                                <div class="flex flex-col items-center">
+                                    <span class="font-mono bg-yellow-100 p-1 rounded">${chunks[i]}</span>
+                                    <span class="text-gray-400">↓</span>
+                                    <span class="font-bold text-lg text-red-500">${resultDigits[i]}</span>
+                                </div>
+                            `;
+                        }
+                        tableHtml += `</div>`;
+                        tableHtml += `<p class="mt-3 font-semibold">Resultado en ${toSystem.toUpperCase()}: ${outputNumber}</p>`;
+
+                        processDescription = tableHtml;
+                    }
+                }
+            } catch (e) {
+                showMessage('error', `Error al realizar la conversión. Asegúrate que el número ${fromSystem.toUpperCase()} es válido.`);
+                console.error("Conversion error:", e);
+                return;
+            }
+
+            // 1. Actualiza el estado
+            numbers[toSystem] = outputNumber;
+            const stepGroupId = `${fromSystem.toUpperCase().substring(0, 3)}${toSystem.toUpperCase().substring(0, 3)}_STEP`;
+            
+            steps.push({
+                step: stepCounter,
+                from: fromSystem,
+                to: toSystem,
+                input: inputNumber,
+                output: outputNumber,
+                conversionType: type,
+                base: base,
+                arrowId: stepGroupId,
+                process: processDescription // Este ahora es HTML
+            });
+            
+            stepCounter++;
+
+            // 2. Renderiza todo
+            renderDiagram();
+            renderStepLabel(stepGroupId, steps[steps.length - 1]);
+            renderHistory();
+            updateResetButtonState();
+            showMessage('success', `Conversión exitosa: ${inputNumber.toUpperCase()} (${fromSystem}) → ${outputNumber.toUpperCase()} (${toSystem})`);
+        }
+        
+        // --- Funciones de Renderizado ---
+
+        function renderDiagram() {
+            // Actualiza los valores dentro de los círculos
+            document.getElementById('decimalValue').textContent = numbers.decimal || systemBases.decimal;
+            document.getElementById('binaryValue').textContent = numbers.binary || systemBases.binary;
+            document.getElementById('octalValue').textContent = numbers.octal || systemBases.octal;
+            document.getElementById('hexaValue').textContent = numbers.hexa || systemBases.hexa;
+        }
+
+        function renderStepLabel(stepGroupId, stepData) {
+            const stepGroup = document.getElementById(stepGroupId);
+            if (!stepGroup) return;
+
+            // Elimina contenido anterior para evitar duplicados si la flecha ya tenía un paso
+            stepGroup.innerHTML = ''; 
+
+            const position = stepPositionMap[stepGroupId];
+            if (!position) return;
+
+            const x = position.x;
+            const y = position.y;
+
+            // Crea el círculo para el paso
+            const stepCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            stepCircle.setAttribute('cx', x); 
+            stepCircle.setAttribute('cy', y);
+            stepCircle.setAttribute('r', 15);
+            stepCircle.setAttribute('fill', '#f59e0b'); // Naranja brillante
+            stepCircle.setAttribute('stroke', '#d97706'); // Borde naranja oscuro
+            stepGroup.appendChild(stepCircle);
+
+            // Crea el texto para el número de paso
+            const stepText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            stepText.setAttribute('x', x);
+            stepText.setAttribute('y', y + 5); // Pequeño ajuste para centrar verticalmente el texto
+            stepText.setAttribute('text-anchor', 'middle');
+            stepText.setAttribute('class', 'step-label');
+            stepText.textContent = stepData.step;
+            stepGroup.appendChild(stepText);
+        }
+
+        function renderHistory() {
+            const historyElement = document.getElementById('conversionHistory');
+            const initialMessage = document.getElementById('initialMessage'); 
+            
+            // Re-renderizar todos los pasos.
+            historyElement.innerHTML = ''; 
+
+            if (steps.length === 0) {
+                 initialMessage.classList.remove('hidden'); 
+                 return;
+            }
+
+            initialMessage.classList.add('hidden'); 
+
+            steps.forEach(step => {
+                const stepCard = document.createElement('div');
+                stepCard.className = 'p-4 rounded-lg shadow-md border-l-4 border-orange-500 bg-gray-50';
+                
+                const title = document.createElement('h3');
+                title.className = 'text-lg font-semibold text-orange-600 mb-2';
+                title.textContent = `Paso ${step.step}: Conversión de ${step.from.toUpperCase()} a ${step.to.toUpperCase()}`;
+
+                const detail = document.createElement('p');
+                detail.className = 'text-slate-700 font-mono mb-3';
+                detail.innerHTML = `Valor inicial: <span class="text-blue-600">${step.input.toUpperCase()} (${systemBases[step.from]})</span> → Valor resultante: <span class="text-green-600">${step.output.toUpperCase()} (${systemBases[step.to]})</span>`;
+
+                const processBox = document.createElement('div'); // Cambiado a <div> para aceptar HTML
+                processBox.className = 'p-3 bg-white border border-gray-200 rounded text-sm whitespace-pre-wrap font-mono overflow-auto max-h-60';
+                processBox.innerHTML = step.process; // Usamos innerHTML
+
+                stepCard.appendChild(title);
+                stepCard.appendChild(detail);
+                stepCard.appendChild(processBox);
+                historyElement.appendChild(stepCard);
+            });
+
+            // Hacer scroll al último paso
+            historyElement.lastChild.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function updateResetButtonState() {
+            document.getElementById('resetButton').disabled = steps.length === 0 && !Object.values(numbers).some(n => n !== null);
+        }
+
+        function resetApp() {
+            // Restablece el estado
+            numbers = { 'decimal': null, 'binary': null, 'octal': null, 'hexa': null };
+            steps = [];
+            stepCounter = 1;
+            activeSystemForInput = null;
+
+            // Restablece el SVG
+            document.querySelectorAll('[id$="_STEP"]').forEach(g => g.innerHTML = '');
+
+            // Restablece los textos en los círculos
+            document.getElementById('decimalValue').textContent = systemBases.decimal;
+            document.getElementById('binaryValue').textContent = systemBases.binary;
+            document.getElementById('octalValue').textContent = systemBases.octal;
+            document.getElementById('hexaValue').textContent = systemBases.hexa;
+
+            // Restablece el historial
+            document.getElementById('conversionHistory').innerHTML = '';
+            document.getElementById('initialMessage').classList.remove('hidden'); // Aseguramos que se muestre el mensaje
+
+            updateResetButtonState();
+            showMessage('info', 'La secuencia interactiva ha sido reiniciada.');
+        }
+
+        function showMessage(type, message) {
+            // Función simple para mostrar mensajes de estado/error al usuario (en lugar de alert())
+            const container = document.getElementById('app-container');
+            let existingMessage = document.getElementById('statusMessage');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            const color = type === 'error' ? 'bg-red-100 border-red-500 text-red-700' :
+                          type === 'success' ? 'bg-green-100 border-green-500 text-green-700' :
+                          'bg-blue-100 border-blue-500 text-blue-700';
+            
+            const div = document.createElement('div');
+            div.id = 'statusMessage';
+            div.className = `fixed top-4 right-4 p-4 rounded-lg border-l-4 shadow-lg z-50 transition-opacity duration-300 ${color}`;
+            div.textContent = message;
+
+            document.body.appendChild(div);
+            
+            // Oculta el mensaje después de 5 segundos
+            setTimeout(() => {
+                div.style.opacity = '0';
+                setTimeout(() => div.remove(), 300);
+            }, 5000);
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDiagram(); // Asegura que las bases iniciales estén visibles.
+            updateResetButtonState();
+        });
+    </script>
+</body>
+</html>
