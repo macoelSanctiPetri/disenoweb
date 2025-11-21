@@ -12,257 +12,165 @@
             --primary: #2563eb; /* Azul */
             --secondary: #16a34a; /* Verde */
             --tertiary: #f59e0b; /* Naranja */
-            --quaternary: #9333ea; /* Morado (Octal) */
-            --quinary: #e11d48; /* Rosa (Hexadecimal) */
+            --quaternary: #9333ea; /* Morado */
+            --quinary: #e11d48; /* Rosa */
             
-            /* Variables para la Escalera (Sección 3) */
+            /* VARIABLES CRÍTICAS DE LA ESCALERA */
             --box-size: 60px;
-            --ladder-border-color: #f97316; 
             --ladder-border-width: 3px;
+            /* El color del borde se define dinámicamente en JS (--ladder-border-color) */
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
-        }
-        
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
         .math-mono { font-family: 'Roboto Mono', monospace; }
         sup { font-size: 0.7em; vertical-align: super; }
 
-        /* --- ESTILOS UNIFICADOS PARA CELDAS DE INTRODUCCIÓN --- */
+        /* --- ESTILOS COMUNES --- */
         .intro-cell {
-            height: 50px;
-            width: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Roboto Mono', monospace;
-            font-size: 1.5rem;
-            font-weight: 700;
-            background-color: white;
-            border-width: 3px;
-            border-style: solid;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+            height: 50px; width: 50px; display: flex; align-items: center; justify-content: center;
+            font-family: 'Roboto Mono', monospace; font-size: 1.5rem; font-weight: 700;
+            background-color: white; border-width: 3px; border-style: solid; border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: transform 0.2s;
         }
         .intro-cell:hover { transform: translateY(-3px); }
+        
         .cell-dec { border-color: var(--primary); color: var(--primary); }
         .cell-bin { border-color: var(--secondary); color: var(--secondary); }
         .cell-oct { border-color: var(--quaternary); color: var(--quaternary); }
         .cell-hex { border-color: var(--quinary); color: var(--quinary); }
 
-        /* --- ESTILOS VISUALIZADORES --- */
+        /* --- VISUALIZADORES DE COMBINACIONES --- */
         .viz-container {
-            height: 500px;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            background: white;
-            overflow: hidden;
+            height: 500px; display: flex; flex-direction: column; border: 1px solid #e2e8f0;
+            border-radius: 0.5rem; background: white; overflow: hidden;
         }
-        
         .viz-header {
-            color: white;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            font-family: 'Roboto Mono', monospace;
-            font-size: 0.85rem;
+            color: white; padding: 10px; display: flex; justify-content: center;
+            font-family: 'Roboto Mono', monospace; font-size: 0.85rem;
         }
-        
         .header-cell {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 30px; 
-            margin: 0 1px;
-            text-align: center;
+            display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 30px; margin: 0 1px; text-align: center;
         }
-        
         .header-value { color: #e2e8f0; font-size: 0.7rem; margin-top: 2px; opacity: 0.9; }
-
         .viz-content { flex: 1; overflow-y: auto; padding: 10px; text-align: center; }
-        
-        /* FILA COMPACTA SIN ESPACIOS */
         .viz-row {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 1.2rem;
-            margin: 0; 
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            line-height: 1.5;
+            font-family: 'Roboto Mono', monospace; font-size: 1.2rem; margin: 0; padding: 0;
+            display: flex; justify-content: center; line-height: 1.5;
         }
+        .digit-span { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 100%; text-align: center; }
         
-        .digit-span {
-            display: inline-flex; 
-            align-items: center;
-            justify-content: center;
-            width: 30px; 
-            height: 100%; 
-            text-align: center;
-        }
-        
-        /* Fondos Uniformes por Sistema */
-        .bg-block-uniform { background-color: #eff6ff; color: #1d4ed8; font-weight: bold; } /* Decimal */
-        .bg-block-uniform-bin { background-color: #f0fdf4; color: #15803d; font-weight: bold; } /* Binario */
-        .bg-block-uniform-oct { background-color: #faf5ff; color: #7e22ce; font-weight: bold; } /* Octal */
-        .bg-block-uniform-hex { background-color: #fff1f2; color: #be123c; font-weight: bold; } /* Hex */
+        .bg-block-uniform { background-color: #eff6ff; color: #1d4ed8; font-weight: bold; }
+        .bg-block-uniform-bin { background-color: #f0fdf4; color: #15803d; font-weight: bold; }
+        .bg-block-uniform-oct { background-color: #faf5ff; color: #7e22ce; font-weight: bold; }
+        .bg-block-uniform-hex { background-color: #fff1f2; color: #be123c; font-weight: bold; }
 
-        /* --- ESTILOS TABLA REFERENCIA (2.3) --- */
+        /* --- TABLAS DE REFERENCIA --- */
         .ref-table-container {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            background: white;
-            width: fit-content;
-            margin: 0 auto;
-            min-width: 280px;
+            max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0;
+            border-radius: 0.5rem; background: white; width: fit-content; margin: 0 auto;
+            min-width: 300px;
         }
         .ref-row {
-            display: grid;
-            grid-template-columns: 60px 1fr; 
-            gap: 20px; 
-            padding: 4px 20px;
-            border-bottom: 1px solid #f1f5f9;
-            font-family: 'Roboto Mono', monospace;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: background-color 0.1s;
-            align-items: center;
+            display: grid; gap: 15px; padding: 4px 15px; border-bottom: 1px solid #f1f5f9;
+            font-family: 'Roboto Mono', monospace; font-size: 0.85rem;
+            cursor: pointer; transition: background-color 0.1s; align-items: center;
         }
-        .ref-row span:first-child { text-align: right; padding-right: 10px; }
         .ref-row:hover { background-color: #f8fafc; }
-        .ref-row.active-row {
-            background-color: #fef08a; 
-            color: #854d0e;
-            font-weight: bold;
-            border-left: 4px solid #eab308;
-        }
+        .ref-row.active-row { background-color: #fef08a; color: #854d0e; font-weight: bold; border-left: 4px solid #eab308; }
 
-        /* --- ESTILOS ESCALERA (Sección 3) - INTACTOS --- */
+        /* --- ESCALERA (LÓGICA CSS CONFIRMADA) --- */
         .ladder-container-wrapper {
-            font-family: 'Roboto Mono', monospace;
-            overflow-x: auto;
-            padding-bottom: 20px;
-            padding-left: 10px;
-            text-align: center; 
+            font-family: 'Roboto Mono', monospace; overflow-x: auto;
+            padding-bottom: 20px; padding-left: 10px; text-align: center; 
         }
-
         .number-cell {
-            height: var(--box-size);
+            height: var(--box-size); 
+            width: var(--box-size); /* Ancho fijo vital */
             min-width: var(--box-size);
-            width: var(--box-size); /* Ancho fijo */
-            padding: 0 15px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end; 
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1f2937;
-            box-sizing: border-box;
-            background-color: white;
-            flex-shrink: 0;
+            padding: 0 15px; display: flex; align-items: center; justify-content: flex-end; 
+            font-size: 1.5rem; font-weight: 700; color: #1f2937;
+            box-sizing: border-box; background-color: white; flex-shrink: 0;
         }
-
         .divisor-cell {
-            border-left: var(--ladder-border-width) solid var(--ladder-border-color);
-            border-bottom: var(--ladder-border-width) solid var(--ladder-border-color);
-            color: var(--ladder-border-color);
+            border-left-width: var(--ladder-border-width);
+            border-left-style: solid;
+            /* El color se aplica inline o via variable */
+            border-left-color: var(--ladder-border-color);
+            
+            border-bottom-width: var(--ladder-border-width);
+            border-bottom-style: solid;
+            border-bottom-color: var(--ladder-border-color);
+            
             justify-content: center; 
-            position: relative;
-            z-index: 20;
+            position: relative; z-index: 20; /* Encima del siguiente bloque */
         }
-
         .remainder-cell { color: #dc2626; font-weight: 800; position: relative; }
         
         .step-container { display: inline-flex; flex-direction: row; align-items: flex-start; }
         .column { display: flex; flex-direction: column; align-items: flex-start; }
         
-        .next-step-wrapper {
-             margin-top: calc(-1 * var(--ladder-border-width)); 
-             position: relative;
-             z-index: 10;
+        /* Colapso de bordes */
+        .next-step-wrapper { 
+            margin-top: calc(-1 * var(--ladder-border-width)); 
+            position: relative; z-index: 10; 
         }
         
         .final-quotient { color: #9ca3af; opacity: 0.6; }
-        
         .end-label {
-            height: var(--box-size);
-            display: flex;
-            align-items: center;
-            padding-left: 10px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #16a34a;
-            white-space: nowrap;
+            height: var(--box-size); display: flex; align-items: center; padding-left: 10px;
+            font-size: 0.8rem; font-weight: bold; color: #16a34a; white-space: nowrap;
         }
-
         .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; transform: translateY(-10px); }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
 
-        input[type="number"], input[type="range"], input[type="text"] {
-            width: 100%; padding: 8px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 1.1rem; text-align: center;
-        }
+        /* Inputs */
+        input { width: 100%; padding: 8px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 1.1rem; text-align: center; }
         input:focus { outline: none; border-color: var(--primary); }
-
+        
         .viz-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .viz-single-line {
+            display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 0.75rem; align-items: center;
+            font-family: 'Roboto Mono', monospace; font-size: 1.125rem; padding-bottom: 5px;
+            width: auto; max-width: 100%;
+        }
     </style>
 </head>
 <body>
 
     <header class="sticky top-0 z-50 bg-slate-900 shadow-md border-b-4 border-blue-600">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold text-white">Sistemas de Numeración</h1>
-                <p class="text-blue-300 text-sm">TIC I - 1º Bachillerato</p>
-            </div>
-            <!-- Navegación -->
+            <h1 class="text-xl font-bold text-white">Sistemas de Numeración</h1>
             <nav class="hidden md:flex gap-2">
                 <a href="#decimal" class="px-3 py-1 rounded bg-blue-900 text-blue-200 text-xs hover:bg-blue-800">Decimal</a>
                 <a href="#binary" class="px-3 py-1 rounded bg-green-900 text-green-200 text-xs hover:bg-green-800">Binario</a>
-                <a href="#conversion" class="px-3 py-1 rounded bg-orange-900 text-orange-200 text-xs hover:bg-orange-800">Conversión</a>
                 <a href="#octal" class="px-3 py-1 rounded bg-purple-900 text-purple-200 text-xs hover:bg-purple-800">Octal</a>
                 <a href="#hexadecimal" class="px-3 py-1 rounded bg-rose-900 text-rose-200 text-xs hover:bg-rose-800">Hexadecimal</a>
             </nav>
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-8 max-w-5xl space-y-16">
+    <main class="container mx-auto px-4 py-8 max-w-5xl space-y-20">
 
-        <!-- SECCIÓN 1: DECIMAL -->
+        <!-- 1. DECIMAL -->
         <section id="decimal" class="scroll-mt-24">
-            <div class="flex items-center gap-3 mb-6">
-                <span class="bg-blue-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl shadow-md">1</span>
-                <h2 class="text-3xl font-bold text-slate-800">Sistema Decimal (Base 10)</h2>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">1</span>
+                <h2 class="text-2xl font-bold text-slate-800">Sistema Decimal</h2>
             </div>
-            <!-- Intro -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500 mb-8">
-                <h3 class="text-lg font-bold text-blue-800 mb-4">1.1 El Alfabeto Decimal</h3>
+            <div class="bg-white p-6 rounded-xl shadow mb-8 border-l-4 border-blue-500">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">1.1 Alfabeto (10 Símbolos)</h3>
                 <div class="viz-grid" id="decimalSymbols"></div>
             </div>
-            <!-- Combinatoria -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100 mb-8">
-                <h3 class="text-xl font-bold text-slate-800 mb-6">1.2 Formación de Combinaciones</h3>
-                <div class="grid md:grid-cols-12 gap-8">
-                    <div class="md:col-span-4 space-y-6">
-                        <div class="bg-blue-50 p-5 rounded-xl border border-blue-100">
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Número de Cifras:</label>
-                            <input type="range" id="decRange" min="1" max="4" value="1" class="w-full accent-blue-600 mb-2" oninput="renderDecimalTable()">
-                            <div class="flex justify-between text-xs text-slate-500"><span>1</span><span>4</span></div>
-                            <div id="decFormulaDisplay" class="mt-4 text-center flex flex-col items-center justify-center min-h-[4rem]"></div>
-                        </div>
-                        <div class="text-sm border-t border-slate-100 pt-4">
-                            <p class="font-bold text-slate-700 mb-2">Leyenda de Posición:</p>
-                            <div id="decLegend" class="space-y-1"></div>
-                        </div>
+            <div class="bg-white p-6 rounded-xl shadow mb-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">1.2 Combinatoria</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <label class="text-sm font-bold text-slate-700">Cifras:</label>
+                        <input type="range" id="decRange" min="1" max="4" value="1" class="accent-blue-600" oninput="renderDecimalTable()">
+                        <div id="decFormulaDisplay" class="mt-2 text-center"></div>
                     </div>
-                    <div class="md:col-span-8">
+                    <div class="md:col-span-2">
                         <div class="viz-container">
                             <div class="viz-header !bg-blue-900" id="decTableHeader"></div>
                             <div class="viz-content" id="decTable"></div>
@@ -270,51 +178,37 @@
                     </div>
                 </div>
             </div>
-            <!-- Descomposición -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100">
-                <h3 class="text-xl font-bold text-slate-800 mb-4">1.3 Descomposición Polinómica</h3>
-                <div class="bg-slate-50 p-6 rounded-xl flex flex-col md:flex-row items-center gap-6 justify-center border border-slate-200">
-                    <div class="text-center">
-                        <label class="block text-xs font-bold text-slate-400 mb-1 tracking-wider">NÚMERO</label>
-                        <input type="number" id="decInput" value="342" max="999999" class="text-3xl font-bold text-center w-32 bg-white border-2 border-blue-200 rounded-lg p-2 text-blue-700 focus:outline-none focus:border-blue-500" oninput="updateDecimalViz()">
-                    </div>
-                    <div class="hidden md:block text-3xl text-slate-300">→</div>
-                    <div id="decViz" class="flex flex-wrap gap-3 justify-center items-center font-mono text-lg"></div>
+            <div class="bg-white p-6 rounded-xl shadow">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">1.3 Descomposición</h3>
+                <div class="bg-slate-50 p-4 rounded flex flex-col md:flex-row items-center gap-4 justify-center">
+                    <input type="number" id="decInput" value="342" class="w-32 text-3xl font-bold text-blue-700 text-center bg-white border-2 border-blue-200 rounded-lg p-2" oninput="updateDecimalViz()">
+                    <div class="hidden md:block text-2xl text-slate-300">→</div>
+                    <div id="decViz" class="viz-single-line justify-center"></div>
                 </div>
             </div>
         </section>
 
-        <!-- SECCIÓN 2: BINARIO -->
+        <!-- 2. BINARIO -->
         <section id="binary" class="scroll-mt-24">
-            <div class="flex items-center gap-3 mb-6">
-                <span class="bg-green-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl shadow-md">2</span>
-                <h2 class="text-3xl font-bold text-slate-800">Sistema Binario (Base 2)</h2>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-green-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">2</span>
+                <h2 class="text-2xl font-bold text-slate-800">Sistema Binario</h2>
             </div>
-            <!-- Intro -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500 mb-8">
-                <h3 class="text-lg font-bold text-green-800 mb-4">2.1 El Alfabeto Binario</h3>
+            <div class="bg-white p-6 rounded-xl shadow mb-8 border-l-4 border-green-500">
+                <h3 class="text-xl font-bold text-green-800 mb-4">2.1 Alfabeto (2 Símbolos)</h3>
                 <div class="flex justify-center gap-6">
-                    <div class="intro-cell cell-bin">0</div>
-                    <div class="intro-cell cell-bin">1</div>
+                    <div class="intro-cell cell-bin">0</div><div class="intro-cell cell-bin">1</div>
                 </div>
             </div>
-            <!-- Combinatoria -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100 mb-8">
-                <h3 class="text-xl font-bold text-slate-800 mb-6">2.2 Formación de Combinaciones</h3>
-                <div class="grid md:grid-cols-12 gap-8">
-                    <div class="md:col-span-4 space-y-6">
-                        <div class="bg-green-50 p-5 rounded-xl border border-green-100">
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Número de Bits:</label>
-                            <input type="range" id="binRange" min="1" max="8" value="3" class="w-full accent-green-600 mb-2" oninput="renderBinaryTable()">
-                            <div class="flex justify-between text-xs text-slate-500"><span>1</span><span>8</span></div>
-                            <div id="binFormulaDisplay" class="mt-4 text-center flex flex-col items-center justify-center min-h-[4rem]"></div>
-                        </div>
-                        <div class="text-sm border-t border-slate-100 pt-4">
-                            <p class="font-bold text-slate-700 mb-2">Leyenda de Posición:</p>
-                            <div id="binLegend" class="space-y-1"></div>
-                        </div>
+            <div class="bg-white p-6 rounded-xl shadow mb-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">2.2 Combinatoria</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <label class="text-sm font-bold text-slate-700">Bits:</label>
+                        <input type="range" id="binRange" min="1" max="8" value="3" class="accent-green-600" oninput="renderBinaryTable()">
+                        <div id="binFormulaDisplay" class="mt-2 text-center"></div>
                     </div>
-                    <div class="md:col-span-8">
+                    <div class="md:col-span-2">
                         <div class="viz-container">
                             <div class="viz-header !bg-green-900" id="binTableHeader"></div>
                             <div class="viz-content" id="binTable"></div>
@@ -322,79 +216,75 @@
                     </div>
                 </div>
             </div>
-            <!-- Descomposición -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100">
-                <h3 class="text-xl font-bold text-slate-800 mb-4">2.3 Conversión Binario a Decimal</h3>
+            <div class="bg-white p-6 rounded-xl shadow mb-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">2.3 Binario a Decimal</h3>
                 <div class="flex flex-col items-center">
-                    <div id="binarySwitches" class="flex flex-wrap justify-center gap-2 mb-8"></div>
-                    <div class="bg-slate-50 p-6 rounded-xl w-full border border-slate-200 flex justify-center mb-8">
-                        <div id="binToDecViz" class="flex flex-wrap gap-3 justify-center items-center font-mono text-lg"></div>
+                    <div id="binarySwitches" class="flex flex-wrap justify-center gap-2 mb-6"></div>
+                    
+                    <!-- Cálculo -->
+                    <div class="w-full bg-slate-50 p-4 rounded-t-xl border border-slate-200 border-b-0 flex justify-center">
+                        <div id="binToDecCalc" class="flex flex-wrap gap-3 justify-center items-center font-mono text-lg"></div>
                     </div>
-                    <div class="w-full border-t border-slate-100 pt-6 text-center">
-                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Tabla de Referencia (0-255)</h4>
+                    <!-- Resultado -->
+                    <div class="w-full bg-slate-800 p-4 rounded-b-xl shadow-lg text-center mb-8">
+                        <div class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Resultado Decimal</div>
+                        <div id="binToDecResult" class="text-4xl font-mono font-bold text-green-400"></div>
+                    </div>
+
+                    <div class="w-full border-t pt-6 text-center">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tabla Referencia (0-255)</h4>
                         <div class="ref-table-container custom-scroll">
-                            <div class="bg-slate-100 px-5 py-2 flex text-xs font-bold text-slate-500 sticky top-0 border-b border-slate-200" style="display: grid; grid-template-columns: 60px 1fr; gap: 20px; align-items: center;">
-                                <span style="text-align: right; padding-right: 10px;">DEC</span>
-                                <span>BIN (8 bits)</span>
+                            <div class="bg-slate-100 px-5 py-2 flex text-xs font-bold text-slate-500 sticky top-0 border-b border-slate-200" style="display: grid; grid-template-columns: 60px 1fr; gap: 20px;">
+                                <span style="text-align: right;">DEC</span><span>BIN (8b)</span>
                             </div>
-                            <div id="referenceTableBody"></div>
+                            <div id="refTableBodyBin"></div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- SECCIÓN 3: CONVERSIÓN ESCALERA (INTACTA) -->
-        <section id="conversion" class="scroll-mt-24">
-            <div class="flex items-center gap-3 mb-6">
-                <span class="bg-orange-500 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl shadow-md">3</span>
-                <h2 class="text-3xl font-bold text-slate-800">Conversión Decimal a Binario</h2>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-orange-500">
-                <h3 class="text-xl font-bold text-orange-900 mb-4">3.1 Método de la Escalera</h3>
-                <div class="grid md:grid-cols-3 gap-8 items-start">
-                    <div class="md:col-span-1 bg-orange-50 p-6 rounded-xl">
-                        <label class="block text-sm font-bold text-orange-900 mb-2">Número Decimal:</label>
-                        <input type="number" id="ladderInput" value="42" min="0" class="w-full text-center p-3 text-xl font-bold text-orange-700 border-2 border-orange-200 rounded-lg focus:border-orange-500 focus:outline-none mb-4" onkeypress="if(event.key === 'Enter') calculateLadder()">
-                        <button onclick="calculateLadder()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg shadow-md transition">Convertir</button>
-                        <div id="ladderResultBox" class="hidden mt-6 bg-white p-4 rounded-lg border border-orange-100 text-center shadow-sm">
-                            <div class="text-xs text-gray-400 uppercase font-bold tracking-wider">Resultado Binario</div>
-                            <div id="ladderBinaryOutput" class="text-3xl font-mono font-bold text-orange-600 mt-1 break-all"></div>
+            <!-- 2.4 Escalera Binaria -->
+            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-500">
+                <h3 class="text-xl font-bold text-green-900 mb-4">2.4 Decimal a Binario (Escalera)</h3>
+                <div class="grid md:grid-cols-3 gap-6 items-start">
+                    <div class="bg-green-50 p-4 rounded-xl">
+                        <label class="block text-sm font-bold text-green-900 mb-2">Decimal:</label>
+                        <input type="number" id="ladderInputBin" value="42" min="0" class="w-full text-center text-3xl font-bold text-green-700 border-2 border-green-200 rounded-lg p-2 mb-4" onkeypress="if(event.key === 'Enter') calculateLadderBin()">
+                        <button onclick="calculateLadderBin()" class="w-full bg-green-600 text-white font-bold py-2 rounded shadow hover:bg-green-700 transition">Convertir</button>
+                        <div class="hidden mt-4 bg-white p-2 rounded border border-green-100 text-center" id="ladderResBoxBin">
+                            <div class="text-xs text-gray-400 uppercase font-bold tracking-wider">Binario</div>
+                            <div id="ladderOutBin" class="text-3xl font-mono font-bold text-green-600 mt-1 break-all"></div>
                         </div>
                     </div>
-                    <div class="md:col-span-2 bg-white border border-slate-200 rounded-xl p-4 overflow-hidden min-h-[200px]">
-                        <div class="text-xs text-slate-400 font-bold uppercase mb-4 border-b pb-2">Proceso Visual</div>
+                    <div class="md:col-span-2 bg-white border rounded-xl p-4 overflow-hidden min-h-[150px]">
                         <div class="ladder-container-wrapper">
-                            <div id="ladderContainer" class="inline-block text-left pt-2"></div>
+                            <div id="ladderContBin" class="inline-block text-left pt-2"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SECCIÓN 4: OCTAL -->
+        <!-- 3. OCTAL -->
         <section id="octal" class="scroll-mt-24">
-            <div class="flex items-center gap-3 mb-6">
-                <span class="bg-purple-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl shadow-md">4</span>
-                <h2 class="text-3xl font-bold text-slate-800">Sistema Octal (Base 8)</h2>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-purple-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">3</span>
+                <h2 class="text-2xl font-bold text-slate-800">Sistema Octal</h2>
             </div>
-            <!-- Intro -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-500 mb-8">
-                <h3 class="text-lg font-bold text-purple-800 mb-4">4.1 El Alfabeto Octal (0-7)</h3>
+            <!-- 3.1 Intro -->
+            <div class="bg-white p-6 rounded-xl shadow mb-8 border-l-4 border-purple-500">
+                <h3 class="text-xl font-bold text-purple-800 mb-4">3.1 Alfabeto Octal</h3>
                 <div class="viz-grid" id="octalSymbols"></div>
             </div>
-            <!-- Combinatoria -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100 mb-8">
-                <h3 class="text-xl font-bold text-slate-800 mb-6">4.2 Formación de Combinaciones</h3>
-                <div class="grid md:grid-cols-12 gap-8">
-                    <div class="md:col-span-4 space-y-6">
-                        <div class="bg-purple-50 p-5 rounded-xl border border-purple-100">
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Cifras:</label>
-                            <input type="range" id="octRange" min="1" max="4" value="2" class="w-full accent-purple-600" oninput="renderOctalTable()">
-                            <div id="octFormulaDisplay" class="mt-4 text-center flex flex-col items-center justify-center min-h-[4rem]"></div>
-                        </div>
+            <!-- 3.2 Combinatoria -->
+            <div class="bg-white p-6 rounded-xl shadow mb-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">3.2 Combinatoria</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <label class="text-sm font-bold text-slate-700">Cifras:</label>
+                        <input type="range" id="octRange" min="1" max="4" value="2" class="accent-purple-600" oninput="renderOctalTable()">
+                        <div id="octFormulaDisplay" class="mt-2 text-center"></div>
                     </div>
-                    <div class="md:col-span-8">
+                    <div class="md:col-span-2">
                         <div class="viz-container">
                             <div class="viz-header !bg-purple-900" id="octTableHeader"></div>
                             <div class="viz-content" id="octTable"></div>
@@ -402,43 +292,67 @@
                     </div>
                 </div>
             </div>
-            <!-- Descomposición -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100">
-                <h3 class="text-xl font-bold text-slate-800 mb-4">4.3 Conversión Octal a Decimal</h3>
-                <div class="bg-purple-50 p-6 rounded-xl flex flex-col md:flex-row items-center gap-6 justify-center border border-purple-200">
-                    <div class="text-center">
-                        <label class="block text-xs font-bold text-purple-700 mb-1 tracking-wider">OCTAL</label>
-                        <input type="text" id="octInput" value="75" maxlength="6" class="text-3xl font-bold text-center w-32 bg-white border-2 border-purple-200 rounded-lg p-2 text-purple-700 focus:outline-none focus:border-purple-500 uppercase" oninput="this.value = this.value.replace(/[^0-7]/g, ''); updateOctalViz()">
+            <!-- 3.3 Descomposición -->
+            <div class="bg-white p-6 rounded-xl shadow mb-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">3.3 Octal a Decimal</h3>
+                <!-- CORRECCIÓN 3.3: Input y Viz en una sola línea -->
+                <div class="bg-purple-50 p-4 rounded-xl flex flex-wrap items-center justify-center gap-4 mb-6">
+                    <input type="text" id="octInput" value="75" class="w-32 text-3xl font-bold text-center text-purple-700 p-2 rounded bg-white border-2 border-purple-200 uppercase" oninput="this.value = this.value.replace(/[^0-7]/g, ''); updateOctalViz()">
+                    <div class="text-2xl text-purple-300 font-bold">→</div>
+                    <div id="octViz" class="viz-single-line"></div>
+                </div>
+                <div class="w-full border-t pt-6 text-center">
+                     <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tabla Referencia</h4>
+                     <div class="ref-table-container custom-scroll">
+                        <div class="bg-slate-100 px-5 py-2 flex text-xs font-bold text-slate-500 sticky top-0 border-b border-slate-200" style="display: grid; grid-template-columns: 60px 80px 1fr; gap: 15px;">
+                            <span style="text-align: right;">DEC</span><span class="text-center">OCT</span><span>BIN</span>
+                        </div>
+                        <div id="refTableBodyOct"></div>
                     </div>
-                    <div class="hidden md:block text-2xl text-purple-300">→</div>
-                    <div id="octViz" class="flex flex-wrap gap-3 justify-center items-center font-mono text-lg"></div>
+                </div>
+            </div>
+             <div class="bg-white p-6 rounded-xl shadow border-l-4 border-purple-500">
+                <h3 class="text-xl font-bold text-purple-900 mb-4">3.4 Decimal a Octal (Escalera)</h3>
+                <div class="grid md:grid-cols-3 gap-6 items-start">
+                    <div class="bg-purple-50 p-4 rounded-xl">
+                        <label class="block text-sm font-bold text-purple-900 mb-2">Decimal:</label>
+                        <input type="number" id="ladderInputOct" value="100" min="0" class="w-full text-center p-3 text-3xl font-bold text-purple-700 border-2 border-purple-200 rounded-lg mb-4" onkeypress="if(event.key === 'Enter') calculateLadderOct()">
+                        <button onclick="calculateLadderOct()" class="w-full bg-purple-600 text-white font-bold py-2 rounded shadow hover:bg-purple-700 transition">Convertir</button>
+                        <div class="hidden mt-4 bg-white p-2 rounded border border-purple-100 text-center" id="ladderResBoxOct">
+                            <div class="text-xs text-gray-400 uppercase font-bold tracking-wider">Octal</div>
+                            <div id="ladderOutOct" class="text-3xl font-mono font-bold text-purple-600 mt-1 break-all"></div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2 bg-white border rounded-xl p-4 overflow-hidden min-h-[150px]">
+                        <div class="ladder-container-wrapper">
+                            <div id="ladderContOct" class="inline-block text-left pt-2"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- SECCIÓN 5: HEXADECIMAL -->
+        <!-- 4. HEXADECIMAL -->
         <section id="hexadecimal" class="scroll-mt-24">
             <div class="flex items-center gap-3 mb-6">
-                <span class="bg-rose-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl shadow-md">5</span>
-                <h2 class="text-3xl font-bold text-slate-800">Sistema Hexadecimal (Base 16)</h2>
+                <span class="bg-rose-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold">4</span>
+                <h2 class="text-3xl font-bold text-slate-800">Sistema Hexadecimal</h2>
             </div>
-            <!-- Intro -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-rose-500 mb-8">
-                <h3 class="text-lg font-bold text-rose-800 mb-4">5.1 El Alfabeto Hexadecimal (0-9, A-F)</h3>
+            <!-- 4.1 Intro -->
+            <div class="bg-white p-6 rounded-xl shadow mb-8 border-l-4 border-rose-500">
+                <h3 class="text-xl font-bold text-rose-800 mb-4">4.1 Alfabeto Hexadecimal</h3>
                 <div class="viz-grid" id="hexSymbols"></div>
             </div>
-            <!-- Combinatoria -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100 mb-8">
-                <h3 class="text-xl font-bold text-slate-800 mb-6">5.2 Formación de Combinaciones</h3>
-                <div class="grid md:grid-cols-12 gap-8">
-                    <div class="md:col-span-4 space-y-6">
-                        <div class="bg-rose-50 p-5 rounded-xl border border-rose-100">
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Cifras:</label>
-                            <input type="range" id="hexRange" min="1" max="3" value="2" class="w-full accent-rose-600" oninput="renderHexTable()">
-                            <div id="hexFormulaDisplay" class="mt-4 text-center flex flex-col items-center justify-center min-h-[4rem]"></div>
-                        </div>
+            <!-- 4.2 Combinatoria -->
+            <div class="bg-white p-6 rounded-xl shadow mb-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">4.2 Combinatoria</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-rose-50 p-4 rounded-lg">
+                        <label class="text-sm font-bold text-slate-700">Cifras:</label>
+                        <input type="range" id="hexRange" min="1" max="3" value="2" class="accent-rose-600" oninput="renderHexTable()">
+                        <div id="hexFormulaDisplay" class="mt-2 text-center"></div>
                     </div>
-                    <div class="md:col-span-8">
+                    <div class="md:col-span-2">
                         <div class="viz-container">
                             <div class="viz-header !bg-rose-900" id="hexTableHeader"></div>
                             <div class="viz-content" id="hexTable"></div>
@@ -446,247 +360,179 @@
                     </div>
                 </div>
             </div>
-            <!-- Descomposición -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-100">
-                <h3 class="text-xl font-bold text-slate-800 mb-4">5.3 Conversión Hexadecimal a Decimal</h3>
-                <div class="bg-rose-50 p-6 rounded-xl flex flex-col md:flex-row items-center gap-6 justify-center border border-rose-200">
-                    <div class="text-center">
-                        <label class="block text-xs font-bold text-rose-700 mb-1 tracking-wider">HEX</label>
-                        <input type="text" id="hexInput" value="1A" maxlength="5" class="text-3xl font-bold text-center w-32 bg-white border-2 border-rose-200 rounded-lg p-2 text-rose-700 focus:outline-none focus:border-rose-500 uppercase" oninput="this.value = this.value.replace(/[^0-9A-Fa-f]/g, '').toUpperCase(); updateHexViz()">
+            <!-- 4.3 Descomposición -->
+            <div class="bg-white p-6 rounded-xl shadow">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">4.3 Hexadecimal a Decimal</h3>
+                <!-- CORRECCIÓN 4.3: Input y Viz en una sola línea -->
+                <div class="bg-rose-50 p-6 rounded-xl flex flex-wrap items-center justify-center gap-4 mb-6">
+                     <input type="text" id="hexInput" value="1A" class="w-32 text-3xl font-bold text-center text-rose-700 uppercase p-2 rounded bg-white border-2 border-rose-200" oninput="this.value = this.value.replace(/[^0-9A-Fa-f]/g, '').toUpperCase(); updateHexViz()">
+                     <div class="text-2xl text-rose-300 font-bold">→</div>
+                    <div id="hexViz" class="viz-single-line"></div>
+                </div>
+                <div class="w-full border-t pt-6 text-center mt-6">
+                     <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tabla Maestra (0-255)</h4>
+                     <div class="ref-table-container custom-scroll" style="max-width: 600px;">
+                        <div class="bg-slate-100 px-5 py-2 flex text-xs font-bold text-slate-500 sticky top-0 border-b border-slate-200" style="display: grid; grid-template-columns: 60px 60px 60px 1fr; gap: 10px;">
+                            <span style="text-align: right;">DEC</span><span class="text-center">HEX</span><span class="text-center">OCT</span><span>BIN</span>
+                        </div>
+                        <div id="refTableBodyHex"></div>
                     </div>
-                    <div class="hidden md:block text-2xl text-rose-300">→</div>
-                    <div id="hexViz" class="flex flex-wrap gap-3 justify-center items-center font-mono text-lg"></div>
                 </div>
             </div>
         </section>
-
     </main>
 
     <script>
-        lucide.createIcons();
         function el(id) { return document.getElementById(id); }
 
-        // --- GENERADOR GENÉRICO DE SÍMBOLOS ---
-        function renderSymbols(containerId, chars, cssClass) {
-            const container = el(containerId);
-            container.innerHTML = '';
-            chars.forEach(char => {
-                container.innerHTML += `<div class="intro-cell ${cssClass}">${char}</div>`;
-            });
-        }
-
-        // --- GENERADOR GENÉRICO DE TABLAS (CON BLOQUES SÓLIDOS) ---
-        function renderBaseTable(base, rangeId, formulaId, headerId, tableId, colorBgClass, colorHex) {
-            const digits = parseInt(el(rangeId).value);
-            const total = Math.pow(base, digits);
-            const plural = digits === 1 ? 'cifra' : 'cifras';
-            
-            el(formulaId).innerHTML = `<div class="text-slate-500 text-sm mb-1">Posibilidades:</div><div class="flex items-center justify-center gap-3 text-3xl font-mono text-slate-700"><div>${base}<sup style="color:${colorHex}; font-weight:bold;">${digits}</sup></div><div class="text-slate-300">=</div><div style="color:${colorHex}; font-weight:bold;">${total.toLocaleString()}</div></div>`;
-
-            const header = el(headerId);
-            header.innerHTML = '';
-            for(let i=digits-1; i>=0; i--) {
-                header.innerHTML += `<div class="header-cell"><div>${base}<sup>${i}</sup></div><div class="header-value">${Math.pow(base, i).toLocaleString()}</div></div>`;
-            }
-
-            const table = el(tableId);
-            table.innerHTML = '';
-            const limit = Math.min(total, 256); 
-            const blockSize = Math.pow(base, Math.max(1, digits - 1));
-
-            for(let n=0; n<limit; n++) {
-                let s = n.toString(base).toUpperCase().padStart(digits, '0');
-                let rowHtml = '';
-                
-                // Separador de bloque
-                const isNewBlock = (n > 0 && n % blockSize === 0);
-                const rowClass = isNewBlock ? 'pt-4' : '';
-                
-                const isBlockStart = (n % blockSize === 0);
-                const isBlockEnd = ((n + 1) % blockSize === 0);
-
-                for(let charIdx=0; charIdx<s.length; charIdx++) {
-                    // Fondo sólido para las cifras que rotan
-                    let bgClass = '';
-                    let styleColor = colorHex;
-                    if (digits > 1 && charIdx > 0) {
-                         bgClass = colorBgClass;
-                         if (isBlockStart) bgClass += ' rounded-t-md';
-                         if (isBlockEnd) bgClass += ' rounded-b-md';
-                    } else {
-                        styleColor = (digits > 1) ? '#64748b' : colorHex;
-                    }
-                    
-                    rowHtml += `<span class="digit-span ${bgClass}" style="color:${styleColor}; font-weight:bold;">${s[charIdx]}</span>`;
-                }
-                table.innerHTML += `<div class="viz-row ${rowClass}">${rowHtml}</div>`;
-            }
-            if(total > limit) table.innerHTML += `<div class="text-slate-400 text-xs py-4">... hasta ${total} combinaciones ...</div>`;
-        }
-
-        // --- GENERADOR GENÉRICO DE DESCOMPOSICIÓN ---
-        function updatePolyViz(inputId, vizId, base, colorHex) {
-            const inputVal = el(inputId).value.toUpperCase();
-            if(!inputVal) { el(vizId).innerHTML = ''; return; }
-            
-            let html = '';
-            let totalDecimal = 0;
-            
-            for(let i=0; i<inputVal.length; i++) {
-                const char = inputVal[i];
-                const val = parseInt(char, base); 
-                const power = inputVal.length - 1 - i;
-                
-                totalDecimal += val * Math.pow(base, power);
-                
-                let displayVal = char;
-                if(base === 16 && val >= 10) {
-                    displayVal = `${char}<span class="text-xs ml-1 opacity-60">(${val})</span>`;
-                }
-
-                html += `<div class="bg-white border rounded px-2 py-1 flex items-baseline gap-1 shadow-sm"><span style="color:${colorHex}; font-weight:bold; font-size:1.2em;">${displayVal}</span><span class="text-slate-400 text-xs">x</span><span class="text-slate-600 font-bold">${base}<sup>${power}</sup></span></div>`;
-                if(i < inputVal.length - 1) html += `<span class="text-slate-300 font-bold">+</span>`;
-            }
-            html += `<span class="text-slate-300 font-bold mx-2">=</span> <strong class="text-slate-800 text-2xl">${totalDecimal}</strong>`;
-            el(vizId).innerHTML = html;
-        }
-
-        // --- INICIALIZACIONES ---
+        // --- GENÉRICOS ---
+        function renderSymbols(id, chars, cls) { el(id).innerHTML = chars.map(c => `<div class="intro-cell ${cls}">${c}</div>`).join(''); }
         
-        // 1. DECIMAL
-        function renderDecimalSymbols() { renderSymbols('decimalSymbols', '0123456789'.split(''), 'cell-dec'); }
+        function renderBaseTable(base, rid, fid, hid, tid, bgCls, colHex) {
+            const d = parseInt(el(rid).value), tot = Math.pow(base, d);
+            el(fid).innerHTML = `<div class="text-sm text-slate-500">Posibilidades</div><div class="text-2xl font-mono font-bold" style="color:${colHex}">${base}<sup>${d}</sup> = ${tot.toLocaleString()}</div>`;
+            let h='', t='', bs=Math.pow(base, Math.max(1,d-1));
+            for(let i=d-1; i>=0; i--) h+=`<div class="header-cell"><div>${base}<sup>${i}</sup></div><div class="header-value">${Math.pow(base,i).toLocaleString()}</div></div>`;
+            el(hid).innerHTML = h;
+            const lim = Math.min(tot, 256);
+            for(let n=0; n<lim; n++) {
+                let s=n.toString(base).toUpperCase().padStart(d,'0'), row='', isNB=(n>0 && n%bs===0);
+                for(let i=0; i<s.length; i++) {
+                    let bg = (d>1 && i>0) ? bgCls : '';
+                    if(bg && n%bs===0) bg+=' rounded-t-md'; if(bg && (n+1)%bs===0) bg+=' rounded-b-md';
+                    row+=`<span class="digit-span ${bg}" style="color:${(d>1&&i>0)?colHex:'#64748b'}; font-weight:bold">${s[i]}</span>`;
+                }
+                t+=`<div class="viz-row ${isNB?'pt-4':''}">${row}</div>`;
+            }
+            if(tot>lim) t+=`<div class="text-xs text-slate-400 py-2">...</div>`;
+            el(tid).innerHTML = t;
+        }
+
+        function updatePolyViz(iid, vid, base, col) {
+            const v = el(iid).value.toUpperCase();
+            if(!v) { el(vid).innerHTML=''; return; }
+            let h='', tot=0;
+            for(let i=0; i<v.length; i++) {
+                let val=parseInt(v[i], base), pow=v.length-1-i; tot+=val*Math.pow(base,pow);
+                let disp = (base===16 && val>=10) ? `${v[i]}<span class="text-xs opacity-60">(${val})</span>` : v[i];
+                h+=`<div class="bg-white border rounded px-2 py-1 shadow-sm flex items-baseline gap-1 shrink-0"><span style="color:${col}; font-weight:bold">${disp}</span><span class="text-xs text-slate-400">x</span><span class="text-slate-600 font-bold">${base}<sup>${pow}</sup></span></div>`;
+                if(i<v.length-1) h+=`<span class="text-slate-300 font-bold">+</span>`;
+            }
+            h+=`<span class="mx-2 text-slate-300">=</span><strong class="text-slate-800 text-2xl">${tot}</strong>`;
+            el(vid).innerHTML = h;
+            if(base===2) highlightRow(tot, 'refTableBodyBin', 'bin');
+            if(base===8) highlightRow(tot, 'refTableBodyOct', 'oct');
+            if(base===16) highlightRow(tot, 'refTableBodyHex', 'hex');
+        }
+
+        // --- TABLAS REF ---
+        function renderRefTables() {
+            let bHtml = '';
+            for(let i=0; i<=255; i++) bHtml += `<div id="bin-row-${i}" class="ref-row" style="grid-template-columns: 60px 1fr; gap: 20px;"><span>${i}</span><span class="font-bold text-slate-700">${i.toString(2).padStart(8,'0')}</span></div>`;
+            el('refTableBodyBin').innerHTML = bHtml;
+            let oHtml = '';
+            for(let i=0; i<=63; i++) oHtml += `<div id="oct-row-${i}" class="ref-row" style="grid-template-columns: 60px 80px 1fr; gap: 15px;"><span style="text-align:right">${i}</span><span class="text-center font-bold text-purple-600">${i.toString(8)}</span><span class="text-slate-500">${i.toString(2).padStart(6,'0')}</span></div>`;
+            el('refTableBodyOct').innerHTML = oHtml;
+            let hHtml = '';
+            for(let i=0; i<=255; i++) hHtml += `<div id="hex-row-${i}" class="ref-row" style="grid-template-columns: 60px 60px 60px 1fr; gap: 10px;"><span style="text-align:right">${i}</span><span class="text-center font-bold text-rose-600">${i.toString(16).toUpperCase()}</span><span class="text-center text-purple-600">${i.toString(8)}</span><span class="text-slate-500">${i.toString(2).padStart(8,'0')}</span></div>`;
+            el('refTableBodyHex').innerHTML = hHtml;
+        }
+        function highlightRow(n, tid, p) {
+            const t=el(tid); if(!t) return;
+            const a=t.querySelector('.active-row'); if(a) a.classList.remove('active-row');
+            const r=document.getElementById(`${p}-row-${n}`);
+            if(r) { r.classList.add('active-row'); r.scrollIntoView({behavior:'smooth', block:'center'}); }
+        }
+
+        // --- ESCALERA GENÉRICA ---
+        function drawLadderGeneric(base, iid, cid, oid, boxid, colPrime, colLight) {
+            const inp=el(iid), cont=el(cid), resBox=el(boxid), out=el(oid);
+            let n=parseInt(inp.value);
+            cont.innerHTML=''; resBox.classList.add('hidden');
+            if(isNaN(n)||n<0) return;
+            if(n===0) { cont.innerHTML='<div class="text-2xl font-bold text-slate-400">0</div>'; out.innerText="0"; resBox.classList.remove('hidden'); return; }
+            
+            document.documentElement.style.setProperty('--ladder-border-color', colPrime);
+            const rems=[];
+            drawStep(n, cont, rems, base, colPrime, colLight);
+            out.innerText = rems.reverse().map(r=>r.toString(16).toUpperCase()).join('');
+            resBox.classList.remove('hidden');
+        }
+
+        function drawStep(div, parent, rems, base, colP, colL) {
+            const q=Math.floor(div/base), r=div%base; rems.push(r);
+            const remDisp = (base===16 && r>=10) ? r.toString(16).toUpperCase() : r;
+            const sc=document.createElement('div'); sc.className='step-container fade-in';
+            sc.style.animationDelay=`${rems.length*0.1}s`;
+            
+            const lc=document.createElement('div'); lc.className='column';
+            const dc=document.createElement('div'); dc.className='number-cell'; dc.innerText=div;
+            const rc=document.createElement('div'); rc.className='number-cell remainder-cell'; rc.innerText=remDisp;
+            lc.append(dc, rc);
+
+            const ric=document.createElement('div'); ric.className='column';
+            const dvc=document.createElement('div'); dvc.className='number-cell divisor-cell'; 
+            dvc.style.borderColor=colP; dvc.style.color=colP; dvc.innerText=base;
+            const nsc=document.createElement('div'); nsc.className='next-step-wrapper';
+            ric.append(dvc, nsc);
+
+            sc.append(lc, ric); parent.append(sc);
+
+            if(q>0) drawStep(q, nsc, rems, base, colP, colL);
+            else {
+                const fd=document.createElement('div'); fd.className='step-container fade-in';
+                fd.style.animationDelay=`${(rems.length+1)*0.1}s`;
+                const fl=document.createElement('div'); fl.className='column';
+                const zc=document.createElement('div'); zc.className='number-cell final-quotient'; zc.innerText='0';
+                fl.append(zc);
+                const elbl=document.createElement('div'); elbl.className='end-label'; elbl.innerText='Fin división';
+                fd.append(fl, elbl); nsc.append(fd);
+            }
+        }
+
+        // --- INITS ---
+        renderSymbols('decimalSymbols', '0123456789'.split(''), 'cell-dec');
         function renderDecimalTable() { renderBaseTable(10, 'decRange', 'decFormulaDisplay', 'decTableHeader', 'decTable', 'bg-block-uniform', '#2563eb'); }
         function updateDecimalViz() { updatePolyViz('decInput', 'decViz', 10, '#2563eb'); }
+        renderDecimalTable(); updateDecimalViz();
 
-        // 2. BINARIO
-        // (Usamos las funciones específicas para el lab de interruptores, pero la tabla usa la genérica)
         function renderBinaryTable() { renderBaseTable(2, 'binRange', 'binFormulaDisplay', 'binTableHeader', 'binTable', 'bg-block-uniform-bin', '#16a34a'); }
+        let binaryBits=[0,0,0,1,0,1,0,1];
+        function renderBinaryLab() {
+            const c=el('binarySwitches'), calc=el('binToDecCalc'), res=el('binToDecResult'); c.innerHTML=''; let sum=0, parts=[];
+            const cols=['#2563eb','#dc2626','#16a34a'];
+            binaryBits.forEach((b,i)=>{
+                const p=7-i, v=Math.pow(2,p), col=cols[p%3], act=b===1;
+                if(act) sum+=v;
+                const btn=document.createElement('button');
+                btn.className=`flex flex-col items-center group transition-all ${act?'-translate-y-2':'opacity-60 hover:opacity-100'}`;
+                btn.onclick=()=>{binaryBits[i]=1-binaryBits[i]; renderBinaryLab();};
+                btn.innerHTML=`<span class="text-[10px] font-bold text-slate-400 mb-1">2<sup>${p}</sup></span><div class="w-10 h-14 rounded border-2 flex flex-col items-center justify-between py-1 shadow-sm transition-colors ${act?'bg-green-50 border-green-500':'bg-white border-slate-300'}"><span class="text-[10px] text-slate-500">${v}</span><span class="text-xl font-mono font-bold ${act?'text-green-600':'text-slate-300'}">${b}</span></div>`;
+                c.append(btn);
+                let style = act ? `color:${col}; font-weight:bold;` : `opacity:0.4;`;
+                parts.push(`<div class="bg-white border rounded px-2 py-1 shadow-sm flex items-baseline gap-1" style="${style}"><span style="color:${col};font-weight:bold">${b}</span><span class="text-xs text-slate-400">x</span><span class="text-slate-600 font-bold">2<sup>${p}</sup></span></div>`);
+            });
+            calc.innerHTML = parts.join('<span class="text-slate-300 mx-2">+</span>');
+            res.innerText = sum;
+            highlightRow(sum, 'refTableBodyBin', 'bin');
+        }
+        renderBinaryTable(); renderBinaryLab();
+        function calculateLadderBin() { drawLadderGeneric(2, 'ladderInputBin', 'ladderContBin', 'ladderOutBin', 'ladderResBoxBin', '#16a34a', '#f0fdf4'); }
+        calculateLadderBin();
 
-        // 4. OCTAL
-        function renderOctalSymbols() { renderSymbols('octalSymbols', '01234567'.split(''), 'cell-oct'); }
+        renderSymbols('octalSymbols', '01234567'.split(''), 'cell-oct');
         function renderOctalTable() { renderBaseTable(8, 'octRange', 'octFormulaDisplay', 'octTableHeader', 'octTable', 'bg-block-uniform-oct', '#9333ea'); }
         function updateOctalViz() { updatePolyViz('octInput', 'octViz', 8, '#9333ea'); }
+        renderOctalTable(); updateOctalViz();
+        function calculateLadderOct() { drawLadderGeneric(8, 'ladderInputOct', 'ladderContOct', 'ladderOutOct', 'ladderResBoxOct', '#9333ea', '#faf5ff'); }
+        calculateLadderOct();
 
-        // 5. HEXADECIMAL
-        function renderHexSymbols() { renderSymbols('hexSymbols', '0123456789ABCDEF'.split(''), 'cell-hex'); }
+        renderSymbols('hexSymbols', '0123456789ABCDEF'.split(''), 'cell-hex');
         function renderHexTable() { renderBaseTable(16, 'hexRange', 'hexFormulaDisplay', 'hexTableHeader', 'hexTable', 'bg-block-uniform-hex', '#e11d48'); }
         function updateHexViz() { updatePolyViz('hexInput', 'hexViz', 16, '#e11d48'); }
+        renderHexTable(); updateHexViz();
 
-
-        // --- LÓGICA BINARIA INTERACTIVA (SECCIÓN 2) ---
-        function renderReferenceTable() {
-            const container = el('referenceTableBody');
-            container.innerHTML = '';
-            for(let i=0; i<=255; i++) {
-                const binStr = i.toString(2).padStart(8, '0');
-                container.innerHTML += `<div id="ref-row-${i}" class="ref-row"><span>${i}</span><span class="font-bold text-slate-700">${binStr}</span></div>`;
-            }
-        }
-        function highlightReferenceRow(num) {
-            const active = document.querySelector('.active-row');
-            if(active) active.classList.remove('active-row');
-            const row = document.getElementById(`ref-row-${num}`);
-            if(row) {
-                row.classList.add('active-row');
-                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-        let binaryBits = [0,0,0,1,0,1,0,1];
-        function renderBinaryLab() {
-            const container = el('binarySwitches');
-            const vizContainer = el('binToDecViz');
-            container.innerHTML = '';
-            let sum = 0;
-            let vizHtml = '';
-            const colors = ['#2563eb', '#dc2626', '#16a34a'];
-            binaryBits.forEach((bit, idx) => {
-                const power = 7 - idx;
-                const val = Math.pow(2, power);
-                const color = colors[power%3];
-                const isActive = bit === 1;
-                if(isActive) sum += val;
-                const btn = document.createElement('button');
-                btn.className = `flex flex-col items-center group transition-all ${isActive ? '-translate-y-2' : 'opacity-60 hover:opacity-100'}`;
-                btn.onclick = () => { binaryBits[idx] = 1 - binaryBits[idx]; renderBinaryLab(); };
-                btn.innerHTML = `<span class="text-[10px] font-bold text-slate-400 mb-1">2<sup>${power}</sup></span><div class="w-10 h-14 rounded border-2 flex flex-col items-center justify-between py-1 shadow-sm transition-colors ${isActive ? 'bg-green-50 border-green-500' : 'bg-white border-slate-300'}"><span class="text-[10px] text-slate-500">${val}</span><span class="text-xl font-mono font-bold ${isActive ? 'text-green-600' : 'text-slate-300'}">${bit}</span></div>`;
-                container.appendChild(btn);
-                const opacityStyle = isActive ? 'opacity: 1;' : 'opacity: 0.4;';
-                vizHtml += `<div class="bg-white border rounded px-2 py-1 flex items-baseline gap-1 shadow-sm" style="${opacityStyle}"><span style="color:${color}; font-weight:bold; font-size:1.2em;">${bit}</span><span class="text-slate-400 text-xs">x</span><span class="text-slate-600 font-bold">2<sup>${power}</sup></span></div>`;
-                if (idx < binaryBits.length - 1) vizHtml += `<span class="text-slate-300 font-bold">+</span>`;
-            });
-            vizHtml += `<span class="text-slate-300 font-bold mx-2">=</span> <strong class="text-slate-800 text-2xl">${sum}</strong>`;
-            vizContainer.innerHTML = vizHtml;
-            highlightReferenceRow(sum);
-        }
-
-        // --- 3. ESCALERA (INTACTA) ---
-        function calculateLadder() {
-            const input = el('ladderInput');
-            const container = el('ladderContainer');
-            const resultBox = el('ladderResultBox');
-            const binaryOutput = el('ladderBinaryOutput');
-            let num = parseInt(input.value);
-            container.innerHTML = '';
-            resultBox.classList.add('hidden');
-            if (isNaN(num) || num < 0) return;
-            if (num === 0) {
-                container.innerHTML = '<div class="text-2xl font-bold text-slate-400 font-mono">0</div>';
-                binaryOutput.innerText = "0";
-                resultBox.classList.remove('hidden');
-                return;
-            }
-            const remainders = [];
-            drawStep(num, container, remainders, true);
-            let binaryString = remainders.reverse().join('');
-            binaryOutput.innerText = binaryString;
-            resultBox.classList.remove('hidden');
-        }
-
-        function drawStep(dividend, parentElement, remaindersArray, isFirst) {
-            const quotient = Math.floor(dividend / 2);
-            const remainder = dividend % 2;
-            remaindersArray.push(remainder);
-            const stepContainer = document.createElement('div');
-            stepContainer.className = 'step-container fade-in';
-            stepContainer.style.animationDelay = `${remaindersArray.length * 0.1}s`;
-            const leftCol = document.createElement('div');
-            leftCol.className = 'ladder-column';
-            const divCell = document.createElement('div'); divCell.className = 'number-cell'; divCell.innerText = dividend;
-            const remCell = document.createElement('div'); remCell.className = 'number-cell remainder-cell'; remCell.innerText = remainder;
-            leftCol.appendChild(divCell);
-            leftCol.appendChild(remCell);
-            const rightCol = document.createElement('div');
-            rightCol.className = 'ladder-column';
-            const divisorCell = document.createElement('div'); divisorCell.className = 'number-cell divisor-cell'; divisorCell.innerText = '2';
-            const nextStepContainer = document.createElement('div'); nextStepContainer.className = 'next-step-wrapper';
-            rightCol.appendChild(divisorCell);
-            rightCol.appendChild(nextStepContainer);
-            stepContainer.appendChild(leftCol);
-            stepContainer.appendChild(rightCol);
-            parentElement.appendChild(stepContainer);
-            if (quotient > 0) {
-                drawStep(quotient, nextStepContainer, remaindersArray, false);
-            } else {
-                const finalDiv = document.createElement('div');
-                finalDiv.className = 'step-container fade-in';
-                finalDiv.style.animationDelay = `${(remaindersArray.length + 1) * 0.1}s`;
-                const finalLeft = document.createElement('div'); finalLeft.className = 'ladder-column';
-                const zero = document.createElement('div'); zero.className = 'number-cell final-quotient'; zero.innerText = '0';
-                finalLeft.appendChild(zero);
-                const endLabel = document.createElement('div'); endLabel.className = 'end-label'; endLabel.innerText = 'Fin división';
-                finalDiv.appendChild(finalLeft);
-                finalDiv.appendChild(endLabel);
-                nextStepContainer.appendChild(finalDiv);
-            }
-        }
-
-        // INIT
-        renderDecimalSymbols(); renderDecimalTable(); updateDecimalViz();
-        renderBinaryTable(); renderReferenceTable(); renderBinaryLab();
-        calculateLadder();
-        
-        renderOctalSymbols(); renderOctalTable(); updateOctalViz();
-        renderHexSymbols(); renderHexTable(); updateHexViz();
+        renderRefTables();
 
     </script>
 </body>
