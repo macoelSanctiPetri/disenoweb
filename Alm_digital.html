@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Unidades de almacenamiento - 4º ESO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--
+    Autor: Manuel López Coello
+    Recurso: Conversor de unidades de almacenamiento con potencias de 2
+    Licencia: Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional
+              (CC BY-NC-SA 4.0)
+    Se permite copiar, adaptar y compartir citando la autoría, siempre que no haya fines comerciales
+    y las obras derivadas se distribuyan con la misma licencia.
+  -->
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+	.cc-logo {
+	  display: inline-flex;
+	  align-items: center;
+	  justify-content: center;
+	  width: 2.2rem;
+	  height: 2.2rem;
+	  border-radius: 999px;
+	  border: 2px solid #e5e7eb;
+	  font-weight: 700;
+	  font-size: 0.9rem;
+	  letter-spacing: 0.03em;
+	  margin-bottom: 0.25rem;
+	  margin-right: 0.25rem;
+	}
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      padding: 1.5rem;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: #f9fafb;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      color: #cbd5f5;
+      margin-top: 2rem;
+    }
+
+    p {
+      line-height: 1.5;
+      color: #e5e7eb;
+    }
+
+    .intro {
+      background: #020617;
+      padding: 1rem 1.2rem;
+      border-radius: 0.8rem;
+      border: 1px solid #1f2937;
+      margin-bottom: 1.5rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 0.8rem;
+      padding: 1rem;
+      border: 1px solid #1f2937;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: #bfdbfe;
+    }
+
+    .card .symbol {
+      font-size: 0.95rem;
+      color: #9ca3af;
+    }
+
+    .card .example {
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+
+    .highlight {
+      color: #facc15;
+      font-weight: 600;
+    }
+
+    .converter {
+      margin-top: 1rem;
+      background: #020617;
+      border-radius: 0.8rem;
+      padding: 1.2rem;
+      border: 1px solid #1f2937;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .converter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input, select, button {
+      border-radius: 0.5rem;
+      border: 1px solid #374151;
+      padding: 0.45rem 0.6rem;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.95rem;
+    }
+
+    input:focus, select:focus, button:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: #3b82f6;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s;
+    }
+
+    button:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .result {
+      text-align: center;
+      font-size: 1rem;
+      margin-top: 0.4rem;
+      min-height: 1.5rem;
+    }
+
+    .result strong {
+      color: #4ade80;
+    }
+
+    .note {
+      font-size: 0.85rem;
+      color: #9ca3af;
+      margin-top: 0.3rem;
+      text-align: center;
+    }
+
+    .error {
+      color: #f97373;
+    }
+
+    .steps {
+      margin-top: 0.8rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .steps-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .steps-value,
+    .steps-result {
+      font-weight: 600;
+    }
+
+    .steps-result {
+      color: #4ade80;
+    }
+
+    .steps-eq,
+    .steps-mul {
+      font-weight: 700;
+    }
+
+    .fraction {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #374151;
+      border-radius: 0.35rem;
+      padding: 0.15rem 0.5rem;
+      min-width: 80px;
+      background: #020617;
+      font-size: 0.9rem;
+    }
+
+    .fraction .top {
+      border-bottom: 1px solid #4b5563;
+      padding-bottom: 0.1rem;
+      margin-bottom: 0.1rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .fraction .bottom {
+      padding-top: 0.05rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .steps-text {
+      margin-top: 0.6rem;
+      font-size: 0.9rem;
+      color: #d1d5db;
+    }
+
+    .cancelled {
+      text-decoration: line-through;
+      text-decoration-color: #f97316;   /* naranja */
+      text-decoration-thickness: 2px;
+      opacity: 0.9;
+    }
+
+    sup {
+      font-size: 0.75em;
+    }
+
+    /* Footer de licencia */
+    .license {
+      margin-top: 2rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #1f2937;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    .license strong {
+      color: #e5e7eb;
+    }
+
+    @media (max-width: 600px) {
+      .converter-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .fraction {
+        min-width: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Unidades de almacenamiento digital</h1>
+    <p style="text-align:center; margin-bottom:1rem;">App para 4º ESO · Tecnologías / Informática</p>
+
+    <section class="intro">
+      <p>
+        La información en un ordenador se guarda usando solo dos valores: <span class="highlight">0 y 1</span>. 
+        Cada uno de esos valores se llama <span class="highlight">bit</span>. A partir de los bits construimos 
+        unidades más grandes para poder medir mejor cuánta información hay.
+      </p>
+      <p>
+        En esta página tus alumnos podrán repasar las unidades más usadas y convertir fácilmente entre ellas.
+        Usaremos la equivalencia habitual en informática:
+        <span class="highlight">1 KB = 2<sup>10</sup> B</span>.
+      </p>
+    </section>
+
+    <h2>1. Explicación de las unidades</h2>
+    <section class="cards">
+      <article class="card">
+        <h3>Bit</h3>
+        <div class="symbol"><strong>Símbolo:</strong> bit</div>
+        <p>
+          Es la unidad de información más pequeña. Solo puede tomar dos valores: 0 ó 1.  
+          Todo lo que ves en una pantalla (texto, imágenes, música, vídeos…) acaba siendo una larga secuencia de bits.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> 8 bits pueden representar números del 0 al 255.</p>
+      </article>
+
+      <article class="card">
+        <h3>Byte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> B</div>
+        <p>
+          Un byte está formado por <span class="highlight">8 = 2<sup>3</sup> bits</span>.  
+          Muchos sistemas usan el byte como unidad básica para contar memoria y tamaño de archivos.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> Una letra de texto ocupa normalmente 1 byte.</p>
+      </article>
+
+      <article class="card">
+        <h3>Kilobyte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> KB</div>
+        <p>
+          Un kilobyte se usa para medir cantidades pequeñas de información.
+          En informática solemos usar:
+          <span class="highlight">1 KB = 2<sup>10</sup> bytes</span>.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> Un fichero de texto muy corto puede ocupar 2–3 KB.</p>
+      </article>
+
+      <article class="card">
+        <h3>Megabyte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> MB</div>
+        <p>
+          1 MB = 2<sup>10</sup> KB = 2<sup>20</sup> B.  
+          Unidad habitual en fotos, canciones, pequeños programas…
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> Una foto hecha con el móvil puede ocupar 2–5 MB.</p>
+      </article>
+
+      <article class="card">
+        <h3>Gigabyte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> GB</div>
+        <p>
+          1 GB = 2<sup>10</sup> MB = 2<sup>30</sup> B.  
+          Se usa para discos duros, memorias USB, etc.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> Un pendrive puede tener 16 GB o 32 GB.</p>
+      </article>
+
+      <article class="card">
+        <h3>Terabyte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> TB</div>
+        <p>
+          1 TB = 2<sup>10</sup> GB = 2<sup>40</sup> B.  
+          Muy habitual en discos duros actuales.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> Un disco duro de 1 TB puede almacenar cientos de miles de fotos.</p>
+      </article>
+    </section>
+
+    <h2>2. Conversor entre unidades (con potencias de 2)</h2>
+    <section class="converter">
+      <p style="text-align:center; margin-top:0;">
+        Escribe una cantidad, elige la unidad de origen y la unidad de destino.
+      </p>
+      <div class="converter-row">
+        <input id="valueInput" type="text" placeholder="Cantidad (ej. 1, 4, 12, 28, 512, 1024)" />
+        <select id="fromUnit">
+          <option value="bit">bit</option>
+          <option value="byte">Byte (B)</option>
+          <option value="kb">Kilobyte (KB)</option>
+          <option value="mb">Megabyte (MB)</option>
+          <option value="gb">Gigabyte (GB)</option>
+          <option value="tb">Terabyte (TB)</option>
+        </select>
+        <span>→</span>
+        <select id="toUnit">
+          <option value="bit">bit</option>
+          <option value="byte" selected>Byte (B)</option>
+          <option value="kb">Kilobyte (KB)</option>
+          <option value="mb">Megabyte (MB)</option>
+          <option value="gb">Gigabyte (GB)</option>
+          <option value="tb">Terabyte (TB)</option>
+        </select>
+        <button id="convertBtn">Convertir</button>
+      </div>
+
+      <div id="result" class="result"></div>
+      <div class="note">
+        Siempre que se pueda, el resultado se da en términos de potencias de 2, sin expandir a números gigantes.
+      </div>
+    </section>
+
+	<footer class="license">
+	  <p>
+		<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+		   target="_blank" rel="license noopener noreferrer">
+		  <img src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png"
+			   alt="Licencia Creative Commons BY-NC-SA 4.0"
+			   style="border-width:0" />
+		</a><br />
+		<strong>2025 Manuel López Coello</strong><br />
+		Este recurso educativo se distribuye bajo licencia
+		<em>Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)</em>.<br />
+		Se permite copiar, adaptar y compartir citando la autoría y sin fines comerciales,
+		manteniendo la misma licencia en las obras derivadas.
+	  </p>
+	</footer>
+
+
+  </main>
+
+  <script>
+    const baseExp = {
+      bit: -3,
+      byte: 0,
+      kb: 10,
+      mb: 20,
+      gb: 30,
+      tb: 40
+    };
+
+    const names = {
+      bit: "bits",
+      byte: "Bytes",
+      kb: "Kilobytes",
+      mb: "Megabytes",
+      gb: "Gigabytes",
+      tb: "Terabytes"
+    };
+
+    const symbols = {
+      bit: "bit",
+      byte: "B",
+      kb: "KB",
+      mb: "MB",
+      gb: "GB",
+      tb: "TB"
+    };
+
+    const order = ["bit", "byte", "kb", "mb", "gb", "tb"];
+
+    const valueInput = document.getElementById("valueInput");
+    const fromUnit = document.getElementById("fromUnit");
+    const toUnit = document.getElementById("toUnit");
+    const resultDiv = document.getElementById("result");
+    const convertBtn = document.getElementById("convertBtn");
+
+    function powHTML(exp) {
+      return `2<sup>${exp}</sup>`;
+    }
+
+    function factorPowerOfTwo(value) {
+      const EPS = 1e-9;
+      const rounded = Math.round(value);
+      if (Math.abs(rounded - value) > EPS || rounded === 0) {
+        return { pow: 0, rest: value, isInteger: false };
+      }
+      let n = Math.abs(rounded);
+      let pow = 0;
+      while (n % 2 === 0) {
+        n = n / 2;
+        pow++;
+      }
+      const rest = (rounded < 0 ? -1 : 1) * n;
+      return { pow, rest, isInteger: true };
+    }
+
+    function getPowerResult(value, from, to) {
+      const expFrom = baseExp[from];
+      const expTo = baseExp[to];
+      const ratioExp = expFrom - expTo;
+      const valueStr = value.toLocaleString("es-ES");
+      const unitFrom = symbols[from];
+      const unitTo = symbols[to];
+
+      if (ratioExp === 0) {
+        const shortHTML = `${valueStr} ${unitTo}`;
+        return { shortHTML, detailHTML: "" };
+      }
+
+      if (ratioExp > 0) {
+        const fact = factorPowerOfTwo(value);
+        const k = ratioExp;
+
+        if (!fact.isInteger || fact.pow === 0) {
+          const shortHTML = `${valueStr} × ${powHTML(k)} ${unitTo}`;
+          const detailHTML =
+            `${valueStr} ${unitFrom} = ` +
+            `${valueStr} × ${powHTML(k)} ${unitTo}`;
+          return { shortHTML, detailHTML };
+        }
+
+        const restStr = fact.rest.toLocaleString("es-ES");
+        const a = fact.pow;
+        const totalExp = a + k;
+
+        let shortHTML;
+        if (Math.abs(fact.rest - 1) < 1e-9) {
+          shortHTML = `${powHTML(totalExp)} ${unitTo}`;
+        } else {
+          shortHTML = `${restStr} × ${powHTML(totalExp)} ${unitTo}`;
+        }
+
+        const detailHTML =
+          `${valueStr} ${unitFrom} = ` +
+          `${restStr} × ${powHTML(a)} ${unitFrom} ` +
+          `= ${restStr} × ${powHTML(a)} × ${powHTML(k)} ${unitTo} ` +
+          `= ${shortHTML}`;
+
+        return { shortHTML, detailHTML };
+      } else {
+        const k = -ratioExp;                
+        const shortHTML = `${valueStr} × ${powHTML(-k)} ${unitTo}`;
+        const detailHTML =
+          `${valueStr} ${unitFrom} = ` +
+          `${valueStr} / ${powHTML(k)} ${unitTo} ` +
+          `= ${shortHTML}`;
+        return { shortHTML, detailHTML };
+      }
+    }
+
+    function buildConversionSteps(value, from, to, finalShortHTML) {
+      const fromIdx = order.indexOf(from);
+      const toIdx = order.indexOf(to);
+      const valueStr = value.toLocaleString("es-ES");
+      const initialUnitHTML = symbols[from];
+
+      if (from === to) {
+        return `
+          <div class="steps">
+            <div class="steps-line">
+              <span class="steps-value">${valueStr} ${initialUnitHTML}</span>
+              <span class="steps-eq">=</span>
+              <span class="steps-result">${finalShortHTML}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      let dir = fromIdx < toIdx ? 1 : -1;
+      let currentUnit = from;
+      let currentIdx = fromIdx;
+      const steps = [];
+
+      while (currentIdx !== toIdx) {
+        const nextIdx = currentIdx + dir;
+        const nextUnit = order[nextIdx];
+
+        let expStep;
+        if (
+          (currentUnit === "bit" && nextUnit === "byte") ||
+          (currentUnit === "byte" && nextUnit === "bit")
+        ) {
+          expStep = 3;
+        } else {
+          expStep = 10;
+        }
+
+        steps.push({
+          fromUnit: currentUnit,
+          toUnit: nextUnit,
+          expStep,
+          dir
+        });
+
+        currentUnit = nextUnit;
+        currentIdx = nextIdx;
+      }
+
+      let html = `
+        <div class="steps">
+          <div class="steps-line">
+            <span class="steps-value">${valueStr} <span class="unit">${initialUnitHTML}</span></span>
+            <span class="steps-eq">=</span>
+            <span class="steps-value">${valueStr} <span class="unit cancelled">${initialUnitHTML}</span></span>
+            <span class="steps-mul">×</span>
+      `;
+
+      steps.forEach((s, index) => {
+        const isLast = index === steps.length - 1;
+
+        let numUnit = symbols[s.toUnit];
+        let denUnit = symbols[s.fromUnit];
+
+        let numUnitClass = !isLast ? "cancelled" : "";
+        let denUnitClass = "cancelled";
+
+        let numHTML, denHTML;
+
+        if (s.dir === 1) {
+          numHTML = `1 <span class="${numUnitClass}">${numUnit}</span>`;
+          denHTML = `${powHTML(s.expStep)} <span class="${denUnitClass}">${denUnit}</span>`;
+        } else {
+          numHTML = `${powHTML(s.expStep)} <span class="${numUnitClass}">${numUnit}</span>`;
+          denHTML = `1 <span class="${denUnitClass}">${denUnit}</span>`;
+        }
+
+        if (index > 0) {
+          html += `<span class="steps-mul">×</span>`;
+        }
+
+        html += `
+          <span class="fraction">
+            <span class="top">${numHTML}</span>
+            <span class="bottom">${denHTML}</span>
+          </span>
+        `;
+      });
+
+      html += `
+            <span class="steps-eq">=</span>
+            <span class="steps-result">${finalShortHTML}</span>
+          </div>
+        </div>
+      `;
+
+      return html;
+    }
+
+    function convert() {
+      const rawValue = valueInput.value.trim().replace(",", ".");
+      const value = parseFloat(rawValue);
+
+      if (rawValue === "" || isNaN(value)) {
+        resultDiv.innerHTML = '<span class="error">Por favor, introduce un número válido.</span>';
+        return;
+      }
+
+      const from = fromUnit.value;
+      const to = toUnit.value;
+
+      const powerInfo = getPowerResult(value, from, to);
+      const stepsHTML = buildConversionSteps(value, from, to, powerInfo.shortHTML);
+
+      resultDiv.innerHTML = `
+        ${stepsHTML}
+        <div class="steps-text">
+          Resultado en forma de potencias de 2: <strong>${powerInfo.shortHTML}</strong>
+        </div>
+        ${powerInfo.detailHTML ? `<div class="steps-text">${powerInfo.detailHTML}</div>` : ""}
+      `;
+    }
+
+    convertBtn.addEventListener("click", convert);
+
+    valueInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        convert();
+      }
+    });
+  </script>
+</body>
+</html>
