@@ -1,1028 +1,1332 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fundamentos de Sistemas Numéricos - TIC 1º Bachillerato</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root {
-            --primary: #2563eb; 
-            --secondary: #16a34a; 
-            --tertiary: #f59e0b; 
-            --quaternary: #9333ea; 
-            --quinary: #e11d48; 
-            
-            --box-size: 60px;
-            --ladder-border-width: 3px;
-        }
-
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; scroll-behavior: smooth; }
-        .math-mono { font-family: 'Roboto Mono', monospace; }
-        sup { font-size: 0.7em; vertical-align: super; }
-
-        /* Intro Cells */
-        .intro-cell {
-            height: 50px; width: 50px; display: flex; align-items: center; justify-content: center;
-            font-family: 'Roboto Mono', monospace; font-size: 1.5rem; font-weight: 700;
-            background-color: white; border-width: 3px; border-style: solid; border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: transform 0.2s;
-        }
-        .intro-cell:hover { transform: translateY(-3px); }
-        .cell-dec { border-color: var(--primary); color: var(--primary); }
-        .cell-bin { border-color: var(--secondary); color: var(--secondary); }
-        .cell-oct { border-color: var(--quaternary); color: var(--quaternary); }
-        .cell-hex { border-color: var(--quinary); color: var(--quinary); }
-
-        /* Viz Tables */
-        .viz-container {
-            height: 500px; display: flex; flex-direction: column; border: 1px solid #e2e8f0;
-            border-radius: 0.5rem; background: white; overflow: hidden;
-        }
-        .viz-header {
-            color: white; padding: 10px; display: flex; justify-content: center;
-            font-family: 'Roboto Mono', monospace; font-size: 0.85rem;
-        }
-        .header-cell {
-            display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 30px; margin: 0 1px; text-align: center;
-        }
-        .header-value { color: #e2e8f0; font-size: 0.7rem; margin-top: 2px; opacity: 0.9; }
-        .viz-content { flex: 1; overflow-y: auto; padding: 10px; text-align: center; }
-        .viz-row {
-            font-family: 'Roboto Mono', monospace; font-size: 1.2rem; margin: 0; padding: 0;
-            display: flex; justify-content: center; line-height: 1.5;
-        }
-        .digit-span { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 100%; text-align: center; }
-        .bg-block-uniform { background-color: #eff6ff; color: #1d4ed8; font-weight: bold; }
-        .bg-block-uniform-bin { background-color: #f0fdf4; color: #15803d; font-weight: bold; }
-        .bg-block-uniform-oct { background-color: #faf5ff; color: #7e22ce; font-weight: bold; }
-        .bg-block-uniform-hex { background-color: #fff1f2; color: #be123c; font-weight: bold; }
-
-        /* Ref Table */
-        .ref-table-container {
-            max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0;
-            border-radius: 0.5rem; background: white; width: fit-content; margin: 0 auto;
-            min-width: 300px;
-        }
-        .ref-row {
-            display: grid; gap: 15px; padding: 4px 15px; border-bottom: 1px solid #f1f5f9;
-            font-family: 'Roboto Mono', monospace; font-size: 0.85rem;
-            cursor: pointer; transition: background-color 0.1s; align-items: center;
-        }
-        .ref-row:hover { background-color: #f8fafc; }
-        .ref-row.active-row { background-color: #fef08a; color: #854d0e; font-weight: bold; border-left: 4px solid #eab308; }
-
-        /* Ladder */
-        .ladder-container-wrapper {
-            font-family: 'Roboto Mono', monospace; overflow-x: auto;
-            padding-bottom: 20px; padding-left: 10px; text-align: center; 
-        }
-        .number-cell {
-            height: var(--box-size); min-width: var(--box-size); width: var(--box-size);
-            padding: 0 15px; display: flex; align-items: center; justify-content: flex-end; 
-            font-size: 1.5rem; font-weight: 700; color: #1f2937;
-            box-sizing: border-box; background-color: white; flex-shrink: 0;
-        }
-        .divisor-cell {
-            border-left-width: var(--ladder-border-width);
-            border-left-style: solid;
-            border-bottom-width: var(--ladder-border-width);
-            border-bottom-style: solid;
-            justify-content: center; position: relative; z-index: 20;
-        }
-        .remainder-cell { color: #dc2626; font-weight: 800; position: relative; }
-        .step-container { display: inline-flex; flex-direction: row; align-items: flex-start; }
-        .column { display: flex; flex-direction: column; align-items: flex-start; }
-        .next-step-wrapper { margin-top: calc(-1 * var(--ladder-border-width)); position: relative; z-index: 10; }
-        .final-quotient { color: #9ca3af; opacity: 0.6; }
-        .end-label {
-            height: var(--box-size); display: flex; align-items: center; padding-left: 10px;
-            font-size: 0.8rem; font-weight: bold; color: #16a34a; white-space: nowrap;
-        }
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; transform: translateY(-10px); }
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-
-        /* Inputs */
-        input { width: 100%; padding: 8px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 1.1rem; text-align: center; }
-        input:focus { outline: none; border-color: var(--primary); }
-        .viz-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        
-        /* Viz Single Line */
-        .viz-single-line {
-            display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 0.75rem; align-items: center;
-            font-family: 'Roboto Mono', monospace; font-size: 1.125rem; padding-bottom: 5px;
-            width: auto; max-width: 100%;
-        }
-
-        /* --- ESTILOS MAPA INTERACTIVO --- */
-        .arrow-text {
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            font-size: 12px;
-            text-anchor: middle;
-            dominant-baseline: central;
-            pointer-events: none;
-        }
-    
-        .node-group { transition: all 0.3s; }
-        .node-circle { stroke-width: 3px; transition: all 0.3s; }
-        .node-group:hover .node-circle { filter: drop-shadow(0 0 10px rgba(0,0,0,0.2)); stroke-width: 5px; }
-        .node-text { font-family: 'Inter', sans-serif; font-weight: 800; text-anchor: middle; dominant-baseline: central; font-size: 14px; pointer-events: none; fill: white; }
-        .node-value-text {
-            font-family: 'Roboto Mono', monospace;
-            font-weight: 600;
-            text-anchor: middle;
-            dominant-baseline: central;
-            font-size: 13px;
-            pointer-events: none;
-            fill: #f9fafb;
-        }
-        
-        .conn-path { fill: none; stroke-width: 3px; transition: all 0.3s; stroke-linecap: round; }
-        .conn-path:hover { stroke-width: 5px; filter: drop-shadow(0 0 2px rgba(0,0,0,0.3)); }
-        
-        /* Colores de Flechas */
-        .arrow-dec { stroke: var(--primary); }
-        .arrow-bin { stroke: var(--secondary); }
-        .arrow-oct { stroke: var(--quaternary); }
-        .arrow-hex { stroke: var(--quinary); }
-
-        #graphInputPopup {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: white; padding: 20px; border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25); border: 3px solid #3b82f6;
-            display: none; z-index: 50; width: 220px;
-        }
-        
-        /* Badge del paso */
-        .step-badge {
-            background-color: #ef4444; color: white; border-radius: 50%;
-            width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 12px; border: 2px solid white;
-            position: absolute; pointer-events: none; z-index: 30;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-    </style>
-</head>
-<body>
-
-    <header class="sticky top-0 z-50 bg-slate-900 shadow-md border-b-4 border-blue-600">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-white">Sistemas de Numeración</h1>
-            <nav class="hidden md:flex gap-2">
-                <a href="#decimal" class="px-3 py-1 rounded bg-blue-900 text-blue-200 text-xs hover:bg-blue-800">Decimal</a>
-                <a href="#binary" class="px-3 py-1 rounded bg-green-900 text-green-200 text-xs hover:bg-green-800">Binario</a>
-                <a href="#octal" class="px-3 py-1 rounded bg-purple-900 text-purple-200 text-xs hover:bg-purple-800">Octal</a>
-                <a href="#hexadecimal" class="px-3 py-1 rounded bg-rose-900 text-rose-200 text-xs hover:bg-rose-800">Hexadecimal</a>
-                <a href="#mapa" class="px-3 py-1 rounded bg-amber-500 text-white text-xs hover:bg-amber-600 font-bold">Mapa</a>
-            </nav>
-        </div>
-    </header>
-
-    <main class="container mx-auto px-4 py-8 max-w-5xl space-y-20">
-
-        <!-- 1. DECIMAL -->
-        <section id="decimal" class="scroll-mt-24">
-            <div class="flex items-center gap-3 mb-4"><span class="bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">1</span><h2 class="text-2xl font-bold text-slate-800">Sistema Decimal</h2></div>
-			<p class="text-slate-700 mb-6">
-    El sistema decimal es el que usamos habitualmente en la vida diaria. Está basado en la base 10 y utiliza las cifras del 0 al 9 para representar cualquier cantidad.
-</p>
-
-            <div class="bg-white p-6 rounded-xl shadow mb-8 border-l-4 border-blue-500"><h3 class="text-xl font-bold text-blue-800 mb-4">1.1 Alfabeto</h3><p class="text-slate-600 mb-4 text-sm">10 Símbolos (0-9). Base 10.</p><div class="viz-grid" id="decimalSymbols"></div></div>
-            <div class="bg-white p-6 rounded-xl shadow mb-8"><h3 class="text-xl font-bold text-slate-800 mb-4">1.2 Combinatoria</h3><div class="grid md:grid-cols-3 gap-6"><div class="bg-blue-50 p-4 rounded-lg"><label class="text-sm font-bold text-slate-700">Cifras:</label><input type="range" id="decRange" min="1" max="4" value="1" class="accent-blue-600" oninput="renderDecimalTable()"><div id="decFormulaDisplay" class="mt-2 text-center"></div></div><div class="md:col-span-2"><div class="viz-container"><div class="viz-header !bg-blue-900" id="decTableHeader"></div><div class="viz-content" id="decTable"></div></div></div></div></div>
-            <div class="bg-white p-6 rounded-xl shadow"><h3 class="text-xl font-bold text-slate-800 mb-4">1.3 Descomposición</h3><div class="bg-slate-50 p-4 rounded flex flex-col md:flex-row items-center gap-4 justify-center"><input type="number" id="decInput" value="342" class="w-32 text-3xl font-bold text-blue-700 text-center bg-white border-2 border-blue-200 rounded-lg p-2" oninput="updateDecimalViz()"><div class="hidden md:block text-2xl text-slate-300">→</div><div id="decViz" class="viz-single-line justify-center"></div></div></div>
-        </section>
-
-        <!-- 2. BINARIO -->
-        <section id="binary" class="scroll-mt-24">
-            <div class="flex items-center gap-3 mb-4"><span class="bg-green-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">2</span><h2 class="text-2xl font-bold text-slate-800">Sistema Binario</h2></div>
-			<p class="text-slate-700 mb-6">
-    El sistema binario es el lenguaje nativo de los ordenadores. Es un sistema en base 2 que solo emplea los dígitos 0 y 1 para codificar la información.
-</p>
-
-            <div class="bg-white p-6 rounded-xl shadow mb-8 border-l-4 border-green-500"><h3 class="text-xl font-bold text-green-800 mb-4">2.1 Alfabeto</h3><p class="text-slate-600 mb-4 text-sm">2 Símbolos (0,1). Base 2.</p><div class="flex justify-center gap-6"><div class="intro-cell cell-bin">0</div><div class="intro-cell cell-bin">1</div></div></div>
-            <div class="bg-white p-6 rounded-xl shadow mb-8"><h3 class="text-xl font-bold text-slate-800 mb-4">2.2 Combinatoria</h3><div class="grid md:grid-cols-3 gap-6"><div class="bg-green-50 p-4 rounded-lg"><label class="text-sm font-bold text-slate-700">Bits:</label><input type="range" id="binRange" min="1" max="8" value="3" class="accent-green-600" oninput="renderBinaryTable()"><div id="binFormulaDisplay" class="mt-2 text-center"></div></div><div class="md:col-span-2"><div class="viz-container"><div class="viz-header !bg-green-900" id="binTableHeader"></div><div class="viz-content" id="binTable"></div></div></div></div></div>
-            <div class="bg-white p-6 rounded-xl shadow mb-8"><h3 class="text-xl font-bold text-slate-800 mb-4">2.3 Binario a Decimal</h3><div class="flex flex-col items-center"><div id="binarySwitches" class="flex flex-wrap justify-center gap-2 mb-6"></div><div class="w-full bg-slate-50 p-4 rounded-t-xl border border-slate-200 border-b-0 flex justify-center"><div id="binToDecCalc" class="viz-single-line justify-center"></div></div><div class="w-full bg-slate-800 p-4 rounded-b-xl shadow-lg text-center mb-8"><div class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Resultado Decimal</div><div id="binToDecResult" class="text-4xl font-mono font-bold text-green-400"></div></div><div class="w-full border-t pt-6 text-center"><h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tabla Referencia (0-255)</h4><div class="ref-table-container custom-scroll"><div class="bg-slate-100 px-5 py-2 flex text-xs font-bold text-slate-500 sticky top-0 border-b border-slate-200" style="display: grid; grid-template-columns: 60px 1fr; gap: 20px;"><span style="text-align: right;">DEC</span><span>BIN (8b)</span></div><div id="refTableBodyBin"></div></div></div></div></div>
-            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-500"><h3 class="text-xl font-bold text-green-900 mb-4">2.4 Decimal a Binario (Escalera)</h3><div class="grid md:grid-cols-3 gap-6 items-start"><div class="bg-green-50 p-4 rounded-xl"><label class="block text-sm font-bold text-green-900 mb-2">Decimal:</label><input type="number" id="ladderInputBin" value="42" min="0" class="w-full text-center text-3xl font-bold text-green-700 border-2 border-green-200 rounded-lg p-2 mb-4" onkeypress="if(event.key === 'Enter') calculateLadderBin()"><button onclick="calculateLadderBin()" class="w-full bg-green-600 text-white font-bold py-2 rounded shadow hover:bg-green-700 transition">Convertir</button><div class="hidden mt-4 bg-white p-2 rounded border border-green-100 text-center" id="ladderResBoxBin"><div class="text-xs text-gray-400 uppercase font-bold tracking-wider">Binario</div><div id="ladderOutBin" class="text-3xl font-mono font-bold text-green-600 mt-1 break-all"></div></div></div><div class="md:col-span-2 bg-white border rounded-xl p-4 overflow-hidden min-h-[150px]"><div class="ladder-container-wrapper"><div id="ladderContBin" class="inline-block text-left pt-2"></div></div></div></div></div>
-        </section>
-
-        <!-- 3. OCTAL -->
-        <section id="octal" class="scroll-mt-24">
-            <div class="flex items-center gap-3 mb-4"><span class="bg-purple-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">3</span><h2 class="text-2xl font-bold text-slate-800">Sistema Octal</h2></div>
-			<p class="text-slate-700 mb-6">
-    El sistema octal es un sistema de numeración en base 8 que usa los dígitos del 0 al 7. Tradicionalmente se ha empleado como forma compacta de escribir números binarios.
-</p>
-
-            <div class="bg-white p-6 rounded-xl shadow mb-8 border-l-4 border-purple-500"><h3 class="text-xl font-bold text-purple-800 mb-4">3.1 Alfabeto Octal</h3><p class="text-slate-600 mb-4 text-sm">8 Símbolos (0-7). Base 8.</p><div class="viz-grid" id="octalSymbols"></div></div>
-            <div class="bg-white p-6 rounded-xl shadow mb-8"><h3 class="text-xl font-bold text-slate-800 mb-4">3.2 Combinatoria</h3><div class="grid md:grid-cols-3 gap-6"><div class="bg-purple-50 p-4 rounded-lg"><label class="text-sm font-bold text-slate-700">Cifras:</label><input type="range" id="octRange" min="1" max="4" value="2" class="accent-purple-600" oninput="renderOctalTable()"><div id="octFormulaDisplay" class="mt-2 text-center"></div></div><div class="md:col-span-2"><div class="viz-container"><div class="viz-header !bg-purple-900" id="octTableHeader"></div><div class="viz-content" id="octTable"></div></div></div></div></div>
-            <div class="bg-white p-6 rounded-xl shadow mb-8"><h3 class="text-xl font-bold text-slate-800 mb-4">3.3 Octal a Decimal</h3><div class="bg-purple-50 p-4 rounded-xl flex flex-wrap items-center justify-center gap-4 mb-6"><input type="text" id="octInput" value="75" class="w-32 text-3xl font-bold text-center text-purple-700 p-2 rounded bg-white border-2 border-purple-200 uppercase" oninput="this.value = this.value.replace(/[^0-7]/g, ''); updateOctalViz()"><div class="text-2xl text-purple-300 font-bold">→</div><div id="octViz" class="viz-single-line"></div></div><div class="w-full border-t pt-6 text-center"><h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tabla Referencia</h4><div class="ref-table-container custom-scroll"><div class="bg-slate-100 px-5 py-2 flex text-xs font-bold text-slate-500 sticky top-0 border-b border-slate-200" style="display: grid; grid-template-columns: 60px 80px 1fr; gap: 15px;"><span style="text-align: right;">DEC</span><span class="text-center">OCT</span><span>BIN</span></div><div id="refTableBodyOct"></div></div></div></div>
-             <div class="bg-white p-6 rounded-xl shadow border-l-4 border-purple-500 mb-8"><h3 class="text-xl font-bold text-purple-900 mb-4">3.4 Decimal a Octal (Escalera)</h3><div class="grid md:grid-cols-3 gap-6 items-start"><div class="bg-purple-50 p-4 rounded-xl"><label class="block text-sm font-bold text-purple-900 mb-2">Decimal:</label><input type="number" id="ladderInputOct" value="100" min="0" class="w-full text-center p-3 text-3xl font-bold text-purple-700 border-2 border-purple-200 rounded-lg mb-4" onkeypress="if(event.key === 'Enter') calculateLadderOct()"><button onclick="calculateLadderOct()" class="w-full bg-purple-600 text-white font-bold py-2 rounded shadow hover:bg-purple-700 transition">Convertir</button><div class="hidden mt-4 bg-white p-2 rounded border border-purple-100 text-center" id="ladderResBoxOct"><div class="text-xs text-gray-400 uppercase font-bold tracking-wider">Octal</div><div id="ladderOutOct" class="text-3xl font-mono font-bold text-purple-600 mt-1 break-all"></div></div></div><div class="md:col-span-2 bg-white border rounded-xl p-4 overflow-hidden min-h-[150px]"><div class="ladder-container-wrapper"><div id="ladderContOct" class="inline-block text-left pt-2"></div></div></div></div></div>
-            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-purple-500"><h3 class="text-xl font-bold text-purple-900 mb-4">3.5 Binario a Octal (Agrupación)</h3><p class="text-slate-600 mb-6 text-sm">Agrupamos bits de 3 en 3.</p><div class="bg-purple-50 p-6 rounded-xl flex flex-col items-center gap-6"><div class="flex flex-col md:flex-row items-center gap-4 w-full justify-center"><div><input type="text" id="binToOctInput" value="10110111" class="w-64 text-center p-3 text-2xl font-mono font-bold text-green-600 border-2 border-green-200 rounded-lg focus:border-green-500" oninput="this.value = this.value.replace(/[^01]/g, ''); updateBinToOctGroupViz()"><p class="text-xs text-slate-400 text-center mt-1">Solo 0 y 1</p></div><div class="text-3xl text-purple-300 hidden md:block">→</div><div id="binToOctDisplay" class="text-2xl font-mono font-bold text-slate-500 tracking-widest"></div></div><div id="binToOctViz" class="w-full flex flex-wrap justify-center gap-6 min-h-[100px]"></div></div></div>
-        </section>
-
-        <!-- 4. HEXADECIMAL -->
-        <section id="hexadecimal" class="scroll-mt-24">
-            <div class="flex items-center gap-3 mb-6"><span class="bg-rose-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold">4</span><h2 class="text-2xl font-bold text-slate-800">Sistema Hexadecimal</h2></div>
-			<p class="text-slate-700 mb-6">
-    El sistema hexadecimal es un sistema en base 16 que combina los dígitos 0–9 y las letras A–F. Es muy habitual en informática para representar direcciones de memoria, colores y otros datos.
-</p>
-
-            <div class="bg-white p-6 rounded-xl shadow mb-8 border-l-4 border-rose-500"><h3 class="text-xl font-bold text-rose-800 mb-4">4.1 Alfabeto Hexadecimal</h3><p class="text-slate-600 mb-4 text-sm">16 Símbolos (0-9, A-F). Base 16.</p><div class="viz-grid" id="hexSymbols"></div></div>
-            <div class="bg-white p-6 rounded-xl shadow mb-8"><h3 class="text-xl font-bold text-slate-800 mb-4">4.2 Combinatoria</h3><div class="grid md:grid-cols-3 gap-6"><div class="bg-rose-50 p-4 rounded-lg"><label class="text-sm font-bold text-slate-700">Cifras:</label><input type="range" id="hexRange" min="1" max="3" value="2" class="accent-rose-600" oninput="renderHexTable()"><div id="hexFormulaDisplay" class="mt-2 text-center"></div></div><div class="md:col-span-2"><div class="viz-container"><div class="viz-header !bg-rose-900" id="hexTableHeader"></div><div class="viz-content" id="hexTable"></div></div></div></div></div>
-            <div class="bg-white p-6 rounded-xl shadow"><h3 class="text-xl font-bold text-slate-800 mb-4">4.3 Hexadecimal a Decimal</h3><div class="bg-rose-50 p-6 rounded-xl flex flex-wrap items-center justify-center gap-4 mb-6"><input type="text" id="hexInput" value="1A" class="w-32 text-3xl font-bold text-center text-rose-700 uppercase p-2 rounded bg-white border-2 border-rose-200" oninput="this.value = this.value.replace(/[^0-9A-Fa-f]/g, '').toUpperCase(); updateHexViz()"><div class="text-2xl text-rose-300 font-bold">→</div><div id="hexViz" class="viz-single-line"></div></div><div class="w-full border-t pt-6 text-center mt-6"><h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tabla Maestra (0-255)</h4><div class="ref-table-container custom-scroll" style="max-width: 600px;"><div class="bg-slate-100 px-5 py-2 flex text-xs font-bold text-slate-500 sticky top-0 border-b border-slate-200" style="display: grid; grid-template-columns: 60px 60px 60px 1fr; gap: 10px;"><span style="text-align: right;">DEC</span><span class="text-center">HEX</span><span class="text-center">OCT</span><span>BIN</span></div><div id="refTableBodyHex"></div></div></div></div>
-            <!-- 4.4 Decimal a Hex (Escalera) - CORREGIDO -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-rose-500 mt-8"><h3 class="text-xl font-bold text-rose-900 mb-4">4.4 Decimal a Hexadecimal (Escalera)</h3><div class="grid md:grid-cols-3 gap-6 items-start"><div class="bg-rose-50 p-4 rounded-xl"><label class="block text-sm font-bold text-rose-900 mb-2">Decimal:</label><input type="number" id="ladderInputHex" value="300" min="0" class="w-full text-center p-3 text-3xl font-bold text-rose-700 border-2 border-rose-200 rounded-lg mb-4" onkeypress="if(event.key === 'Enter') calculateLadderHex()"><button onclick="calculateLadderHex()" class="w-full bg-rose-600 text-white font-bold py-2 rounded shadow hover:bg-rose-700 transition">Convertir</button><div class="hidden mt-4 bg-white p-2 rounded border border-rose-100 text-center" id="ladderResBoxHex"><div class="text-xs text-gray-400 uppercase font-bold tracking-wider">Hexadecimal</div><div id="ladderOutHex" class="text-3xl font-mono font-bold text-rose-600 mt-1 break-all"></div></div></div><div class="md:col-span-2 bg-white border rounded-xl p-4 overflow-hidden min-h-[150px]"><div class="ladder-container-wrapper"><div id="ladderContHex" class="inline-block text-left pt-2"></div></div></div></div></div>
-            <!-- 4.5 Binario a Hex (Agrupación) - CORREGIDO -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-rose-500 mt-8"><h3 class="text-xl font-bold text-rose-900 mb-4">4.5 Binario a Hexadecimal (Agrupación)</h3><p class="text-slate-600 mb-6 text-sm">Agrupamos bits de 4 en 4.</p><div class="bg-rose-50 p-6 rounded-xl flex flex-col items-center gap-6"><div class="flex flex-col md:flex-row items-center gap-4 w-full justify-center"><div><input type="text" id="binToHexInput" value="10110111" class="w-64 text-center p-3 text-2xl font-mono font-bold text-green-600 border-2 border-green-200 rounded-lg focus:border-green-500" oninput="this.value = this.value.replace(/[^01]/g, ''); updateBinToHexGroupViz()"><p class="text-xs text-slate-400 text-center mt-1">Solo 0 y 1</p></div><div class="text-3xl text-rose-300 hidden md:block">→</div><div id="binToHexDisplay" class="text-2xl font-mono font-bold text-slate-500 tracking-widest"></div></div><div id="binToHexViz" class="w-full flex flex-wrap justify-center gap-6 min-h-[100px]"></div></div></div>
-        </section>
-
-        <!-- 5. MAPA -->
-        <section id="mapa" class="scroll-mt-24">
-            <div class="flex items-center gap-3 mb-6"><span class="bg-amber-500 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold text-xl shadow-md">5</span><h2 class="text-3xl font-bold text-slate-800">Mapa de Conversiones</h2></div>
-            <div class="bg-white p-6 rounded-xl shadow-xl border border-slate-200 relative min-h-[500px]">
-				    <!-- Botón para reiniciar el mapa -->
-				<button type="button"  onclick="resetConversionGraph()" class="absolute top-4 right-4 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 shadow-sm">
-					<i data-lucide="rotate-ccw" class="w-3 h-3"></i>
-					Reiniciar mapa
-				</button>
-                <div id="graphInputPopup" class="hidden absolute bg-white p-4 rounded-lg shadow-xl border-2 border-blue-500 z-50 text-center w-48">
-                    <label class="block text-xs font-bold text-gray-500 mb-2 uppercase">Valor Inicial</label>
-                    <input type="text" id="popupInput" class="w-full border rounded p-2 text-center font-bold mb-3 uppercase text-xl" onkeypress="if(event.key === 'Enter') confirmNodeInput()">
-                    <button onclick="confirmNodeInput()" class="w-full bg-blue-600 text-white text-sm font-bold py-1.5 rounded hover:bg-blue-700">CONFIRMAR</button>
-                </div>
-
-                <div id="badgesContainer" class="absolute top-4 left-4 z-10 pointer-events-none"></div>
-
-                <svg id="conversionGraph" width="100%" height="450" viewBox="0 0 600 450" class="mx-auto select-none">
-                    <defs>
-                        <!-- Marcadores Personalizados -->
-                        <marker id="arrow-dec" markerWidth="14" markerHeight="14"
-                                refX="7" refY="3.5" orient="auto" markerUnits="strokeWidth">
-                            <polygon points="0 0, 7 3.5, 0 7" fill="#2563eb" />
-                        </marker>
-                        <marker id="arrow-bin" markerWidth="14" markerHeight="14"
-                                refX="7" refY="3.5" orient="auto" markerUnits="strokeWidth">
-                            <polygon points="0 0, 7 3.5, 0 7" fill="#16a34a" />
-                        </marker>
-                        <marker id="arrow-oct" markerWidth="14" markerHeight="14"
-                                refX="7" refY="3.5" orient="auto" markerUnits="strokeWidth">
-                            <polygon points="0 0, 7 3.5, 0 7" fill="#9333ea" />
-                        </marker>
-                        <marker id="arrow-hex" markerWidth="14" markerHeight="14"
-                                refX="7" refY="3.5" orient="auto" markerUnits="strokeWidth">
-                            <polygon points="0 0, 7 3.5, 0 7" fill="#e11d48" />
-                        </marker>
-                        <marker id="arrow-default" markerWidth="14" markerHeight="14"
-                                refX="7" refY="3.5" orient="auto" markerUnits="strokeWidth">
-                            <polygon points="0 0, 7 3.5, 0 7" fill="#cbd5e1" />
-                        </marker>
-                    </defs>
-                    <g transform="translate(0,20)">
-
-                    
-                    <!-- FLECHAS DEC <-> BIN -->
-                    <!-- Salida DEC (Azul) -->
-                    <path id="path-dec-bin" onclick="handlePathClick('dec','bin')"  d="M 285 215 Q 260 145 285 105" class="conn-path arrow-dec" marker-end="url(#arrow-dec)"></path>
-                    <text x="250" y="145" class="arrow-text fill-blue-600">:2</text>
-                    <!-- Salida BIN (Verde) -->
-                    <path id="path-bin-dec" onclick="handlePathClick('bin','dec')"  d="M 329.3 98.9 Q 340 145 322.5 197.6" class="conn-path arrow-bin" marker-end="url(#arrow-bin)"></path>
-                    <text x="350" y="140" class="arrow-text fill-green-600">x2</text>
-                    <!-- FLECHAS BIN <-> OCT -->
-<!-- Salida BIN (Verde) -->
-<path id="path-bin-oct" onclick="handlePathClick('bin','oct')" 
-      d="M 249.1 95.6 Q 170 140 140.3 209.7"
-      class="conn-path arrow-bin"
-      marker-end="url(#arrow-bin)"></path>
-
-<!-- Salida OCT (Verde, mismo grupo G-3) -->
-<path id="path-oct-bin" onclick="handlePathClick('oct','bin')" 
-      d="M 140.3 209.7 Q 170 140 249.1 95.6"
-      class="conn-path arrow-bin"
-      marker-end="url(#arrow-bin)"></path>
-
-<text x="165" y="125" class="arrow-text fill-green-600">G-3</text>
-
-
-<!-- FLECHAS BIN <-> HEX -->
-<!-- Salida BIN (Verde) -->
-<path id="path-bin-hex" onclick="handlePathClick('bin','hex')" 
-      d="M 350.9 95.6 Q 440 140 459.7 209.7"
-      class="conn-path arrow-bin"
-      marker-end="url(#arrow-bin)"></path>
-
-<!-- Salida HEX (Verde, mismo grupo G-4) -->
-<path id="path-hex-bin" onclick="handlePathClick('hex','bin')" 
-      d="M 459.7 209.7 Q 440 140 350.9 95.6"
-      class="conn-path arrow-bin"
-      marker-end="url(#arrow-bin)"></path>
-
-<text x="430" y="120" class="arrow-text fill-green-600">G-4</text>
-
-                    
-                    <!-- FLECHAS DEC <-> OCT (Opcional) -->
-                    <!-- Salida DEC -->
-                    <path id="path-dec-oct" onclick="handlePathClick('dec','oct')"  d="M 247.6 227.5 Q 200 210 152.4 227.5" class="conn-path arrow-dec" marker-end="url(#arrow-dec)"></path>
-                    <text x="200" y="210" class="arrow-text fill-blue-600">:8</text>
-                    <!-- Salida OCT -->
-                    <path id="path-oct-dec" onclick="handlePathClick('oct','dec')"  d="M 152.4 272.5 Q 200 290 247.6 272.5" class="conn-path arrow-oct" marker-end="url(#arrow-oct)"></path>
-                    <text x="200" y="290" class="arrow-text fill-purple-600">x8</text>
-
-                    <!-- FLECHAS DEC <-> HEX (Opcional) -->
-                    <!-- Salida DEC -->
-                    <path id="path-dec-hex" onclick="handlePathClick('dec','hex')"  d="M 352.4 227.5 Q 400 210 447.6 227.5" class="conn-path arrow-dec" marker-end="url(#arrow-dec)"></path>
-                    <text x="400" y="210" class="arrow-text fill-blue-600">:16</text>
-                    <!-- Salida HEX -->
-                    <path id="path-hex-dec" onclick="handlePathClick('hex','dec')"  d="M 447.6 272.5 Q 400 290 352.4 272.5" class="conn-path arrow-hex" marker-end="url(#arrow-hex)"></path>
-                    <text x="400" y="290" class="arrow-text fill-rose-600">x16</text>
-
-                    <!-- NODOS (R=50) -->
-                    <g class="node-group" transform="translate(300,250)" onclick="handleNodeClick('dec')">
-                        <circle r="50" fill="#2563eb" stroke="#1e40af" class="node-circle"></circle>
-                        <text class="node-text" dy="1">DEC</text>
-                        <text class="node-value-text" dy="24" data-node="dec"></text>
-                    </g>
-                    <g class="node-group" transform="translate(300,50)" onclick="handleNodeClick('bin')">
-                        <circle r="50" fill="#16a34a" stroke="#15803d" class="node-circle"></circle>
-                        <text class="node-text" dy="1">BIN</text>
-                        <text class="node-value-text" dy="24" data-node="bin"></text>
-                    </g>
-                    <g class="node-group" transform="translate(100,250)" onclick="handleNodeClick('oct')">
-                        <circle r="50" fill="#9333ea" stroke="#7e22ce" class="node-circle"></circle>
-                        <text class="node-text" dy="1">OCT</text>
-                        <text class="node-value-text" dy="24" data-node="oct"></text>
-                    </g>
-                    <g class="node-group" transform="translate(500,250)" onclick="handleNodeClick('hex')">
-                        <circle r="50" fill="#e11d48" stroke="#be123c" class="node-circle"></circle>
-                        <text class="node-text" dy="1">HEX</text>
-                        <text class="node-value-text" dy="24" data-node="hex"></text>
-                    </g>
-                
-                    </g>
-</svg>
-                <div class="mt-6 border-t pt-4">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Registro de Conversiones</h4>
-                    <div id="conversionHistory" class="space-y-8 min-h-[100px] text-center text-sm text-gray-400 italic">Haz clic en un círculo para comenzar...</div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <script>
-        function el(id) { return document.getElementById(id); }
-
-        // --- GENÉRICOS ---
-        function renderSymbols(id, chars, cls) { el(id).innerHTML = chars.map(c => `<div class="intro-cell ${cls}">${c}</div>`).join(''); }
-        
-        function renderBaseTable(base, rid, fid, hid, tid, bgCls, colHex) {
-            const d = parseInt(el(rid).value), tot = Math.pow(base, d);
-            el(fid).innerHTML = `<div class="text-sm text-slate-500">Posibilidades</div><div class="text-2xl font-mono font-bold" style="color:${colHex}">${base}<sup>${d}</sup> = ${tot.toLocaleString()}</div>`;
-            let h='', t='', bs=Math.pow(base, Math.max(1,d-1));
-            for(let i=d-1; i>=0; i--) h+=`<div class="header-cell"><div>${base}<sup>${i}</sup></div><div class="header-value">${Math.pow(base,i).toLocaleString()}</div></div>`;
-            el(hid).innerHTML = h;
-            const lim = Math.min(tot, 256);
-            for(let n=0; n<lim; n++) {
-                let s=n.toString(base).toUpperCase().padStart(d,'0'), row='', isNB=(n>0 && n%bs===0);
-                for(let i=0; i<s.length; i++) {
-                    let bg = (d>1 && i>0) ? bgCls : '';
-                    if(bg && n%bs===0) bg+=' rounded-t-md'; if(bg && (n+1)%bs===0) bg+=' rounded-b-md';
-                    row+=`<span class="digit-span ${bg}" style="color:${(d>1&&i>0)?colHex:'#64748b'}; font-weight:bold">${s[i]}</span>`;
-                }
-                t+=`<div class="viz-row ${isNB?'pt-4':''}">${row}</div>`;
-            }
-            if(tot>lim) t+=`<div class="text-xs text-slate-400 py-2">...</div>`;
-            el(tid).innerHTML = t;
-        }
-
-        function updatePolyViz(iid, vid, base, col) {
-            const v = el(iid).value.toUpperCase();
-            if(!v) { el(vid).innerHTML=''; return; }
-            let h='', tot=0;
-            for(let i=0; i<v.length; i++) {
-                let val=parseInt(v[i], base), pow=v.length-1-i; tot+=val*Math.pow(base,pow);
-                let disp = (base===16 && val>=10) ? `${v[i]}<span class="text-xs opacity-60">(${val})</span>` : v[i];
-                h+=`<div class="bg-white border rounded px-2 py-1 shadow-sm flex items-baseline gap-1 shrink-0"><span style="color:${col}; font-weight:bold">${disp}</span><span class="text-xs text-slate-400">x</span><span class="text-slate-600 font-bold">${base}<sup>${pow}</sup></span></div>`;
-                if(i<v.length-1) h+=`<span class="text-slate-300 font-bold">+</span>`;
-            }
-            h+=`<span class="mx-2 text-slate-300">=</span><strong class="text-slate-800 text-2xl">${tot}</strong>`;
-            el(vid).innerHTML = h;
-            if(base===2) highlightRow(tot, 'refTableBodyBin', 'bin');
-            if(base===8) highlightRow(tot, 'refTableBodyOct', 'oct');
-            if(base===16) highlightRow(tot, 'refTableBodyHex', 'hex');
-        }
-
-        // --- TABLAS REF ---
-        function renderRefTables() {
-            let bHtml = '';
-            for(let i=0; i<=255; i++) bHtml += `<div id="bin-row-${i}" class="ref-row" style="grid-template-columns: 60px 1fr; gap: 20px;"><span>${i}</span><span class="font-bold text-slate-700">${i.toString(2).padStart(8,'0')}</span></div>`;
-            el('refTableBodyBin').innerHTML = bHtml;
-            let oHtml = '';
-            for(let i=0; i<=63; i++) oHtml += `<div id="oct-row-${i}" class="ref-row" style="grid-template-columns: 60px 80px 1fr; gap: 15px;"><span style="text-align:right">${i}</span><span class="text-center font-bold text-purple-600">${i.toString(8)}</span><span class="text-slate-500">${i.toString(2).padStart(6,'0')}</span></div>`;
-            el('refTableBodyOct').innerHTML = oHtml;
-            let hHtml = '';
-            for(let i=0; i<=255; i++) hHtml += `<div id="hex-row-${i}" class="ref-row" style="grid-template-columns: 60px 60px 60px 1fr; gap: 10px;"><span style="text-align:right">${i}</span><span class="text-center font-bold text-rose-600">${i.toString(16).toUpperCase()}</span><span class="text-center text-purple-600">${i.toString(8)}</span><span class="text-slate-500">${i.toString(2).padStart(8,'0')}</span></div>`;
-            el('refTableBodyHex').innerHTML = hHtml;
-        }
-        function highlightRow(n, tid, p) {
-            const t=el(tid); if(!t) return;
-            const a=t.querySelector('.active-row'); if(a) a.classList.remove('active-row');
-            const r=document.getElementById(`${p}-row-${n}`);
-            if(r) { r.classList.add('active-row'); r.scrollIntoView({behavior:'smooth', block:'center'}); }
-        }
-
-        // --- ESCALERA GENÉRICA ---
-        // Función para dibujar en un contenedor específico (para secciones individuales)
-        function drawLadderGeneric(base, iid, cid, oid, boxid, colPrime, colLight) {
-            const inp=el(iid), cont=el(cid), resBox=el(boxid), out=el(oid);
-            let n=parseInt(inp.value);
-            cont.innerHTML=''; resBox.classList.add('hidden');
-            if(isNaN(n)||n<0) return;
-            if(n===0) { cont.innerHTML='<div class="text-2xl font-bold text-slate-400">0</div>'; out.innerText="0"; resBox.classList.remove('hidden'); return; }
-            document.documentElement.style.setProperty('--ladder-border-color', colPrime);
-            const rems=[];
-            drawStep(n, cont, rems, base, colPrime, colLight);
-            out.innerText = rems.reverse().map(r=>r.toString(16).toUpperCase()).join('');
-            resBox.classList.remove('hidden');
-        }
-
-        // Función recursiva de dibujo
-        function drawStep(div, parent, rems, base, colP, colL) {
-            const q=Math.floor(div/base), r=div%base; rems.push(r);
-            const remDisp = (base===16 && r>=10) ? r.toString(16).toUpperCase() : r;
-            const sc=document.createElement('div'); sc.className='step-container fade-in';
-            // Animación solo si no estamos en modo historial (muchos pasos a la vez)
-            if(parent.id.includes('ladderCont')) sc.style.animationDelay=`${rems.length*0.1}s`;
-            
-            const lc=document.createElement('div'); lc.className='column';
-            const dc=document.createElement('div'); dc.className='number-cell'; dc.innerText=div;
-            const rc=document.createElement('div'); rc.className='number-cell remainder-cell'; rc.innerText=remDisp;
-            lc.append(dc, rc);
-
-            const ric=document.createElement('div'); ric.className='column';
-            const dvc=document.createElement('div'); dvc.className='number-cell divisor-cell'; 
-            dvc.style.borderColor=colP; dvc.style.color=colP; dvc.innerText=base;
-            const nsc=document.createElement('div'); nsc.className='next-step-wrapper';
-            ric.append(dvc, nsc);
-
-            sc.append(lc, ric); parent.append(sc);
-
-            if(q>0) drawStep(q, nsc, rems, base, colP, colL);
-            else {
-                const fd=document.createElement('div'); fd.className='step-container'; // sin fade-in extra
-                const fl=document.createElement('div'); fl.className='column';
-                const zc=document.createElement('div'); zc.className='number-cell final-quotient'; zc.innerText='0';
-                fl.append(zc);
-                const elbl=document.createElement('div'); elbl.className='end-label'; elbl.innerText='Fin división';
-                fd.append(fl, elbl); nsc.append(fd);
-            }
-        }
-        
-        // Helper para generar escalera en el historial (Sección 5)
-        function generateLadderHTML(num, base, colorPrime, colorLight) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'ladder-container-wrapper bg-white rounded p-4 border border-slate-200 inline-block';
-            const container = document.createElement('div');
-            container.className = 'inline-block text-left pt-2';
-            // Set local style variable for border color hack (simulated)
-            // En realidad drawStep usa styles inline para el borde, así que funciona.
-            const rems = [];
-            drawStep(num, container, rems, base, colorPrime, colorLight);
-            wrapper.appendChild(container);
-            return { html: wrapper, result: rems.reverse().map(r=>r.toString(16).toUpperCase()).join('') };
-        }
-
-        // --- GROUPING (3.5/4.4) ---
-        function updateBinToOctGroupViz() { renderGrouping(3, 'binToOctInput', 'binToOctDisplay', 'binToOctViz', 'purple'); }
-        function updateBinToHexGroupViz() { renderGrouping(4, 'binToHexInput', 'binToHexDisplay', 'binToHexViz', 'rose'); }
-
-        function renderGrouping(size, iid, did, vid, colorTheme) {
-            let binStr = el(iid).value.replace(/[^01]/g, '');
-            const container = el(vid);
-            const disp = el(did);
-            if (!binStr) { container.innerHTML = ''; disp.innerText=''; return; }
-
-            const rem = binStr.length % size;
-            const pad = rem === 0 ? 0 : size - rem;
-            const padded = '0'.repeat(pad) + binStr;
-
-            // Base correcta según tamaño del grupo
-            const base = (size === 3) ? 8 : 16;
-
-            let groups = [];
-            let displayGroups = [];
-            for (let i = 0; i < padded.length; i += size) {
-                const g = padded.substr(i, size);
-                groups.push(g);
-                displayGroups.push(g);
-            }
-            disp.innerText = displayGroups.join('-');
-
-            let html = '';
-            groups.forEach((group, idx) => {
-                const val = parseInt(group, 2);
-                const digit = val.toString(base).toUpperCase();
-                const isPad = idx === 0 && pad > 0;
-                html += `<div class="flex flex-col items-center gap-1">
-                    <div class="flex rounded-lg overflow-hidden border border-${colorTheme}-200 rounded-lg overflow-hidden bg-white shadow-sm">`;
-                for (let j = 0; j < size; j++) {
-                    let bit = group[j];
-                    let pBit = isPad && j < pad;
-                    let cl = pBit ? 'text-gray-300 bg-gray-50' : 'text-slate-700 font-bold';
-                    html += `<div class="w-6 h-10 flex items-center justify-center border-r border-${colorTheme}-100 last:border-r-0 ${cl}">${bit}</div>`;
-                }
-                html += `</div>
-                    <div class="text-${colorTheme}-300">
-                        <i data-lucide="arrow-down" class="w-4 h-4"></i>
-                    </div>
-                    <div class="w-10 h-10 rounded-full bg-${colorTheme}-100 text-${colorTheme}-700 flex items-center justify-center font-bold text-sm shadow-sm border border-${colorTheme}-200">
-                        ${digit}
-                    </div>
-                </div>`;
-            });
-
-            const res = parseInt(padded, 2).toString(base).toUpperCase();
-            const label = size === 3 ? 'Octal' : 'Hex';
-
-            html = `<div class="flex flex-wrap gap-4 justify-center items-end font-mono w-full mb-4">${html}</div>`;
-            html += `<div class="w-full text-center mt-6 pt-4 border-t border-${colorTheme}-100 flex justify-center items-center gap-3">
-                <span class="text-xs uppercase tracking-wide text-slate-400">${label}</span>
-                <span class="px-3 py-1 rounded-lg bg-${colorTheme}-50 border border-${colorTheme}-200 font-mono font-bold text-${colorTheme}-600">${res}</span>
-            </div>`;
-
-            container.innerHTML = html;
-            lucide.createIcons();
-        }
-
-        
-        // Helper para generar agrupación en historial
-        function generateGroupingHTML(binVal, size, colorTheme) {
-            const cleanBin = binVal.toString().replace(/[^01]/g, '');
-            if (!cleanBin) {
-                const emptyDiv = document.createElement('div');
-                emptyDiv.textContent = 'Sin datos';
-                return { html: emptyDiv, result: '' };
-            }
-
-            const rem = cleanBin.length % size;
-            const pad = rem === 0 ? 0 : size - rem;
-            const padded = '0'.repeat(pad) + cleanBin;
-
-            // Base correcta: 3 bits -> OCT, 4 bits -> HEX
-            const base = (size === 3) ? 8 : 16;
-
-            let groups = [];
-            for (let i = 0; i < padded.length; i += size) {
-                groups.push(padded.substr(i, size));
-            }
-
-            let inner = '';
-            groups.forEach((group, idx) => {
-                const val = parseInt(group, 2);
-                const digit = val.toString(base).toUpperCase();
-                const isPad = idx === 0 && pad > 0;
-
-                inner += `
-                    <div class="flex flex-col items-center gap-1">
-                        <div class="flex rounded-lg overflow-hidden border border-${colorTheme}-200 bg-white shadow-sm">
-                `;
-                for (let j = 0; j < size; j++) {
-                    const bit = group[j];
-                    const paddedBit = isPad && j < pad;
-                    const cl = paddedBit
-                        ? 'text-gray-300 bg-gray-50'
-                        : 'text-slate-700 font-bold';
-                    inner += `
-                            <div class="w-6 h-10 flex items-center justify-center border-r border-${colorTheme}-100 last:border-r-0 ${cl}">
-                                ${bit}
-                            </div>
-                    `;
-                }
-                inner += `
-                        </div>
-                        <div class="text-${colorTheme}-300">
-                            <i data-lucide="arrow-down" class="w-4 h-4"></i>
-                        </div>
-                        <div class="w-10 h-10 rounded-full bg-${colorTheme}-100 text-${colorTheme}-700 flex items-center justify-center font-bold text-sm shadow-sm border border-${colorTheme}-200">
-                            ${digit}
-                        </div>
-                    </div>
-                `;
-            });
-
-            const res = parseInt(padded, 2).toString(base).toUpperCase();
-            const label = (size === 3) ? 'Octal' : 'Hex';
-
-            let html = `
-                <div class="ladder-container-wrapper bg-white rounded-xl p-4 border border-slate-200 inline-block">
-                    <div class="flex flex-wrap gap-4 justify-center items-end font-mono w-full mb-4">
-                        ${inner}
-                    </div>
-                    <div class="w-full text-center mt-6 pt-4 border-t border-${colorTheme}-100 flex justify-center items-center gap-3">
-                        <span class="text-xs uppercase tracking-wide text-slate-400">${label}</span>
-                        <span class="px-3 py-1 rounded-lg bg-${colorTheme}-50 border border-${colorTheme}-200 font-mono font-bold text-${colorTheme}-600">
-                            ${res}
-                        </span>
-                    </div>
-                </div>
-            `;
-
-            const wrapper = document.createElement('div');
-            wrapper.innerHTML = html;
-
-            return {
-                html: wrapper,
-                result: res
-            };
-        }
-
-
-// Helper para polinomio en historial
-function generatePolyHTML(valStr, base, colorHex) {
-    const v = valStr.toUpperCase();
-    const wrapper = document.createElement('div');
-    wrapper.className = 'inline-block text-left';
-
-    let html = '<div class="flex flex-wrap items-center gap-2 font-mono text-sm">';
-    let total = 0;
-
-    for (let i = 0; i < v.length; i++) {
-        let val = parseInt(v[i], base);
-        let pow = v.length - 1 - i;
-        total += val * Math.pow(base, pow);
-
-        // Para HEX mostramos también el valor decimal del dígito entre paréntesis
-        let disp = (base === 16 && val >= 10)
-            ? `${v[i]}<span class="text-xs opacity-60">(${val})</span>`
-            : v[i];
-
-        html += `
-            <div class="bg-white border rounded px-2 py-1 flex items-center gap-2">
-                <span class="text-lg text-slate-800">${disp}</span>
-                <span class="text-slate-400 font-bold">·</span>
-                <span class="text-slate-600 font-bold">${base}<sup>${pow}</sup></span>
-            </div>
-        `;
-
-        if (i < v.length - 1) {
-            html += `<span class="text-slate-300 font-bold">+</span>`;
-        }
+  <meta charset="UTF-8" />
+  <title>Unidades de almacenamiento - 4º ESO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--
+    Autor: Manuel López Coello
+    Recurso: Conversor de unidades de almacenamiento con potencias de 2
+    Licencia: Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional
+              (CC BY-NC-SA 4.0)
+    Se permite copiar, adaptar y compartir citando la autoría, siempre que no haya fines comerciales
+    y las obras derivadas se distribuyan con la misma licencia.
+  -->
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    html += `
-        <span class="mx-2 text-slate-300">=</span>
-        <strong class="text-slate-800 text-xl" style="color:${colorHex}">${total}</strong>
-    `;
-    html += '</div>';
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+    }
 
-    wrapper.innerHTML = html;
-    return { html: wrapper, result: total };
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      padding: 1.5rem;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: #f9fafb;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      color: #cbd5f5;
+      margin-top: 2rem;
+    }
+
+    p {
+      line-height: 1.5;
+      color: #e5e7eb;
+    }
+
+    .top-actions {
+      text-align: right;
+      margin-bottom: 0.5rem;
+    }
+
+    .intro {
+      background: #020617;
+      padding: 1rem 1.2rem;
+      border-radius: 0.8rem;
+      border: 1px solid #1f2937;
+      margin-bottom: 1.5rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 0.8rem;
+      padding: 1rem;
+      border: 1px solid #1f2937;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: #bfdbfe;
+    }
+
+    .card .symbol {
+      font-size: 0.95rem;
+      color: #9ca3af;
+    }
+
+    .card .example {
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+
+    .highlight {
+      color: #facc15;
+      font-weight: 600;
+    }
+
+    .converter {
+      margin-top: 1rem;
+      background: #020617;
+      border-radius: 0.8rem;
+      padding: 1.2rem;
+      border: 1px solid #1f2937;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .converter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input, select, button {
+      border-radius: 0.5rem;
+      border: 1px solid #374151;
+      padding: 0.45rem 0.6rem;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.95rem;
+    }
+
+    input:focus, select:focus, button:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: #3b82f6;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s;
+    }
+
+    button:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .result {
+      text-align: center;
+      font-size: 1rem;
+      margin-top: 0.4rem;
+      min-height: 1.5rem;
+    }
+
+    .result strong {
+      color: #4ade80;
+    }
+
+    .note {
+      font-size: 0.85rem;
+      color: #9ca3af;
+      margin-top: 0.3rem;
+      text-align: center;
+    }
+
+    .error {
+      color: #f97373;
+    }
+
+    .steps {
+      margin-top: 0.8rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .steps-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .steps-value,
+    .steps-result {
+      font-weight: 600;
+    }
+
+    .steps-result {
+      color: #4ade80;
+    }
+
+    .steps-eq,
+    .steps-mul {
+      font-weight: 700;
+    }
+
+    .fraction {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content:center;
+      border: 1px solid #374151;
+      border-radius: 0.35rem;
+      padding: 0.15rem 0.5rem;
+      min-width: 80px;
+      background: #020617;
+      font-size: 0.9rem;
+    }
+
+    .fraction .top {
+      border-bottom: 1px solid #4b5563;
+      padding-bottom: 0.1rem;
+      margin-bottom: 0.1rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .fraction .bottom {
+      padding-top: 0.05rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .steps-text {
+      margin-top: 0.6rem;
+      font-size: 0.9rem;
+      color: #d1d5db;
+    }
+
+    .cancelled {
+      text-decoration: line-through;
+      text-decoration-color: #f97316;
+      text-decoration-thickness: 2px;
+      opacity: 0.9;
+    }
+
+    sup {
+      font-size: 0.75em;
+    }
+
+    /* Inputs para la sección de práctica */
+    .frac-input {
+      width: 4.2rem;
+      margin: 0 0.1rem;
+      text-align: center;
+      background: #020617;
+      border-radius: 0.35rem;
+      border: 1px solid #4b5563;
+      color: #e5e7eb;
+      font-size: 0.8rem;
+    }
+
+    .frac-input.unit {
+      width: 4.8rem;
+    }
+
+    .frac-input.ok {
+      border-color: #4ade80;
+      box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.4);
+    }
+
+    .frac-input.wrong {
+      border-color: #f97373;
+      box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.4);
+    }
+
+    .practice-grade-btn {
+      margin-top: 0.8rem;
+    }
+
+    /* Preguntas del modo examen */
+    .exam-question {
+      text-align: left;
+      margin: 0.5rem 0;
+      padding: 0.4rem 0.6rem;
+      border-radius: 0.5rem;
+      border: 1px solid #1f2937;
+      background: #020617;
+    }
+
+    .exam-question-title {
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .exam-answer-row {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+    }
+
+    /* Línea de unidades (timeline) */
+    .timeline-box {
+      margin-top: 1rem;
+      background: #020617;
+      border-radius: 0.8rem;
+      border: 1px solid #1f2937;
+      padding: 1rem 1.2rem;
+    }
+
+    .timeline-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    .timeline-unit {
+      width: 90px;
+      height: 90px;
+      border-radius: 999px;
+      border: 2px solid #4b5563;
+      background: radial-gradient(circle at 30% 30%, #1f2937, #020617);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0.4rem;
+      box-shadow: 0 0 10px rgba(15, 23, 42, 0.7);
+    }
+
+    .timeline-unit-name {
+      font-weight: 700;
+      color: #e5e7eb;
+      font-size: 0.95rem;
+    }
+
+    .timeline-unit-symbol {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 0.15rem;
+    }
+
+    .timeline-connector {
+      position: relative;
+      width: 180px;
+      height: 70px;
+    }
+
+    .timeline-connector-line {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 50%;
+      border-top: 2px solid #4b5563;
+      transform: translateY(-50%);
+    }
+
+    .timeline-connector::after {
+      content: "";
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 7px 0 7px 11px;
+      border-style: solid;
+      border-color: transparent transparent transparent #4ade80;
+    }
+
+    .timeline-connector::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 7px 11px 7px 0;
+      border-style: solid;
+      border-color: transparent #facc15 transparent transparent;
+    }
+
+    .arrow-label {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .arrow-label-right {
+      top: 6px;
+      color: #4ade80;
+    }
+
+    .arrow-label-left {
+      bottom: 6px;
+      color: #facc15;
+    }
+
+    .arrow-label sup {
+      font-size: 0.7em;
+    }
+
+    /* Footer de licencia */
+    .license {
+      margin-top: 2rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #1f2937;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    .license strong {
+      color: #e5e7eb;
+    }
+
+    @media (max-width: 600px) {
+      .converter-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .fraction {
+        min-width: 70px;
+      }
+
+      .timeline-connector {
+        width: 150px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      .container {
+        max-width: none;
+        padding: 0.5rem;
+      }
+      .intro, .card, .converter, .timeline-box {
+        background: #ffffff;
+        color: #000000;
+        border-color: #000000;
+      }
+      .steps-result {
+        color: #000000;
+      }
+      .license {
+        color: #000000;
+        border-color: #000000;
+      }
+      button {
+        background: #ffffff !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+      }
+      .top-actions {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="top-actions">
+      <button id="printBtn">Imprimir esta página</button>
+    </div>
+
+    <h1>Unidades de almacenamiento digital</h1>
+    <p style="text-align:center; margin-bottom:1rem;">App para 4º ESO · Tecnologías / Informática</p>
+
+    <section class="intro">
+      <p>
+        La información en un ordenador se guarda usando solo dos valores: <span class="highlight">0 y 1</span>. 
+        Cada uno de esos valores se llama <span class="highlight">bit</span>. A partir de los bits se construyen 
+        unidades más grandes para poder medir mejor cuánta información hay.
+      </p>
+
+      <p>
+        Durante muchos años, en informática se usó la palabra <strong>kilobyte (KB)</strong> para referirse a 
+        <span class="highlight">1024 bytes (2<sup>10</sup>)</span>, porque casi todo se basaba en potencias de 2.  
+        Sin embargo, en el Sistema Internacional de Unidades, <strong>kilo</strong> siempre ha significado 
+        <strong>1000</strong> (10<sup>3</sup>), no 1024.
+      </p>
+
+      <p>
+        Para evitar confusiones entre “mundo decimal” (1000) y “mundo binario” (1024), se decidió crear una 
+        nomenclatura nueva basada en binario:
+        <br>
+        – <strong>KiB</strong> (kibibyte) = <span class="highlight">1024 B = 2<sup>10</sup> B</span><br>
+        – <strong>MiB</strong> (mebibyte) = 2<sup>20</sup> B<br>
+        – <strong>GiB</strong> (gibibyte) = 2<sup>30</sup> B<br>
+        – <strong>TiB</strong> (tebibyte) = 2<sup>40</sup> B<br>
+        y así sucesivamente.
+      </p>
+
+      <p>
+        En la práctica, muchos programas, sistemas operativos y libros siguen usando 
+        <strong>KB, MB, GB, TB</strong> como si fueran KiB, MiB, GiB, TiB, es decir, basados en potencias de 2.
+        <br>
+        <span class="highlight">
+          En esta aplicación haremos lo mismo: usaremos KB, MB, GB, TB como si fueran 2<sup>10</sup>, 2<sup>20</sup>, 
+          2<sup>30</sup>, 2<sup>40</sup> bytes, respectivamente.
+        </span>
+      </p>
+
+      <p style="font-size:0.85rem; color:#9ca3af;">
+        Recuerda: <strong>b</strong> (minúscula) son <strong>bits</strong> y <strong>B</strong> (mayúscula) son <strong>Bytes</strong>.
+      </p>
+    </section>
+
+
+    <h2>1. Explicación de las unidades</h2>
+    <section class="cards">
+      <article class="card">
+        <h3>Bit</h3>
+        <div class="symbol"><strong>Símbolo:</strong> bit (b)</div>
+        <p>
+          Es la unidad de información más pequeña. Solo puede tomar dos valores: 0 ó 1.  
+          Todo lo que ves en una pantalla (texto, imágenes, música, vídeos…) acaba siendo una larga secuencia de bits.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> 8 bits pueden representar números del 0 al 255.</p>
+      </article>
+
+      <article class="card">
+        <h3>Byte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> B</div>
+        <p>
+          <span class="highlight">1 B = 8 bits = 2<sup>3</sup> bits</span>.  
+          Muchos sistemas usan el byte como unidad básica para contar memoria y tamaño de archivos.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> Una letra de texto ocupa normalmente 1 byte.</p>
+      </article>
+
+
+      <article class="card">
+        <h3>Kilobyte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> KB</div>
+        <p>
+          Un kilobyte se usa para medir cantidades pequeñas de información.
+          En informática solemos usar:
+          <span class="highlight">1 KB = 2<sup>10</sup> B</span>.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> Un fichero de texto muy corto puede ocupar 2–3 KB.</p>
+      </article>
+
+      <article class="card">
+        <h3>Megabyte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> MB</div>
+        <p>
+          <span class="highlight">1 MB = 2<sup>10</sup> KB = 2<sup>20</sup> B</span>.  
+          Unidad habitual en fotos, canciones, pequeños programas…
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> Una foto hecha con el móvil puede ocupar 2–5 MB.</p>
+      </article>
+
+      <article class="card">
+        <h3>Gigabyte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> GB</div>
+        <p>
+          <span class="highlight">1 GB = 2<sup>10</sup> MB = 2<sup>30</sup> B</span>.  
+          Se usa para discos duros, memorias USB, etc.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> Un pendrive puede tener 16 GB o 32 GB.</p>
+      </article>
+
+      <article class="card">
+        <h3>Terabyte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> TB</div>
+        <p>
+          <span class="highlight">1 TB = 2<sup>10</sup> GB = 2<sup>40</sup> B</span>.  
+          Muy habitual en discos duros actuales.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> Un disco duro de 1 TB puede almacenar cientos de miles de fotos.</p>
+      </article>
+
+      <article class="card">
+        <h3>Petabyte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> PB</div>
+        <p>
+          <span class="highlight">1 PB = 2<sup>10</sup> TB = 2<sup>50</sup> B</span>.  
+          Se usa para medir cantidades enormes de datos, por ejemplo en grandes centros de datos.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> Algunos proveedores en la nube almacenan petabytes de información de sus usuarios.</p>
+      </article>
+
+      <article class="card">
+        <h3>Exabyte</h3>
+        <div class="symbol"><strong>Símbolo:</strong> EB</div>
+        <p>
+          <span class="highlight">1 EB = 2<sup>10</sup> PB = 2<sup>60</sup> B</span>.  
+          Es una unidad gigantesca, usada para hablar del tráfico global de Internet o el volumen total de datos mundiales.
+        </p>
+        <p class="example"><strong>Ejemplo:</strong> El tráfico de datos mundial anual puede medirse en exabytes.</p>
+      </article>
+    </section>
+
+    <h2>2. Línea de unidades y relaciones</h2>
+    <section class="timeline-box">
+      <p style="text-align:center; margin-top:0;">
+        De menor a mayor unidad. La etiqueta de arriba indica cómo <strong>subir</strong> (multiplicar) y la de abajo cómo <strong>bajar</strong> (dividir).
+      </p>
+      <div class="timeline-line">
+        <div class="timeline-unit">
+          <div class="timeline-unit-name">bit</div>
+          <div class="timeline-unit-symbol">(b)</div>
+        </div>
+
+        <div class="timeline-connector">
+          <div class="timeline-connector-line"></div>
+          <div class="arrow-label arrow-label-right">× 2<sup>3</sup></div>
+          <div class="arrow-label arrow-label-left">÷ 2<sup>3</sup></div>
+        </div>
+
+        <div class="timeline-unit">
+          <div class="timeline-unit-name">Byte</div>
+          <div class="timeline-unit-symbol">(B)</div>
+        </div>
+
+        <div class="timeline-connector">
+          <div class="timeline-connector-line"></div>
+          <div class="arrow-label arrow-label-right">× 2<sup>10</sup></div>
+          <div class="arrow-label arrow-label-left">÷ 2<sup>10</sup></div>
+        </div>
+
+        <div class="timeline-unit">
+          <div class="timeline-unit-name">Kilobyte</div>
+          <div class="timeline-unit-symbol">(KB)</div>
+        </div>
+
+        <div class="timeline-connector">
+          <div class="timeline-connector-line"></div>
+          <div class="arrow-label arrow-label-right">× 2<sup>10</sup></div>
+          <div class="arrow-label arrow-label-left">÷ 2<sup>10</sup></div>
+        </div>
+
+        <div class="timeline-unit">
+          <div class="timeline-unit-name">Megabyte</div>
+          <div class="timeline-unit-symbol">(MB)</div>
+        </div>
+
+        <div class="timeline-connector">
+          <div class="timeline-connector-line"></div>
+          <div class="arrow-label arrow-label-right">× 2<sup>10</sup></div>
+          <div class="arrow-label arrow-label-left">÷ 2<sup>10</sup></div>
+        </div>
+
+        <div class="timeline-unit">
+          <div class="timeline-unit-name">Gigabyte</div>
+          <div class="timeline-unit-symbol">(GB)</div>
+        </div>
+
+        <div class="timeline-connector">
+          <div class="timeline-connector-line"></div>
+          <div class="arrow-label arrow-label-right">× 2<sup>10</sup></div>
+          <div class="arrow-label arrow-label-left">÷ 2<sup>10</sup></div>
+        </div>
+
+        <div class="timeline-unit">
+          <div class="timeline-unit-name">Terabyte</div>
+          <div class="timeline-unit-symbol">(TB)</div>
+        </div>
+
+        <div class="timeline-connector">
+          <div class="timeline-connector-line"></div>
+          <div class="arrow-label arrow-label-right">× 2<sup>10</sup></div>
+          <div class="arrow-label arrow-label-left">÷ 2<sup>10</sup></div>
+        </div>
+
+        <div class="timeline-unit">
+          <div class="timeline-unit-name">Petabyte</div>
+          <div class="timeline-unit-symbol">(PB)</div>
+        </div>
+
+        <div class="timeline-connector">
+          <div class="timeline-connector-line"></div>
+          <div class="arrow-label arrow-label-right">× 2<sup>10</sup></div>
+          <div class="arrow-label arrow-label-left">÷ 2<sup>10</sup></div>
+        </div>
+
+        <div class="timeline-unit">
+          <div class="timeline-unit-name">Exabyte</div>
+          <div class="timeline-unit-symbol">(EB)</div>
+        </div>
+      </div>
+    </section>
+
+    <h2>3. Conversor entre unidades (con potencias de 2)</h2>
+    <section class="converter">
+      <p style="text-align:center; margin-top:0;">
+        Escribe una cantidad, elige la unidad de origen y la unidad de destino.
+      </p>
+      <div class="converter-row">
+        <input id="valueInput" type="text" placeholder="Cantidad (ej. 1, 4, 12, 28, 512, 1024)" />
+        <select id="fromUnit">
+          <option value="bit">bit</option>
+          <option value="byte">Byte (B)</option>
+          <option value="kb">Kilobyte (KB)</option>
+          <option value="mb">Megabyte (MB)</option>
+          <option value="gb">Gigabyte (GB)</option>
+          <option value="tb">Terabyte (TB)</option>
+        </select>
+        <span>→</span>
+        <select id="toUnit">
+          <option value="bit">bit</option>
+          <option value="byte" selected>Byte (B)</option>
+          <option value="kb">Kilobyte (KB)</option>
+          <option value="mb">Megabyte (MB)</option>
+          <option value="gb">Gigabyte (GB)</option>
+          <option value="tb">Terabyte (TB)</option>
+        </select>
+        <button id="convertBtn">Convertir</button>
+      </div>
+
+      <div id="result" class="result"></div>
+      <div class="note">
+        Siempre que se pueda, el resultado se da en términos de potencias de 2, sin expandir a números gigantes.
+      </div>
+    </section>
+
+    <h2>4. Modo práctica: completa las fracciones de conversión</h2>
+    <section class="converter">
+      <p style="text-align:center; margin-top:0;">
+        Elige un valor y las unidades. Completa las fracciones de conversión usando potencias de 2 (por ejemplo, <code>2^10</code>).<br/>
+        Recuerda usar <strong>b</strong> para bits y <strong>B</strong> para Bytes.
+      </p>
+      <div class="converter-row">
+        <input id="practiceValue" type="text" placeholder="Cantidad (ej. 12)" />
+        <select id="practiceFromUnit">
+          <option value="bit">bit</option>
+          <option value="byte">Byte (B)</option>
+          <option value="kb">Kilobyte (KB)</option>
+          <option value="mb">Megabyte (MB)</option>
+          <option value="gb">Gigabyte (GB)</option>
+          <option value="tb">Terabyte (TB)</option>
+        </select>
+        <span>→</span>
+        <select id="practiceToUnit">
+          <option value="bit">bit</option>
+          <option value="byte">Byte (B)</option>
+          <option value="kb">Kilobyte (KB)</option>
+          <option value="mb">Megabyte (MB)</option>
+          <option value="gb">Gigabyte (GB)</option>
+          <option value="tb">Terabyte (TB)</option>
+        </select>
+        <button id="createExerciseBtn">Crear ejercicio</button>
+      </div>
+
+      <div id="practiceArea" class="result"></div>
+    </section>
+
+    <h2>5. Modo examen rápido</h2>
+    <section class="converter">
+      <p style="text-align:center; margin-top:0;">
+        Se generarán varias conversiones. Para cada una, escribe el resultado en la forma<br/>
+        <strong>a × 2<sup>n</sup> (unidad destino)</strong>, con <strong>a</strong> sin factores de 2 (es decir, que no sea múltiplo de 2 si es posible).
+      </p>
+      <div class="converter-row">
+        <span>Número de preguntas:</span>
+        <select id="examQuestionCount">
+          <option value="3">3</option>
+          <option value="5" selected>5</option>
+          <option value="10">10</option>
+        </select>
+        <button id="generateExamBtn">Generar examen</button>
+      </div>
+      <div id="examArea" class="result"></div>
+    </section>
+
+    <footer class="license">
+      <p>
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+           target="_blank" rel="license noopener noreferrer">
+          <img src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png"
+               alt="Licencia Creative Commons BY-NC-SA 4.0"
+               style="border-width:0" />
+        </a><br />
+        <strong>2025 Manuel López Coello</strong><br />
+        Este recurso educativo se distribuye bajo licencia
+        <em>Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)</em>.<br />
+        Se permite copiar, adaptar y compartir citando la autoría y sin fines comerciales,
+        manteniendo la misma licencia en las obras derivadas.
+      </p>
+    </footer>
+  </main>
+
+  <script>
+    const baseExp = {
+      bit: -3,
+      byte: 0,
+      kb: 10,
+      mb: 20,
+      gb: 30,
+      tb: 40
+    };
+
+    const symbols = {
+      bit: "b",
+      byte: "B",
+      kb: "KB",
+      mb: "MB",
+      gb: "GB",
+      tb: "TB"
+    };
+
+    const order = ["bit", "byte", "kb", "mb", "gb", "tb"];
+
+    const valueInput = document.getElementById("valueInput");
+    const fromUnit = document.getElementById("fromUnit");
+    const toUnit = document.getElementById("toUnit");
+    const resultDiv = document.getElementById("result");
+    const convertBtn = document.getElementById("convertBtn");
+
+    const printBtn = document.getElementById("printBtn");
+    if (printBtn) {
+      printBtn.addEventListener("click", () => window.print());
+    }
+
+    const practiceValueInput = document.getElementById("practiceValue");
+    const practiceFromUnit = document.getElementById("practiceFromUnit");
+    const practiceToUnit = document.getElementById("practiceToUnit");
+    const practiceArea = document.getElementById("practiceArea");
+    const createExerciseBtn = document.getElementById("createExerciseBtn");
+    let practiceSolution = null;
+
+    const examQuestionCount = document.getElementById("examQuestionCount");
+    const generateExamBtn = document.getElementById("generateExamBtn");
+    const examArea = document.getElementById("examArea");
+    let examQuestions = [];
+
+    function powHTML(exp) {
+      return `2<sup>${exp}</sup>`;
+    }
+
+    function factorPowerOfTwo(value) {
+      const EPS = 1e-9;
+      const rounded = Math.round(value);
+      if (Math.abs(rounded - value) > EPS || rounded === 0) {
+        return { pow: 0, rest: value, isInteger: false };
+      }
+      let n = Math.abs(rounded);
+      let pow = 0;
+      while (n % 2 === 0) {
+        n = n / 2;
+        pow++;
+      }
+      const rest = (rounded < 0 ? -1 : 1) * n;
+      return { pow, rest, isInteger: true };
+    }
+
+    function getSteps(from, to) {
+      const fromIdx = order.indexOf(from);
+      const toIdx = order.indexOf(to);
+      if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return [];
+
+      let dir = fromIdx < toIdx ? 1 : -1;
+      let currentUnit = from;
+      let currentIdx = fromIdx;
+      const steps = [];
+
+      while (currentIdx !== toIdx) {
+        const nextIdx = currentIdx + dir;
+        const nextUnit = order[nextIdx];
+
+        let expStep;
+        if (
+          (currentUnit === "bit" && nextUnit === "byte") ||
+          (currentUnit === "byte" && nextUnit === "bit")
+        ) {
+          expStep = 3;
+        } else {
+          expStep = 10;
+        }
+
+        steps.push({
+          fromUnit: currentUnit,
+          toUnit: nextUnit,
+          expStep,
+          dir
+        });
+
+        currentUnit = nextUnit;
+        currentIdx = nextIdx;
+      }
+
+      return steps;
+    }
+
+    function getPowerResult(value, from, to) {
+      const expFrom = baseExp[from];
+      const expTo = baseExp[to];
+      const ratioExp = expFrom - expTo;
+      const valueStr = value.toLocaleString("es-ES");
+      const unitFrom = symbols[from];
+      const unitTo = symbols[to];
+
+      if (ratioExp === 0) {
+        const shortHTML = `${valueStr} ${unitTo}`;
+        return { shortHTML, detailHTML: "" };
+      }
+
+      if (ratioExp > 0) {
+        const fact = factorPowerOfTwo(value);
+        const k = ratioExp;
+
+        if (!fact.isInteger || fact.pow === 0) {
+          const shortHTML = `${valueStr} × ${powHTML(k)} ${unitTo}`;
+          const detailHTML =
+            `${valueStr} ${unitFrom} = ` +
+            `${valueStr} × ${powHTML(k)} ${unitTo}`;
+          return { shortHTML, detailHTML };
+        }
+
+        const restStr = fact.rest.toLocaleString("es-ES");
+        const a = fact.pow;
+        const totalExp = a + k;
+
+        let shortHTML;
+        if (Math.abs(fact.rest - 1) < 1e-9) {
+          shortHTML = `${powHTML(totalExp)} ${unitTo}`;
+        } else {
+          shortHTML = `${restStr} × ${powHTML(totalExp)} ${unitTo}`;
+        }
+
+        const detailHTML =
+          `${valueStr} ${unitFrom} = ` +
+          `${restStr} × ${powHTML(a)} ${unitFrom} ` +
+          `= ${restStr} × ${powHTML(a)} × ${powHTML(k)} ${unitTo} ` +
+          `= ${shortHTML}`;
+
+        return { shortHTML, detailHTML };
+      } else {
+        const k = -ratioExp;
+        const shortHTML = `${valueStr} × ${powHTML(-k)} ${unitTo}`;
+        const detailHTML =
+          `${valueStr} ${unitFrom} = ` +
+          `${valueStr} / ${powHTML(k)} ${unitTo} ` +
+          `= ${shortHTML}`;
+        return { shortHTML, detailHTML };
+      }
+    }
+
+ function getPowerDecomposition(value, from, to) {
+  const expFrom = baseExp[from];
+  const expTo = baseExp[to];
+  const ratioExp = expFrom - expTo; // cuántas potencias de 2 hay entre unidades
+
+  // Si las unidades son iguales
+  if (ratioExp === 0) {
+    return { factor: value, exp: 0, unit: symbols[to] };
+  }
+
+  // Intentamos descomponer siempre el valor en 2^k
+  const fact = factorPowerOfTwo(value);
+
+  // Si no es entero o no tiene factores de 2, no podemos mejorar nada
+  if (!fact.isInteger || fact.pow === 0) {
+    return { factor: value, exp: ratioExp, unit: symbols[to] };
+  }
+
+  if (ratioExp > 0) {
+    // Ej: de MB a B → multiplicamos por 2^(ratioExp)
+    // valor * 2^(ratioExp) = (rest * 2^fact.pow) * 2^ratioExp
+    const totalExp = fact.pow + ratioExp;
+    return { factor: fact.rest, exp: totalExp, unit: symbols[to] };
+  } else {
+    // Ej: de B a MB → multiplicamos por 2^(ratioExp) con ratioExp < 0
+    // valor * 2^(ratioExp) = (rest * 2^fact.pow) * 2^(-k) = rest * 2^(fact.pow - k)
+    const k = -ratioExp; // k > 0
+    const totalExp = fact.pow - k;
+    return { factor: fact.rest, exp: totalExp, unit: symbols[to] };
+  }
 }
 
+    function buildConversionSteps(value, from, to, finalShortHTML) {
+      const valueStr = value.toLocaleString("es-ES");
+      const initialUnitHTML = symbols[from];
 
-        // --- MAPA INTERACTIVO (LÓGICA CENTRAL) ---
-        let gState = { node: null, val: null, step: 1 , values: { dec: null, bin: null, oct: null, hex: null } };
-		
-		        function resetConversionGraph() {
-            // Reiniciar estado interno
-            gState = {
-                node: null,
-                val: null,
-                step: 1,
-                values: { dec: null, bin: null, oct: null, hex: null }
-            };
+      const steps = getSteps(from, to);
+      if (steps.length === 0) {
+        return `
+          <div class="steps">
+            <div class="steps-line">
+              <span class="steps-value">${valueStr} ${initialUnitHTML}</span>
+              <span class="steps-eq">=</span>
+              <span class="steps-result">${finalShortHTML}</span>
+            </div>
+          </div>
+        `;
+      }
 
-            // Ocultar popup y limpiar input
-            const popup = el('graphInputPopup');
-            if (popup) popup.style.display = 'none';
-            const popupInput = el('popupInput');
-            if (popupInput) popupInput.value = '';
+      let html = `
+        <div class="steps">
+          <div class="steps-line">
+            <span class="steps-value">${valueStr} <span class="unit">${initialUnitHTML}</span></span>
+            <span class="steps-eq">=</span>
+            <span class="steps-value">${valueStr} <span class="unit cancelled">${initialUnitHTML}</span></span>
+            <span class="steps-mul">×</span>
+      `;
 
-            // Limpiar valores mostrados en los nodos
-            document.querySelectorAll('.node-value-text').forEach(t => t.textContent = '');
+      steps.forEach((s, index) => {
+        const isLast = index === steps.length - 1;
 
-            // Resetear el historial
-            const history = el('conversionHistory');
-            if (history) {
-                history.innerHTML = 'Haz clic en un círculo para comenzar.';
-            }
+        let numUnit = symbols[s.toUnit];
+        let denUnit = symbols[s.fromUnit];
 
-            // Eliminar badges de pasos sobre las flechas
-            const svg = document.getElementById('conversionGraph');
-            if (svg) {
-                svg.querySelectorAll('.step-badge').forEach(b => b.remove());
-            } else {
-                document.querySelectorAll('.step-badge').forEach(b => b.remove());
-            }
+        let numUnitClass = !isLast ? "cancelled" : "";
+        let denUnitClass = "cancelled";
 
-            // Restaurar aspecto de todas las flechas
-            document.querySelectorAll('.conn-path').forEach(p => {
-                p.classList.remove('active', 'visited');
-                p.style.stroke = ''; // quitar estilos inline
+        let numHTML, denHTML;
 
-                if (p.classList.contains('arrow-dec')) {
-                    p.setAttribute('marker-end', 'url(#arrow-dec)');
-                } else if (p.classList.contains('arrow-bin')) {
-                    p.setAttribute('marker-end', 'url(#arrow-bin)');
-                } else if (p.classList.contains('arrow-oct')) {
-                    p.setAttribute('marker-end', 'url(#arrow-oct)');
-                } else if (p.classList.contains('arrow-hex')) {
-                    p.setAttribute('marker-end', 'url(#arrow-hex)');
-                } else {
-                    p.setAttribute('marker-end', 'url(#arrow-default)');
-                }
-            });
-
-            // Por si el botón usa iconos de lucide
-            if (window.lucide && typeof lucide.createIcons === 'function') {
-                lucide.createIcons();
-            }
+        if (s.dir === 1) {
+          numHTML = `1 <span class="${numUnitClass}">${numUnit}</span>`;
+          denHTML = `${powHTML(s.expStep)} <span class="${denUnitClass}">${denUnit}</span>`;
+        } else {
+          numHTML = `${powHTML(s.expStep)} <span class="${numUnitClass}">${numUnit}</span>`;
+          denHTML = `1 <span class="${denUnitClass}">${denUnit}</span>`;
         }
 
-
-        function handleNodeClick(id) {
-            gState.node = id;
-            const popup = el('graphInputPopup');
-            popup.style.display = 'block';
-            // Simple center positioning
-            popup.style.left = '50%'; popup.style.top = '50%'; popup.style.transform = 'translate(-50%, -50%)';
-            el('popupInput').value = ''; el('popupInput').focus();
+        if (index > 0) {
+          html += `<span class="steps-mul">×</span>`;
         }
 
-        function confirmNodeInput() {
-            let val = el('popupInput').value.toUpperCase().trim();
-            // Basic validation
-            if(!val) return;
-            let valid = true;
-            if(gState.node === 'bin' && /[^01]/.test(val)) valid = false;
-            if(gState.node === 'dec' && /[^0-9]/.test(val)) valid = false;
-            if(gState.node === 'oct' && /[^0-7]/.test(val)) valid = false;
-            if(gState.node === 'hex' && /[^0-9A-F]/.test(val)) valid = false;
-            
-            if(!valid) { alert("Formato incorrecto para " + gState.node.toUpperCase()); return; }
+        html += `
+          <span class="fraction">
+            <span class="top">${numHTML}</span>
+            <span class="bottom">${denHTML}</span>
+          </span>
+        `;
+      });
 
-            gState.val = val;
-            el('graphInputPopup').style.display = 'none';
-            el('conversionHistory').innerHTML = '';
-            gState.step = 1;
+      html += `
+            <span class="steps-eq">=</span>
+            <span class="steps-result">${finalShortHTML}</span>
+          </div>
+        </div>
+      `;
 
-            // Initialize values map and set starting node value
-            if (!gState.values) { gState.values = { dec: null, bin: null, oct: null, hex: null }; }
-            gState.values.dec = null;
-            gState.values.bin = null;
-            gState.values.oct = null;
-            gState.values.hex = null;
-            gState.values[gState.node] = gState.val;
+      return html;
+    }
 
-            // Reset displayed values in all nodes and set initial node value
-            document.querySelectorAll('.node-value-text').forEach(t => t.textContent = '');
-            const startValNode = document.querySelector(`.node-value-text[data-node="${gState.node}"]`);
-            if (startValNode) startValNode.textContent = gState.val;
+    function convert() {
+      const rawValue = valueInput.value.trim().replace(",", ".");
+      const value = parseFloat(rawValue);
 
-            // Reset visual state of graph
-            document.querySelectorAll('.conn-path').forEach(p => {
-                 p.classList.remove('active', 'visited');
-                 p.style.stroke = '#e2e8f0';
-                 p.setAttribute('marker-end', 'url(#arrow-default)');
-            });
-            // Remove old badges
-            document.querySelectorAll('.step-badge').forEach(b => b.remove());
+      if (rawValue === "" || isNaN(value)) {
+        resultDiv.innerHTML = '<span class="error">Por favor, introduce un número válido.</span>';
+        return;
+      }
 
-            activateArrowsFrom(gState.node);
+      const from = fromUnit.value;
+      const to = toUnit.value;
+
+      const powerInfo = getPowerResult(value, from, to);
+      const stepsHTML = buildConversionSteps(value, from, to, powerInfo.shortHTML);
+
+      resultDiv.innerHTML = `
+        ${stepsHTML}
+        <div class="steps-text">
+          Resultado en forma de potencias de 2: <strong>${powerInfo.shortHTML}</strong>
+        </div>
+        ${powerInfo.detailHTML ? `<div class="steps-text">${powerInfo.detailHTML}</div>` : ""}
+      `;
+    }
+
+    convertBtn.addEventListener("click", convert);
+    valueInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") convert();
+    });
+
+    function normVal(str) {
+      return str.replace(/\s+/g, "").toLowerCase();
+    }
+
+    function normUnit(str) {
+      const raw = str.trim();
+      if (!raw) return "";
+      const lower = raw.toLowerCase();
+
+      if (lower === "b" || lower === "bit" || lower === "bits") return "b";
+      if (raw === "B" || lower === "byte" || lower === "bytes") return "B";
+      if (lower === "kb" || lower === "kib") return "KB";
+      if (lower === "mb" || lower === "mib") return "MB";
+      if (lower === "gb" || lower === "gib") return "GB";
+      if (lower === "tb" || lower === "tib") return "TB";
+
+      return raw;
+    }
+
+    function createPracticeExercise() {
+      const rawValue = practiceValueInput.value.trim().replace(",", ".");
+      const value = parseFloat(rawValue);
+
+      if (rawValue === "" || isNaN(value)) {
+        practiceArea.innerHTML = '<span class="error">Por favor, introduce un número válido para el ejercicio.</span>';
+        practiceSolution = null;
+        return;
+      }
+
+      const from = practiceFromUnit.value;
+      const to = practiceToUnit.value;
+
+      const steps = getSteps(from, to);
+      if (steps.length === 0) {
+        practiceArea.innerHTML = '<span class="error">Las unidades de origen y destino son iguales. No hay conversión que practicar.</span>';
+        practiceSolution = null;
+        return;
+      }
+
+      const valueStr = value.toLocaleString("es-ES");
+      const fromSymbol = symbols[from];
+
+      practiceSolution = steps.map((s) => {
+        let numVal, numUnit, denVal, denUnit;
+        if (s.dir === 1) {
+          numVal = "1";
+          numUnit = symbols[s.toUnit];
+          denVal = `2^${s.expStep}`;
+          denUnit = symbols[s.fromUnit];
+        } else {
+          numVal = `2^${s.expStep}`;
+          numUnit = symbols[s.toUnit];
+          denVal = "1";
+          denUnit = symbols[s.fromUnit];
+        }
+        return { numVal, numUnit, denVal, denUnit };
+      });
+
+      let html = `
+        <div class="steps">
+          <div class="steps-line">
+            <span class="steps-value">${valueStr} <span class="unit">${fromSymbol}</span></span>
+            <span class="steps-eq">=</span>
+            <span class="steps-value">${valueStr} <span class="unit cancelled">${fromSymbol}</span></span>
+            <span class="steps-mul">×</span>
+      `;
+
+      steps.forEach((s, index) => {
+        if (index > 0) {
+          html += `<span class="steps-mul">×</span>`;
         }
 
-        function activateArrowsFrom(node) {
-             const outgoing = document.querySelectorAll(`[id^="path-${node}-"]`);
-             outgoing.forEach(p => {
-                 let color = '#cbd5e1'; let marker = 'url(#arrow-default)';
-                 if(node==='dec') { color='#2563eb'; marker='url(#arrow-dec)'; }
-                 if(node==='bin') { color='#16a34a'; marker='url(#arrow-bin)'; }
-                 if(node==='oct') { color='#9333ea'; marker='url(#arrow-oct)'; }
-                 if(node==='hex') { color='#e11d48'; marker='url(#arrow-hex)'; }
-                 
-                 if(!p.classList.contains('visited')) {
-                     p.style.stroke = color;
-                     p.setAttribute('marker-end', marker);
-                     p.classList.add('active');
-                 }
-             });
-        }
+        html += `
+          <span class="fraction">
+            <span class="top">
+              <input class="frac-input" id="p_numVal_${index}" placeholder="valor" />
+              <input class="frac-input unit" id="p_numUnit_${index}" placeholder="unidad" />
+            </span>
+            <span class="bottom">
+              <input class="frac-input" id="p_denVal_${index}" placeholder="valor" />
+              <input class="frac-input unit" id="p_denUnit_${index}" placeholder="unidad" />
+            </span>
+          </span>
+        `;
+      });
 
-        function handlePathClick(from, to) {
-            if(!gState.values || !gState.values[from]) return; // Solo permitir desde nodos con valor
-            const path = document.getElementById(`path-${from}-${to}`);
-            if(path.classList.contains('visited')) return; 
+      html += `
+          </div>
+        </div>
+        <button id="gradePracticeBtn" class="practice-grade-btn">Corregir</button>
+        <div id="practiceFeedback" class="steps-text"></div>
+      `;
 
-            // 1. Add Step Badge on Arrow
-            // Get path bounding box center for badging (approx)
-            const pathRect = path.getBBox();
-            // Simple approximation for middle of quadratic curve
-            // For exact positioning, we'd need path data parsing, but let's use fixed offsets for known paths
-            const badgePos = getBadgePos(from, to);
-            
-            const badge = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            badge.setAttribute("class", "step-badge");
-            badge.innerHTML = `<circle cx="${badgePos.x}" cy="${badgePos.y}" r="10" fill="#ef4444" stroke="white" stroke-width="2"/><text x="${badgePos.x}" y="${badgePos.y}" fill="white" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central">${gState.step}</text>`;
-            document.getElementById('conversionGraph').appendChild(badge);
+      practiceArea.innerHTML = html;
 
-            // 2. Perform Calculation & Generate Visualization
-            let visualObj = { html: document.createTextNode("Error"), result: "Error" };
-            const currentVal = gState.values[from];
-            let methodTitle = "";
-            let color = 'gray';
-            let numVal = 0;
+      const gradeBtn = document.getElementById("gradePracticeBtn");
+      gradeBtn.addEventListener("click", gradePractice);
+    }
 
-            if(from === 'dec') {
-                numVal = parseInt(currentVal, 10);
-                if(to === 'bin') { visualObj = generateLadderHTML(numVal, 2, '#16a34a', '#f0fdf4'); methodTitle = "Escalera (:2)"; color='green'; }
-                else if(to === 'oct') { visualObj = generateLadderHTML(numVal, 8, '#9333ea', '#faf5ff'); methodTitle = "Escalera (:8)"; color='purple'; }
-                else if(to === 'hex') { visualObj = generateLadderHTML(numVal, 16, '#e11d48', '#fff1f2'); methodTitle = "Escalera (:16)"; color='rose'; }
-            } 
-            else if (to === 'dec') {
-                 let base = (from==='bin')?2 : (from==='oct')?8 : 16;
-                 let col = (from==='bin')?'#16a34a' : (from==='oct')?'#9333ea' : '#e11d48';
-                 visualObj = generatePolyHTML(currentVal, base, col);
-                 methodTitle = "Polinomio"; color='blue';
-            }
-            else if (from === 'bin') {
-                 if(to === 'oct') { visualObj = generateGroupingHTML(currentVal, 3, 'purple'); methodTitle = "Agrupación (3)"; color='purple'; }
-                 if(to === 'hex') { visualObj = generateGroupingHTML(currentVal, 4, 'rose'); methodTitle = "Agrupación (4)"; color='rose'; }
-            }
-            // Inverse grouping (Hex/Oct -> Bin) we simulate with simple text for now or reverse logic
-            else if (to === 'bin') {
-                // Visual detallado de desagrupación (OCT/HEX -> BIN)
-                let base = (from === 'oct') ? 8 : 16;
-                let bits = (from === 'oct') ? 3 : 4;
-                const wrapper = document.createElement('div');
-                wrapper.className = "inline-block text-left font-mono text-sm";
+    function gradePractice() {
+      if (!practiceSolution) return;
 
-                let html = '<div class="flex flex-wrap items-end gap-4">';
-                let binRes = "";
+      let correctFractions = 0;
+      const totalFractions = practiceSolution.length;
 
-                for (let i = 0; i < currentVal.length; i++) {
-                    const ch = currentVal[i];
-                    const val = parseInt(ch, base);
-                    const groupBin = val.toString(2).padStart(bits, '0');
-                    binRes += groupBin;
+      practiceSolution.forEach((sol, index) => {
+        const numValInput = document.getElementById(`p_numVal_${index}`);
+        const numUnitInput = document.getElementById(`p_numUnit_${index}`);
+        const denValInput = document.getElementById(`p_denVal_${index}`);
+        const denUnitInput = document.getElementById(`p_denUnit_${index}`);
 
-                    const disp = (base === 16 && val >= 10)
-                        ? `${ch}<span class="text-xs opacity-60">(${val})</span>`
-                        : ch;
+        [numValInput, numUnitInput, denValInput, denUnitInput].forEach(el =>
+          el.classList.remove("ok", "wrong")
+        );
 
-                    html += `
-                        <div class="flex flex-col items-center gap-1">
-                            <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm shadow-sm border border-emerald-200">
-                                ${disp}
-                            </div>
-                            <div class="text-emerald-300">
-                                <i data-lucide="arrow-down" class="w-4 h-4"></i>
-                            </div>
-                            <div class="flex rounded-lg overflow-hidden border border-emerald-200 bg-white shadow-sm">
-                    `;
-                    for (let j = 0; j < bits; j++) {
-                        const bit = groupBin[j];
-                        html += `
-                                <div class="w-6 h-8 flex items-center justify-center border-r border-emerald-100 last:border-r-0 text-slate-700 font-bold">
-                                    ${bit}
-                                </div>
-                        `;
-                    }
-                    html += `
-                            </div>
-                        </div>
-                    `;
-                }
+        const numValOk = normVal(numValInput.value) === normVal(sol.numVal);
+        const numUnitOk = normUnit(numUnitInput.value) === normUnit(sol.numUnit);
+        const denValOk = normVal(denValInput.value) === normVal(sol.denVal);
+        const denUnitOk = normUnit(denUnitInput.value) === normUnit(sol.denUnit);
 
-                html += '</div>';
-                html += `
-                    <div class="mt-3 text-xs text-slate-500">Concatenando todos los grupos binarios:</div>
-                    <div class="mt-1 text-lg font-mono text-emerald-700">${binRes}</div>
-                `;
+        if (numValOk) numValInput.classList.add("ok"); else numValInput.classList.add("wrong");
+        if (numUnitOk) numUnitInput.classList.add("ok"); else numUnitInput.classList.add("wrong");
+        if (denValOk) denValInput.classList.add("ok"); else denValInput.classList.add("wrong");
+        if (denUnitOk) denUnitInput.classList.add("ok"); else denUnitInput.classList.add("wrong");
 
-                wrapper.innerHTML = html;
-                visualObj = { html: wrapper, result: binRes };
-                methodTitle = "Desagrupación";
-                color = 'green';
-            }
+        if (numValOk && numUnitOk && denValOk && denUnitOk) correctFractions++;
+      });
 
+      const feedback = document.getElementById("practiceFeedback");
+      if (!feedback) return;
 
-// 3. Update History
-            const historyItem = document.createElement('div');
-            historyItem.className = `p-4 bg-white border-l-4 border-${color}-500 rounded shadow mb-4 fade-in`;
-            historyItem.innerHTML = `
-                <div class="flex justify-between mb-2">
-                    <span class="font-bold text-slate-700">Paso ${gState.step}: ${from.toUpperCase()} &rarr; ${to.toUpperCase()}</span>
-                    <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500">${methodTitle}</span>
-                </div>
-            `;
-            historyItem.appendChild(visualObj.html);
-            historyItem.innerHTML += `<div class="mt-2 pt-2 border-t border-slate-100 text-right font-mono font-bold text-lg text-${color}-600">Resultado: ${visualObj.result}</div>`;
-            
-            el('conversionHistory').prepend(historyItem);
-            lucide.createIcons(); // Refresh icons if any
+      if (correctFractions === totalFractions) {
+        feedback.innerHTML = `✅ ¡Perfecto! Has acertado las ${totalFractions} fracciones.`;
+      } else {
+        feedback.innerHTML = `Has acertado ${correctFractions} de ${totalFractions} fracciones. Revisa las que aparecen en rojo.`;
+      }
+    }
 
-            // 4. Update State
-            gState.val = visualObj.result;
-            gState.node = to;
-            if (gState.values) { gState.values[to] = gState.val; }
-            gState.step++;
+    createExerciseBtn.addEventListener("click", createPracticeExercise);
 
-            // Update destination node displayed value
-            const destValNode = document.querySelector(`.node-value-text[data-node="${gState.node}"]`);
-            if (destValNode) destValNode.textContent = gState.val;
-            
-            // 5. Update Graph Visuals
-            path.classList.add('visited');
-            path.classList.remove('active');
-            path.style.stroke = '#cbd5e1'; // Fade out used path
-            
-            // Activate next possibilities
-            activateArrowsFrom(to);
-        }
-        
-      function getBadgePos(from, to) {
-    // Posiciones del marcador de paso, situadas al otro lado de las etiquetas
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
-    // DEC ↔ BIN (vertical)
-    // :2 está en x=250,y=145  → paso al otro lado en x=350,y=145
-    if(from==='dec' && to==='bin') return {x:280, y:180};
-    // x2 está en x=350,y=140 → paso al otro lado en x=250,y=140
-    if(from==='bin' && to==='dec') return {x:340, y:180};
+    function generateRandomQuestion() {
+      let fromIdx = randomInt(0, order.length - 1);
+      let toIdx;
+      do {
+        toIdx = randomInt(0, order.length - 1);
+      } while (toIdx === fromIdx);
 
-    // BIN ↔ OCT (G-3) (etiqueta G-3 está hacia el interior)
-    if(from==='bin' && to==='oct') return {x:210, y:170};
-    if(from==='oct' && to==='bin') return {x:210, y:170};
+      const from = order[fromIdx];
+      const to = order[toIdx];
 
-    // BIN ↔ HEX (G-4)
-    if(from==='bin' && to==='hex') return {x:390, y:170};
-    if(from==='hex' && to==='bin') return {x:390, y:170};
+      const allowedValues = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 64];
+      const value = allowedValues[randomInt(0, allowedValues.length - 1)];
 
-    // DEC ↔ OCT (horizontal izquierda)
-    // :8 está arriba (y≈210) → paso debajo
-    if(from==='dec' && to==='oct') return {x:200, y:260};
-    // x8 está abajo (y≈290) → paso encima
-    if(from==='oct' && to==='dec') return {x:200, y:330};
+      const decomp = getPowerDecomposition(value, from, to);
 
-    // DEC ↔ HEX (horizontal derecha)
-    // :16 está arriba → paso debajo
-    if(from==='dec' && to==='hex') return {x:400, y:260};
-    // x16 está abajo → paso encima
-    if(from==='hex' && to==='dec') return {x:400, y:290};
+      return {
+        value,
+        from,
+        to,
+        factor: decomp.factor,
+        exp: decomp.exp,
+        unit: decomp.unit
+      };
+    }
 
-    // Fallback (por si acaso)
-    return {x:300, y:150};
-}
+    function generateExam() {
+      const n = parseInt(examQuestionCount.value, 10) || 5;
+      examQuestions = [];
+      for (let i = 0; i < n; i++) {
+        examQuestions.push(generateRandomQuestion());
+      }
 
-        // --- INITS ---
-        renderSymbols('decimalSymbols', '0123456789'.split(''), 'cell-dec');
-        function renderDecimalTable() { renderBaseTable(10, 'decRange', 'decFormulaDisplay', 'decTableHeader', 'decTable', 'bg-block-uniform', '#2563eb'); }
-        function updateDecimalViz() { updatePolyViz('decInput', 'decViz', 10, '#2563eb'); }
-        renderDecimalTable(); updateDecimalViz();
+      let html = "";
+      examQuestions.forEach((q, idx) => {
+        const valueStr = q.value.toLocaleString("es-ES");
+        const fromSymbol = symbols[q.from];
+        const toSymbol = symbols[q.to];
+        html += `
+          <div class="exam-question">
+            <div class="exam-question-title">
+              Pregunta ${idx + 1}: convierte <strong>${valueStr} ${fromSymbol}</strong> a <strong>${toSymbol}</strong>.
+            </div>
+            <div class="exam-answer-row">
+              Respuesta: 
+              <input class="frac-input" id="ex_factor_${idx}" placeholder="a" />
+              &times; 2^
+              <input class="frac-input" id="ex_exp_${idx}" placeholder="n" />
+              <span class="unit">${toSymbol}</span>
+            </div>
+          </div>
+        `;
+      });
 
-        function renderBinaryTable() { renderBaseTable(2, 'binRange', 'binFormulaDisplay', 'binTableHeader', 'binTable', 'bg-block-uniform-bin', '#16a34a'); }
-        let binaryBits=[0,0,0,1,0,1,0,1];
-        function renderBinaryLab() {
-            const c=el('binarySwitches'), calc=el('binToDecCalc'), res=el('binToDecResult'); c.innerHTML=''; let sum=0, parts=[];
-            const cols=['#2563eb','#dc2626','#16a34a'];
-            binaryBits.forEach((b,i)=>{
-                const p=7-i, v=Math.pow(2,p), col=cols[p%3], act=b===1;
-                if(act) sum+=v;
-                const btn=document.createElement('button');
-                btn.className=`flex flex-col items-center group transition-all ${act?'-translate-y-2':'opacity-60 hover:opacity-100'}`;
-                btn.onclick=()=>{binaryBits[i]=1-binaryBits[i]; renderBinaryLab();};
-                btn.innerHTML=`<span class="text-[10px] font-bold text-slate-400 mb-1">2<sup>${p}</sup></span><div class="w-10 h-14 rounded border-2 flex flex-col items-center justify-between py-1 shadow-sm transition-colors ${act?'bg-green-50 border-green-500':'bg-white border-slate-300'}"><span class="text-[10px] text-slate-500">${v}</span><span class="text-xl font-mono font-bold ${act?'text-green-600':'text-slate-300'}">${b}</span></div>`;
-                c.append(btn);
-                let style = act ? `color:${col}; font-weight:bold;` : `opacity:0.4;`;
-                parts.push(`<div class="bg-white border rounded px-2 py-1 shadow-sm flex items-baseline gap-1 shrink-0" style="${style}"><span style="color:${col};font-weight:bold">${b}</span><span class="text-xs text-slate-400">x</span><span class="text-slate-600 font-bold">2<sup>${p}</sup></span></div>`);
-            });
-            calc.innerHTML = parts.join('<span class="text-slate-300 mx-2">+</span>');
-            res.innerText = sum;
-            highlightRow(sum, 'refTableBodyBin', 'bin');
-        }
-        renderBinaryTable(); renderBinaryLab();
-        function calculateLadderBin() { drawLadderGeneric(2, 'ladderInputBin', 'ladderContBin', 'ladderOutBin', 'ladderResBoxBin', '#16a34a', '#f0fdf4'); }
-        calculateLadderBin();
+      html += `
+        <button id="gradeExamBtn" class="practice-grade-btn">Corregir examen</button>
+        <div id="examFeedback" class="steps-text"></div>
+      `;
 
-        renderSymbols('octalSymbols', '01234567'.split(''), 'cell-oct');
-        function renderOctalTable() { renderBaseTable(8, 'octRange', 'octFormulaDisplay', 'octTableHeader', 'octTable', 'bg-block-uniform-oct', '#9333ea'); }
-        function updateOctalViz() { updatePolyViz('octInput', 'octViz', 8, '#9333ea'); }
-        renderOctalTable(); updateOctalViz();
-        function calculateLadderOct() { drawLadderGeneric(8, 'ladderInputOct', 'ladderContOct', 'ladderOutOct', 'ladderResBoxOct', '#9333ea', '#faf5ff'); }
-        calculateLadderOct();
-        updateBinToOctGroupViz();
+      examArea.innerHTML = html;
 
-        renderSymbols('hexSymbols', '0123456789ABCDEF'.split(''), 'cell-hex');
-        function renderHexTable() { renderBaseTable(16, 'hexRange', 'hexFormulaDisplay', 'hexTableHeader', 'hexTable', 'bg-block-uniform-hex', '#e11d48'); }
-        function updateHexViz() { updatePolyViz('hexInput', 'hexViz', 16, '#e11d48'); }
-        renderHexTable(); updateHexViz();
-        function calculateLadderHex() { drawLadderGeneric(16, 'ladderInputHex', 'ladderContHex', 'ladderOutHex', 'ladderResBoxHex', '#e11d48', '#fff1f2'); }
-        calculateLadderHex();
-        updateBinToHexGroupViz();
+      const gradeExamBtn = document.getElementById("gradeExamBtn");
+      gradeExamBtn.addEventListener("click", gradeExam);
+    }
 
-        renderRefTables();
+    function gradeExam() {
+      if (!examQuestions || examQuestions.length === 0) return;
 
-    </script>
+      let correct = 0;
+      const total = examQuestions.length;
+
+      examQuestions.forEach((q, idx) => {
+        const factorInput = document.getElementById(`ex_factor_${idx}`);
+        const expInput = document.getElementById(`ex_exp_${idx}`);
+
+        factorInput.classList.remove("ok", "wrong");
+        expInput.classList.remove("ok", "wrong");
+
+        const factorStr = factorInput.value.trim().replace(",", ".");
+        const expStr = expInput.value.trim();
+
+        const factorUser = parseFloat(factorStr);
+        const expUser = parseInt(expStr, 10);
+
+        const factorOk = !isNaN(factorUser) && Math.abs(factorUser - q.factor) < 1e-6;
+        const expOk = !isNaN(expUser) && expUser === q.exp;
+
+        if (factorOk) factorInput.classList.add("ok"); else factorInput.classList.add("wrong");
+        if (expOk) expInput.classList.add("ok"); else expInput.classList.add("wrong");
+
+        if (factorOk && expOk) correct++;
+      });
+
+      const feedback = document.getElementById("examFeedback");
+      if (!feedback) return;
+
+      const gradePercent = Math.round((correct / total) * 100);
+      if (correct === total) {
+        feedback.innerHTML = `✅ ¡Excelente! Has acertado las ${total} preguntas. Nota: ${gradePercent}%.`;
+      } else {
+        feedback.innerHTML = `Has acertado ${correct} de ${total} preguntas. Nota aproximada: ${gradePercent}%. Revisa las respuestas marcadas en rojo.`;
+      }
+    }
+
+    generateExamBtn.addEventListener("click", generateExam);
+  </script>
 </body>
 </html>
